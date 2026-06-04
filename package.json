@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build": "node scripts/build-vercel.mjs",
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "vercel": "^34.0.0"
+  }
+}

@@ -1,0 +1,459 @@
+<style>
+  /* â”€â”€ Reports page styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .rep-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    align-items: flex-end;
+    overflow: hidden; /* prevent iOS date blowout */
+  }
+  .rep-filters > * {
+    min-width: 0; /* grid cell must shrink for date inputs */
+    overflow: hidden;
+  }
+  .rep-btns {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .rep-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .rep-sum-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--accent);
+  }
+  .rep-sum-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 6px;
+  }
+  .rep-sum-val {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .rep-sum-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .rep-pos { color: var(--success) !important; }
+  .rep-neg { color: var(--danger) !important; }
+
+  .app-table tfoot td {
+    background: var(--accent-glow) !important;
+    font-weight: 700;
+    color: var(--accent);
+    border-top: 2px solid var(--border);
+  }
+
+  @media (max-width: 900px) {
+    .rep-filters { grid-template-columns: 1fr 1fr; }
+    .rep-summary-grid { grid-template-columns: 1fr 1fr; }
+    .rep-filters .app-field,
+    .rep-filters input,
+    .rep-filters select { width: 100%; min-width: 0; box-sizing: border-box; }
+  }
+  @media (max-width: 600px) {
+    .rep-filters { grid-template-columns: 1fr !important; }
+    .rep-filters input,
+    .rep-filters select,
+    .rep-filters .app-field { width: 100%; min-width: 0; box-sizing: border-box; font-size: 16px; min-height: 44px; }
+    .rep-summary-grid { grid-template-columns: 1fr 1fr; }
+    .rep-btns { width: 100%; flex-direction: column; }
+    .rep-btns .btn { width: 100%; min-height: 44px; justify-content: center; box-sizing: border-box; }
+  }
+</style>
+
+<div class="app-overlay" id="repOv">
+  <div class="app-spin"></div>
+  <div class="app-spin-txt">Loading Reportâ€¦</div>
+</div>
+
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-chart-bar" style="color:var(--accent);margin-right:8px"></i>Business Reports</div>
+  <div class="app-subtitle">View purchase, sales and payment summaries by date range</div>
+</div>
+
+<!-- Filters -->
+<div class="rep-filters">
+  <div class="app-fg">
+    <label class="app-label">From Date</label>
+    <input class="app-field" id="repFrom" type="date" />
+  </div>
+  <div class="app-fg">
+    <label class="app-label">To Date</label>
+    <input class="app-field" id="repTo" type="date" />
+  </div>
+  <div class="app-fg">
+    <label class="app-label">Party</label>
+    <select class="app-field" id="repParty">
+      <option value="">All Parties</option>
+    </select>
+  </div>
+  <div class="app-fg">
+    <label class="app-label">Area</label>
+    <input class="app-field" id="repArea" type="text" placeholder="All Areas" />
+  </div>
+  <div class="app-fg">
+    <label class="app-label">Module</label>
+    <select class="app-field" id="repModule">
+      <option value="all">All Modules</option>
+      <option value="purchase">Purchase</option>
+      <option value="sales">Sales</option>
+      <option value="payments">Receipts &amp; Payments</option>
+    </select>
+  </div>
+  <div class="rep-btns">
+    <button class="btn btn-primary" onclick="repLoad()"><i class="fas fa-search"></i> Run Report</button>
+    <button class="btn btn-secondary" onclick="repClear()"><i class="fas fa-xmark"></i> Clear</button>
+    <button class="btn btn-secondary" onclick="repPrint()" id="repPrintBtn" style="display:none"><i class="fas fa-print"></i> Print</button>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div id="repSumGrid" class="rep-summary-grid" style="display:none">
+  <div class="rep-sum-card">
+    <div class="rep-sum-lbl"><i class="fas fa-cart-arrow-down"></i> Total Purchase</div>
+    <div class="rep-sum-val" id="repTotPurG">0.000 g</div>
+    <div class="rep-sum-sub" id="repTotPurR">â‚¹ 0.00</div>
+  </div>
+  <div class="rep-sum-card">
+    <div class="rep-sum-lbl"><i class="fas fa-hand-holding-usd"></i> Total Sales</div>
+    <div class="rep-sum-val" id="repTotSalG">0.000 g</div>
+    <div class="rep-sum-sub" id="repTotSalR">â‚¹ 0.00</div>
+  </div>
+  <div class="rep-sum-card">
+    <div class="rep-sum-lbl"><i class="fas fa-receipt"></i> Total Receipts</div>
+    <div class="rep-sum-val" id="repTotRcpR">â‚¹ 0.00</div>
+    <div class="rep-sum-sub" id="repTotRcpG">0.000 g</div>
+  </div>
+  <div class="rep-sum-card">
+    <div class="rep-sum-lbl"><i class="fas fa-money-bill-wave"></i> Net Stock (g)</div>
+    <div class="rep-sum-val" id="repNetStock">0.000 g</div>
+    <div class="rep-sum-sub">Purchase âˆ’ Sales</div>
+  </div>
+  <div class="rep-sum-card">
+    <div class="rep-sum-lbl"><i class="fas fa-chart-line"></i> Net Profit</div>
+    <div class="rep-sum-val rep-pos" id="repNetProfit">â‚¹ 0.00</div>
+    <div class="rep-sum-sub" id="repNetProfitPct">0.00%</div>
+  </div>
+</div>
+
+<!-- Purchase Block -->
+<div id="repPurBlock" class="app-wrap" style="display:none; margin-bottom: 20px;">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-cart-arrow-down" style="color:var(--accent);margin-right:6px"></i>Purchase Entries</span>
+    <span class="app-count" id="repPurCnt">0 records</span>
+  </div>
+  <div class="app-scroll">
+    <table class="app-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Purchase ID</th><th>Date</th><th>Party</th><th>Area</th>
+          <th>Grams</th><th>Rupees</th><th>Rate/10g</th><th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="repPurTbody"></tbody>
+      <tfoot id="repPurFoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Sales Block -->
+<div id="repSaleBlock" class="app-wrap" style="display:none; margin-bottom: 20px;">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-hand-holding-usd" style="color:var(--accent);margin-right:6px"></i>Sales Entries</span>
+    <span class="app-count" id="repSaleCnt">0 records</span>
+  </div>
+  <div class="app-scroll">
+    <table class="app-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Sale ID</th><th>Date</th><th>Party</th><th>Area</th>
+          <th>Grams</th><th>Rupees</th><th>Rate/10g</th><th>Profit â‚¹</th><th>Profit %</th><th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="repSaleTbody"></tbody>
+      <tfoot id="repSaleFoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Payments Block -->
+<div id="repPayBlock" class="app-wrap" style="display:none; margin-bottom: 20px;">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-receipt" style="color:var(--accent);margin-right:6px"></i>Receipts &amp; Payments</span>
+    <span class="app-count" id="repPayCnt">0 records</span>
+  </div>
+  <div class="app-scroll">
+    <table class="app-table">
+      <thead>
+        <tr>
+          <th>#</th><th>ID</th><th>Type</th><th>Date</th><th>Party</th><th>Area</th>
+          <th>Amount â‚¹</th><th>Amount g</th><th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="repPayTbody"></tbody>
+      <tfoot id="repPayFoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+<div id="repEmpty" style="display:none;text-align:center;padding:60px 20px;color:#9ca3af">
+  <i class="fas fa-chart-bar" style="font-size:36px;display:block;margin-bottom:12px;color:#d1d5db"></i>
+  <div style="font-size:15px;font-weight:600;color:#6b7280;margin-bottom:4px">No data found</div>
+  <div style="font-size:13px">Try adjusting your filters or date range</div>
+</div>
+
+<script>
+  var repData = null;
+
+  function repLoad() {
+    var dateFrom = document.getElementById('repFrom').value;
+    var dateTo   = document.getElementById('repTo').value;
+    var party    = document.getElementById('repParty').value;
+    var area     = document.getElementById('repArea').value.trim();
+    var modEl    = document.getElementById('repModule');
+    var module   = modEl ? modEl.value : 'all';
+    document.getElementById('repOv').classList.add('show');
+    document.getElementById('repSumGrid').style.display  = 'none';
+    document.getElementById('repPurBlock').style.display  = 'none';
+    document.getElementById('repSaleBlock').style.display = 'none';
+    document.getElementById('repPayBlock').style.display  = 'none';
+    document.getElementById('repEmpty').style.display     = 'none';
+    document.getElementById('repPrintBtn').style.display  = 'none';
+    if (typeof API === 'undefined') {
+      document.getElementById('repOv').classList.remove('show');
+      showToast('Not connected to backend', 'warning'); return;
+    }
+    API.run
+      .withSuccessHandler(function(r) {
+        document.getElementById('repOv').classList.remove('show');
+        if (!r || !r.success) { showToast((r && r.message) || 'Load failed', 'error'); return; }
+        repData = r;
+        repRender(repData);
+        if (r.truncated) showToast('Report totals are complete. Showing first ' + ((r.counts && r.counts.maxRows) || 500) + ' rows per section.', 'info');
+        document.getElementById('repPrintBtn').style.display = '';
+      })
+      .withFailureHandler(function(e) {
+        document.getElementById('repOv').classList.remove('show');
+        showToast(e.message || 'Failed', 'error');
+      })
+      .repGetReportData({ dateFrom: dateFrom, dateTo: dateTo, party: party, area: area, module: module });
+  }
+
+  function repClear() {
+    document.getElementById('repFrom').value  = '';
+    document.getElementById('repTo').value    = '';
+    document.getElementById('repParty').value = '';
+    document.getElementById('repArea').value  = '';
+    var modEl = document.getElementById('repModule');
+    if (modEl) modEl.value = 'all';
+    repData = null;
+    document.getElementById('repSumGrid').style.display = 'none';
+    document.getElementById('repPurBlock').style.display = 'none';
+    document.getElementById('repSaleBlock').style.display = 'none';
+    document.getElementById('repPayBlock').style.display = 'none';
+    document.getElementById('repEmpty').style.display = 'none';
+    document.getElementById('repPrintBtn').style.display = 'none';
+  }
+
+  function repRender(d) {
+    var pur = d.purchase || [], sal = d.sales || [], pay = d.payments || [];
+    var hasData = pur.length || sal.length || pay.length;
+    if (!hasData) { document.getElementById('repEmpty').style.display = ''; return; }
+
+    // Summary
+    var sum = d.summary || {};
+    var totPurG = parseFloat(sum.purGrams) || 0, totPurR = parseFloat(sum.purRupees) || 0;
+    var totSalG = parseFloat(sum.saleGrams) || 0, totSalR = parseFloat(sum.saleRupees) || 0;
+    var totRcpR = parseFloat(sum.payRupees) || 0, totRcpG = parseFloat(sum.payGrams) || 0;
+    var totProfit = parseFloat(sum.profitRupees) || 0;
+    var profitPct = sum.profitPct != null ? parseFloat(sum.profitPct).toFixed(2) : (totSalR > 0 ? (totProfit / totSalR * 100).toFixed(2) : '0.00');
+
+    document.getElementById('repTotPurG').textContent = totPurG.toFixed(3) + ' g';
+    document.getElementById('repTotPurR').textContent = 'â‚¹ ' + totPurR.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('repTotSalG').textContent = totSalG.toFixed(3) + ' g';
+    document.getElementById('repTotSalR').textContent = 'â‚¹ ' + totSalR.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('repTotRcpR').textContent = 'â‚¹ ' + totRcpR.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('repTotRcpG').textContent = (totRcpG).toFixed(3) + ' g';
+    document.getElementById('repNetStock').textContent = (totPurG - totSalG).toFixed(3) + ' g';
+    var np = document.getElementById('repNetProfit');
+    np.textContent = 'â‚¹ ' + totProfit.toLocaleString('en-IN',{minimumFractionDigits:2});
+    np.className = 'rep-sum-val ' + (totProfit >= 0 ? 'rep-pos' : 'rep-neg');
+    document.getElementById('repNetProfitPct').textContent = profitPct + '%';
+    document.getElementById('repSumGrid').style.display = '';
+
+    // Purchase table
+    if (pur.length) {
+      document.getElementById('repPurCnt').textContent = ((d.counts && d.counts.purchase) || pur.length) + ' records';
+      var purRows = '', purTotG = 0, purTotR = 0;
+      pur.forEach(function(r, i){
+        purTotG += parseFloat(r.grams)||0; purTotR += parseFloat(r.rupees)||0;
+        purRows += '<tr><td>' + (i+1) + '</td><td><code>' + _htmlEsc(r.purchaseId) + '</code></td>'
+          + '<td>' + _htmlEsc(r.date) + '</td><td>' + _htmlEsc(r.partyName) + '</td><td>' + _htmlEsc(r.area) + '</td>'
+          + '<td style="text-align:right">' + (parseFloat(r.grams)||0).toFixed(3) + ' g</td>'
+          + '<td style="text-align:right">â‚¹ ' + (parseFloat(r.rupees)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
+          + '<td style="text-align:right">' + _htmlEsc(r.rate10g) + '</td>'
+          + '<td>' + _htmlEsc(r.note||'') + '</td></tr>';
+      });
+      document.getElementById('repPurTbody').innerHTML = purRows;
+      document.getElementById('repPurFoot').innerHTML = '<tr><td colspan="5"><strong>Totals</strong></td>'
+        + '<td style="text-align:right"><strong>' + purTotG.toFixed(3) + ' g</strong></td>'
+        + '<td style="text-align:right"><strong>â‚¹ ' + purTotR.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</strong></td>'
+        + '<td colspan="2"></td></tr>';
+      document.getElementById('repPurBlock').style.display = '';
+    }
+
+    // Sales table
+    if (sal.length) {
+      document.getElementById('repSaleCnt').textContent = ((d.counts && d.counts.sales) || sal.length) + ' records';
+      var salRows = '', salTotG = 0, salTotR = 0, salTotP = 0;
+      sal.forEach(function(r, i){
+        salTotG += parseFloat(r.grams)||0; salTotR += parseFloat(r.rupees)||0; salTotP += parseFloat(r.profitR)||0;
+        var plCls = (parseFloat(r.profitR)||0) >= 0 ? 'rep-pos' : 'rep-neg';
+        salRows += '<tr><td>' + (i+1) + '</td><td><code>' + _htmlEsc(r.saleId) + '</code></td>'
+          + '<td>' + _htmlEsc(r.date) + '</td><td>' + _htmlEsc(r.partyName) + '</td><td>' + _htmlEsc(r.area) + '</td>'
+          + '<td style="text-align:right">' + (parseFloat(r.grams)||0).toFixed(3) + ' g</td>'
+          + '<td style="text-align:right">â‚¹ ' + (parseFloat(r.rupees)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
+          + '<td style="text-align:right">' + _htmlEsc(r.rate10g) + '</td>'
+          + '<td class="' + plCls + '" style="text-align:right">â‚¹ ' + (parseFloat(r.profitR)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
+          + '<td style="text-align:right">' + _htmlEsc(r.profitPct||'') + '%</td>'
+          + '<td>' + _htmlEsc(r.note||'') + '</td></tr>';
+      });
+      document.getElementById('repSaleTbody').innerHTML = salRows;
+      document.getElementById('repSaleFoot').innerHTML = '<tr><td colspan="5"><strong>Totals</strong></td>'
+        + '<td style="text-align:right"><strong>' + salTotG.toFixed(3) + ' g</strong></td>'
+        + '<td style="text-align:right"><strong>â‚¹ ' + salTotR.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</strong></td>'
+        + '<td></td><td class="rep-pos" style="text-align:right"><strong>â‚¹ ' + salTotP.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</strong></td>'
+        + '<td colspan="2"></td></tr>';
+      document.getElementById('repSaleBlock').style.display = '';
+    }
+
+    // Payments table
+    if (pay.length) {
+      document.getElementById('repPayCnt').textContent = ((d.counts && d.counts.payments) || pay.length) + ' records';
+      var payRows = '', payTotR = 0, payTotG = 0;
+      pay.forEach(function(r, i){
+        payTotR += parseFloat(r.rupeesRP)||0; payTotG += parseFloat(r.gramsRP)||0;
+        var typeBadge = r.entryType === 'Receipt' ? '<span style="background:#d1fae5;color:#065f46;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600">Receipt</span>'
+          : r.entryType === 'Payment' ? '<span style="background:#fee2e2;color:#dc2626;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600">Payment</span>'
+          : '<span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600">Adjustment</span>';
+        payRows += '<tr><td>' + (i+1) + '</td><td><code>' + _htmlEsc(r.paymentId||r.id||'') + '</code></td>'
+          + '<td>' + typeBadge + '</td>'
+          + '<td>' + _htmlEsc(r.date) + '</td><td>' + _htmlEsc(r.partyName) + '</td><td>' + _htmlEsc(r.area) + '</td>'
+          + '<td style="text-align:right">â‚¹ ' + (parseFloat(r.rupeesRP)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
+          + '<td style="text-align:right">' + (parseFloat(r.gramsRP)||0).toFixed(3) + ' g</td>'
+          + '<td>' + _htmlEsc(r.note||'') + '</td></tr>';
+      });
+      document.getElementById('repPayTbody').innerHTML = payRows;
+      document.getElementById('repPayFoot').innerHTML = '<tr><td colspan="6"><strong>Totals</strong></td>'
+        + '<td style="text-align:right"><strong>â‚¹ ' + payTotR.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</strong></td>'
+        + '<td style="text-align:right"><strong>' + payTotG.toFixed(3) + ' g</strong></td>'
+        + '<td></td></tr>';
+      document.getElementById('repPayBlock').style.display = '';
+    }
+  }
+
+  /* â”€â”€ Load Parties for filter â”€â”€ */
+  function repLoadParties() {
+    if (typeof API === 'undefined') return;
+    API.run
+      .withSuccessHandler(function(r) {
+        if (r && r.success) {
+          var sel = document.getElementById('repParty');
+          sel.innerHTML = '<option value="">All Parties</option>';
+          (r.data || []).forEach(function(p) {
+            var o = document.createElement('option');
+            o.value = p.partyName; o.textContent = p.partyName; sel.appendChild(o);
+          });
+        }
+      })
+      .withFailureHandler(function(e) {
+        showToast((e && e.message) || 'Could not load parties', 'warning');
+      })
+      .partGetAllParties();
+  }
+
+  /* â”€â”€ Print â”€â”€ */
+  function repGetPrintCSS() {
+    return [
+      '@page{size:A4 landscape;margin:10mm 12mm;}',
+      'body{font-family:Poppins,sans-serif;margin:0;padding:0;color:#1a1d23;font-size:9pt;background:#fff;}',
+      '.gk-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:3px solid #0d9488;margin-bottom:14px;}',
+      '.gk-biz{font-family:Montserrat,sans-serif;font-size:18px;font-weight:800;color:#0d9488;}',
+      '.gk-biz-sub{font-size:8.5px;color:#6b7280;margin-top:2px;}',
+      '.gk-hdr-right{text-align:right;}',
+      '.gk-rep-title{font-family:Montserrat,sans-serif;font-size:13px;font-weight:700;color:#1a1d23;}',
+      '.gk-rep-meta{font-size:8px;color:#9ca3af;margin-top:3px;}',
+      '.rep-filters,.rep-btns{display:none!important;}',
+      '.rep-summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}',
+      '.rep-sum-card{border:1px solid #e5e7eb;border-radius:6px;padding:10px 12px;border-left:3px solid #0d9488;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.rep-sum-lbl{font-size:7.5pt;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:4px;}',
+      '.rep-sum-val{font-family:Montserrat,sans-serif;font-size:13pt;font-weight:700;color:#1a1d23;}',
+      '.rep-sum-sub{font-size:8pt;color:#9ca3af;margin-top:2px;}',
+      '.rep-block{border:1px solid #e5e7eb;border-radius:6px;margin-bottom:14px;page-break-inside:avoid;overflow:hidden;}',
+      '.rep-bh{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:#f8fafb;border-bottom:1px solid #e5e7eb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.rep-bt{font-size:11pt;font-weight:700;color:#1a1d23;}',
+      '.rep-bc{font-size:9.5pt;color:#6b7280;background:#e5e7eb;padding:1px 8px;border-radius:12px;}',
+      'table{width:100%;border-collapse:collapse;font-size:8.5pt;}',
+      'th{background:#0d9488!important;color:#fff!important;padding:7px 9px;text-align:left;font-weight:600;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      'td{padding:5px 9px;border-bottom:1px solid #f3f4f6;color:#374151;vertical-align:middle;}',
+      'tr:nth-child(even) td{background:#f9fafb!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      'tfoot td{background:#f0fdf9!important;font-weight:700;color:#0d9488;border-top:2px solid #0d9488;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.rep-pos{color:#059669!important;font-weight:600;}',
+      '.rep-neg{color:#dc2626!important;font-weight:600;}',
+      '.app-no-data{text-align:center;padding:20px;color:#9ca3af;}',
+      '.gk-footer{margin-top:12px;padding-top:8px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:7.5pt;color:#9ca3af;}',
+    ].join('\n');
+  }
+
+  function repPrint() {
+    if (!repData) { showToast('Load a report first', 'warning'); return; }
+    var sg = document.getElementById('repSumGrid') ? document.getElementById('repSumGrid').outerHTML : '';
+    var pur = document.getElementById('repPurBlock') ? document.getElementById('repPurBlock').outerHTML : '';
+    var sal = document.getElementById('repSaleBlock') ? document.getElementById('repSaleBlock').outerHTML : '';
+    var pay = document.getElementById('repPayBlock') ? document.getElementById('repPayBlock').outerHTML : '';
+    var from = document.getElementById('repFrom').value;
+    var to = document.getElementById('repTo').value;
+    var dateStr = (from || to) ? (from || '...') + ' \u2013 ' + (to || '...') : 'All Dates';
+    var css = repGetPrintCSS();
+    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+      + '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">'
+      + '<title>Business Report \u2014 GajKesari Ornaments</title>'
+      + '<style>' + css + '</style>'
+      + '</head><body>'
+      + '<div class="gk-hdr">'
+      + '<div><div class="gk-biz">\uD83D\uDC8E GajKesari Ornaments</div>'
+      + '<div class="gk-biz-sub">Fine Jewellery &amp; Ornaments</div></div>'
+      + '<div class="gk-hdr-right"><div class="gk-rep-title">Business Report</div>'
+      + '<div class="gk-rep-meta">Period: ' + dateStr + '</div></div></div>'
+      + sg + pur + sal + pay
+      + '<div class="gk-footer"><span>GajKesari Ornaments \u2014 Confidential</span>'
+      + '<span>Printed: ' + new Date().toLocaleString('en-IN') + '</span></div>'
+      + '</body></html>';
+    mobileSafePrint(html, 'Business Report \u2014 GajKesari Ornaments');
+  }
+
+  APP.reload = function() { repClear(); };
+  repLoadParties();
+</script>

@@ -1,0 +1,404 @@
+<div class="app-overlay" id="purOv">
+  <div class="app-spin"></div>
+  <div class="app-spin-txt" id="purOvTxt">Processingâ€¦</div>
+</div>
+
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-cart-arrow-down" style="color:var(--accent);margin-right:8px"></i>Purchase</div>
+  <div class="app-subtitle">Add and manage purchase entries</div>
+</div>
+
+<div class="app-bar">
+  <!-- Row 1: Action buttons -->
+  <div class="app-bar-left">
+    <button class="btn btn-primary edit-only" onclick="purOpenAdd()"><i class="fas fa-plus"></i> New Purchase</button>
+    <button class="btn btn-danger" id="purDelRow" style="display:none" onclick="purDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span id="purSelCount">0</span>)</button>
+  </div>
+  <!-- Row 2: Search bar -->
+  <div class="app-bar-search">
+    <div class="app-search-wrap">
+      <i class="fas fa-search app-search-icon"></i>
+      <input class="app-search-inp" id="purSrchQ" type="text" placeholder="Search purchasesâ€¦"
+        onkeydown="if(event.key==='Enter')purSearch()" oninput="purToggleClear()" />
+      <button class="app-search-clear" id="purClearBtn" onclick="purClear()" title="Clear" style="display:none"><i class="fas fa-xmark"></i></button>
+      <button class="app-search-btn" onclick="purSearch()" title="Search"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+  <!-- Row 3: Sort & Print -->
+  <div class="app-bar-print">
+    <select class="app-sel" id="purSrchCrit">
+      <option value="all">All Fields</option>
+      <option value="0">Purchase ID</option>
+      <option value="3">Party Name</option>
+      <option value="4">Area</option>
+    </select>
+    <button class="btn btn-secondary" onclick="purPrint()"><i class="fas fa-print"></i> Print Purchase List</button>
+  </div>
+</div>
+
+
+<div class="app-wrap">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-table" style="color:var(--accent);margin-right:6px"></i>Purchase List</span>
+    <span class="app-count" id="purCnt">Loadingâ€¦</span>
+  </div>
+  <div class="app-scroll">
+    <table id="purTable" class="app-table">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="purSelAll" onchange="purToggleAll(this)"
+              title="Select all" /></th>
+          <th>#</th>
+          <th>Purchase ID</th>
+          <th>Date</th>
+          <th>Party ID</th>
+          <th>Party Name</th>
+          <th>Area</th>
+          <th>Grams</th>
+          <th>Rupees</th>
+          <th>Rate/10g</th>
+          <th>Avg Rate</th>
+          <th>Stock (g)</th>
+          <th>Note</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="purTbody"></tbody>
+    </table>
+  </div>
+  <div class="app-pag" id="purPag"></div>
+</div>
+
+<script>
+  /* â”€â”€ State â”€â”€ */
+  var purAll = [], purPage = 1, purPer = 25, purTotal = 0, purEditing = null, purParties = [], purCombo = null;
+  var purSearchCol = 'all', purSearchQ = '';
+  var _purOvTimer = null;
+
+  /* â”€â”€ Overlay â”€â”€ */
+  function purShowOv(t) {
+    document.getElementById('purOvTxt').textContent = t || 'Processingâ€¦';
+    document.getElementById('purOv').classList.add('show');
+    if (_purOvTimer) clearTimeout(_purOvTimer);
+    _purOvTimer = setTimeout(function () { purHideOv(); }, 15000);
+  }
+  function purHideOv() {
+    if (_purOvTimer) { clearTimeout(_purOvTimer); _purOvTimer = null; }
+    document.getElementById('purOv').classList.remove('show');
+  }
+
+  /* â”€â”€ Load â”€â”€ */
+  function purLoad() {
+    purPage = 1; purSearchCol = 'all'; purSearchQ = '';
+    var qEl = document.getElementById('purSrchQ'), cEl = document.getElementById('purSrchCrit');
+    if (qEl) qEl.value = ''; if (cEl) cEl.value = 'all';
+    purLoadPage(1);
+  }
+
+  function purLoadPage(page) {
+    purPage = page;
+    document.getElementById('purCnt').textContent = 'Loadingâ€¦';
+    if (typeof API === 'undefined') { purAll = []; purTotal = 0; purRender(); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        if (r && r.success) { purAll = r.data || []; purTotal = r.total || 0; purPer = r.pageSize || purPer; purRender(); }
+        else { purAll = []; purTotal = 0; purRender(); showToast((r && r.message) || 'Load failed', 'error'); }
+      })
+      .withFailureHandler(function (e) { purAll = []; purTotal = 0; purRender(); showToast(e.message, 'error'); })
+      .purGetPage({ page: purPage, pageSize: purPer, searchCol: purSearchCol, searchQ: purSearchQ });
+  }
+
+  function purRender() {
+    var tb = document.getElementById('purTbody'), tot = purTotal;
+    document.getElementById('purCnt').textContent = tot + ' record' + (tot !== 1 ? 's' : '');
+    if (!purAll.length) { tb.innerHTML = '<tr><td colspan="14" class="app-no-data"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db"></i>No records found</td></tr>'; purRenderPagination(0); return; }
+    var start = (purPage - 1) * purPer, rows = '';
+    for (var i = 0; i < purAll.length; i++) {
+      var d = purAll[i];
+      rows += '<tr id="app-form-grid-' + _htmlEsc(d.purchaseId) + '">'
+        + '<td><input type="checkbox" class="pur-chk" value="' + _htmlEsc(d.purchaseId) + '" onchange="purChkChange()"/></td>'
+        + '<td>' + (start + i + 1) + '</td>'
+        + '<td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">' + _htmlEsc(d.purchaseId) + '</code></td>'
+        + '<td class="pur-cd">' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyId) + '</td>'
+        + '<td class="pur-cpn">' + _htmlEsc(d.partyName) + '</td>'
+        + '<td class="pur-ca">' + _htmlEsc(d.area) + '</td>'
+        + '<td class="pur-cg">' + _htmlEsc(d.grams) + '</td>'
+        + '<td class="pur-cr">' + _htmlEsc(d.rupees) + '</td>'
+        + '<td>' + _htmlEsc(d.rate10g) + '</td>'
+        + '<td>' + _htmlEsc(d.avgPurRate) + '</td>'
+        + '<td>' + _htmlEsc(d.stockBalGrams) + '</td>'
+        + '<td class="pur-cn">' + (d.isPaid ? '<span class="app-badge" style="background:#dcfce7;color:#166534;margin-right:4px">PAID</span>' : '') + _htmlEsc(d.note) + '</td>'
+        + '<td style="min-width:160px">'
+        + '<div id="pur-view-' + _htmlEsc(d.purchaseId) + '" style="display:flex;gap:5px">'
+        + '<button class="app-ab app-edit edit-only" onclick="purStartEdit(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-pen"></i> Edit</button>'
+        + '<button class="app-ab app-del edit-only" onclick="purConfirmDel(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-trash"></i> Delete</button>'
+        + '</div>'
+        + '<div id="app-edit-' + _htmlEsc(d.purchaseId) + '" style="display:none;gap:5px">'
+        + '<button class="app-ab app-upd" onclick="purDoUpdate(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-check"></i> Update</button>'
+        + '<button class="app-ab app-can" onclick="purCancelEdit(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-xmark"></i> Cancel</button>'
+        + '</div></td></tr>';
+    }
+    tb.innerHTML = rows; purRenderPagination(purTotal);
+  }
+
+  function purRenderPagination(tot) {
+    if (typeof UI !== 'undefined') UI.renderPagination(tot, purPage, purPer, 'purPag', 'purGoPage');
+    else document.getElementById('purPag').innerHTML = '';
+  }
+  function purGoPage(p) { var pages = Math.ceil(purTotal / purPer) || 1; p = Math.max(1, Math.min(p, pages)); if (p === purPage) return; purLoadPage(p); }
+
+  function purSearch() {
+    purSearchQ = document.getElementById('purSrchQ').value.trim().toLowerCase();
+    purSearchCol = document.getElementById('purSrchCrit').value;
+    purLoadPage(1);
+  }
+  function purClear() {
+    document.getElementById('purSrchQ').value = '';
+    document.getElementById('purSrchCrit').value = 'all';
+    var cb = document.getElementById('purClearBtn'); if (cb) cb.style.display = 'none';
+    purSearchQ = ''; purSearchCol = 'all';
+    purLoadPage(1);
+  }
+  function purToggleClear() {
+    var v = document.getElementById('purSrchQ').value;
+    var cb = document.getElementById('purClearBtn');
+    if (cb) cb.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  /* â”€â”€ Load Parties â”€â”€ */
+  function purLoadParties(cb) {
+    if (purParties.length) { cb && cb(); return; }
+    try {
+      API.run
+        .withSuccessHandler(function (r) { if (r && r.success) purParties = r.data || []; cb && cb(); })
+        .withFailureHandler(function () { cb && cb(); })
+        .purGetPartiesForDropdown();
+    } catch (ex) { cb && cb(); }
+  }
+
+  /* â”€â”€ Add Modal â”€â”€ */
+  function purOpenAdd() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    purLoadParties(function () {
+      var body = '<div class="app-fg"><label class="app-label">Purchase ID</label>'
+        + '<div class="app-id-row"><input class="app-field" id="pfPurId" readonly placeholder="Click Generate"/>'
+        + '<button class="btn btn-secondary btn-sm" onclick="purGenId()"><i class="fas fa-rotate-right"></i> Generate</button></div></div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Date *</label><input class="app-field" id="pfDate" type="date"/></div>'
+        + '<div class="app-fg"><label class="app-label">Party Name *</label><div id="pfPartyNameWrap"></div></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Party ID</label><input class="app-field" id="pfPartyId" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="pfArea" readonly/></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Grams *</label><input class="app-field" id="pfGrams" type="number" step="0.001" oninput="purCalcRate()"/></div>'
+        + '<div class="app-fg"><label class="app-label">Rupees *</label><input class="app-field" id="pfRupees" type="number" step="0.01" oninput="purCalcRate()"/></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Rate/10g (Auto)</label><input class="app-field" id="pfRate" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Avg Rate (Auto)</label><input class="app-field" id="pfAvg" readonly placeholder="Calculated on save"/></div>'
+        + '</div>'
+        + '<div class="app-fg"><label class="app-label">Stock Balance g (Auto)</label><input class="app-field" id="pfStock" readonly placeholder="Calculated on save"/></div>'
+        + '<div class="app-fg"><label class="app-label">Note</label><input class="app-field" id="pfNote" type="text" placeholder="Optional note"/></div>'
+        + '<div class="app-fg" style="margin-top:10px;"><label class="app-label" style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pfIsPaid" style="margin-right:8px;width:18px;height:18px;cursor:pointer;accent-color:var(--accent);"> <span style="font-size:14px;font-weight:500;color:#1a1d23">Mark as Paid (Skip adding to Outstanding)</span></label></div>';
+      var foot = '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>'
+        + '<button class="btn btn-primary" onclick="purSaveNew()"><i class="fas fa-save"></i> Save</button>';
+      openModal('Add New Purchase', body, foot);
+      var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+      document.getElementById('pfDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+      /* build searchable party combobox */
+      var wrap = document.getElementById('pfPartyNameWrap');
+      if (wrap) {
+        purCombo = makePartyCombo({
+          wrap: wrap,
+          inputId: 'pfPartyName',
+          parties: purParties,
+          placeholder: 'Type to search partyâ€¦',
+          onSelect: function(p) {
+            document.getElementById('pfPartyId').value = p ? p.partyId : '';
+            document.getElementById('pfArea').value = p ? p.area : '';
+          }
+        });
+      }
+      purGenId();
+    });
+  }
+
+  function purFetchParty() { /* now handled by combobox onSelect */ }
+
+  function purCalcRate() {
+    var g = parseFloat(document.getElementById('pfGrams').value) || 0;
+    var r = parseFloat(document.getElementById('pfRupees').value) || 0;
+    var rate = g > 0 ? Math.round((r / g) * 10 * 100) / 100 : 0;
+    document.getElementById('pfRate').value = rate || '';
+  }
+
+  function purGenId() {
+    document.getElementById('pfPurId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
+  }
+
+
+  function purSaveNew() {
+    var id = document.getElementById('pfPurId').value.trim();
+    var dt = document.getElementById('pfDate').value;
+    var pn = purCombo ? purCombo.getValue() : '';
+    var g = document.getElementById('pfGrams').value;
+    var r = document.getElementById('pfRupees').value;
+    if (!id) { showToast('Generate a Purchase ID first', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!purCombo || !purCombo.getSelected()) { showToast('Please select a party from the dropdown list', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams must be greater than 0', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees must be greater than 0', 'warning'); return; }
+    closeModal(); purShowOv('Savingâ€¦');
+    var d = {
+      purchaseId: id, date: dt,
+      partyId: document.getElementById('pfPartyId').value,
+      partyName: pn, area: document.getElementById('pfArea').value,
+      grams: g, rupees: r,
+      note: document.getElementById('pfNote').value.trim(),
+      isPaid: document.getElementById('pfIsPaid') ? document.getElementById('pfIsPaid').checked : false
+    };
+    API.run
+      .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('New Purchase Added', 'success'); purLoad(); } else showToast((res && res.message) || 'Save failed', 'error'); })
+      .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+      .purAddPurchase(d);
+  }
+
+  /* â”€â”€ Inline Edit â”€â”€ */
+  function purStartEdit(id) {
+    if (purEditing && purEditing !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; }
+    purEditing = id;
+    var d = purAll.find(function (x) { return x.purchaseId === id; }); if (!d) return;
+    purShowOv('Loadingâ€¦');
+    purLoadParties(function () {
+      setTimeout(function () {
+        var row = document.getElementById('app-form-grid-' + id); if (!row) { purHideOv(); return; }
+        row.classList.add('app-editing');
+        var tdD = row.querySelector('.pur-cd'); tdD.setAttribute('data-orig', tdD.innerHTML); tdD.innerHTML = '<input class="app-edit-inp" type="date" value="' + _htmlEsc(d.dateRaw) + '"/>';
+        var opts = purParties.map(function (p) { return '<option value="' + _htmlEsc(p.partyName) + '" data-id="' + _htmlEsc(p.partyId) + '" data-area="' + _htmlEsc(p.area) + '"' + (p.partyName === d.partyName ? ' selected' : '') + '>' + _htmlEsc(p.partyName) + '</option>'; }).join('');
+        var tdP = row.querySelector('.pur-cpn'); tdP.setAttribute('data-orig', tdP.innerHTML); tdP.innerHTML = '<select class="app-edit-inp" onchange="purEditPartyChange(\'' + id + '\',this)"><option value="">Selectâ€¦</option>' + opts + '</select>';
+        var tdA = row.querySelector('.pur-ca'); tdA.setAttribute('data-orig', tdA.innerHTML);
+        [['pur-cg', d.grams, 'number'], ['pur-cr', d.rupees, 'number'], ['pur-cn', d.note, 'text']].forEach(function (x) {
+          var td = row.querySelector('.' + x[0]); td.setAttribute('data-orig', td.innerHTML); td.innerHTML = '<input class="app-edit-inp" type="' + x[2] + '" value="' + _htmlEsc(String(x[1] || '')) + '"/>';
+        });
+        document.getElementById('pur-view-' + id).style.display = 'none';
+        document.getElementById('app-edit-' + id).style.display = 'flex';
+        purHideOv();
+      }, 150);
+    });
+  }
+
+  function purEditPartyChange(rowId, sel) {
+    var opt = sel.options[sel.selectedIndex];
+    var row = document.getElementById('app-form-grid-' + rowId);
+    if (row) { var tdA = row.querySelector('.pur-ca'); tdA.textContent = opt ? opt.getAttribute('data-area') : ''; }
+  }
+
+  function purCancelEdit(id) {
+    var row = document.getElementById('app-form-grid-' + id); if (!row) return;
+    row.classList.remove('app-editing');
+    ['pur-cd', 'pur-cpn', 'pur-ca', 'pur-cg', 'pur-cr', 'pur-cn'].forEach(function (c) {
+      var td = row.querySelector('.' + c); if (td && td.getAttribute('data-orig') !== null) td.innerHTML = td.getAttribute('data-orig');
+    });
+    document.getElementById('pur-view-' + id).style.display = 'flex';
+    document.getElementById('app-edit-' + id).style.display = 'none';
+    purEditing = null;
+  }
+
+  function purGetCell(row, cls) { var td = row.querySelector('.' + cls); if (!td) return ''; var el = td.querySelector('input') || td.querySelector('select'); return el ? el.value : td.textContent; }
+
+  function purDoUpdate(id) {
+    var row = document.getElementById('app-form-grid-' + id); if (!row) return;
+    var dt = purGetCell(row, 'pur-cd'), pn = purGetCell(row, 'pur-cpn');
+    var g = purGetCell(row, 'pur-cg'), r = purGetCell(row, 'pur-cr');
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams required', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees required', 'warning'); return; }
+    var party = purParties.find(function (p) { return p.partyName === pn; }) || {};
+    purShowOv('Updatingâ€¦');
+    var origData = purAll.find(function(x) { return x.purchaseId === id; }) || {};
+    var d = {
+      purchaseId: id, date: dt,
+      partyId: party.partyId || '', partyName: pn, area: party.area || purGetCell(row, 'pur-ca'),
+      grams: g, rupees: r, note: purGetCell(row, 'pur-cn'),
+      isPaid: !!origData.isPaid
+    };
+    API.run
+      .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('Purchase Updated', 'success'); purEditing = null; purLoadPage(purPage); } else showToast((res && res.message) || 'Update failed', 'error'); })
+      .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+      .purUpdatePurchase(d);
+  }
+
+  /* â”€â”€ Delete â”€â”€ */
+  function purConfirmDel(id) {
+    var d = purAll.find(function (x) { return x.purchaseId === id; });
+    confirmDialog('Delete purchase <strong>' + _htmlEsc(id) + '</strong>' + (d ? ' (' + _htmlEsc(d.partyName) + ')?' : '?'), function () {
+      purShowOv('Deletingâ€¦');
+      API.run
+        .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('Purchase Deleted', 'success'); purLoadPage(purPage); } else showToast((res && res.message) || 'Delete failed', 'error'); })
+        .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+        .purDeletePurchase(id);
+    });
+  }
+
+  function purToggleAll(cb) {
+    document.querySelectorAll('.pur-chk').forEach(function (c) { c.checked = cb.checked; });
+    purChkChange();
+  }
+  function purChkChange() {
+    var sel = document.querySelectorAll('.pur-chk:checked').length;
+    var row = document.getElementById('purDelRow');
+    var sc = document.getElementById('purSelCount');
+    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (sc) sc.textContent = sel;
+  }
+  function purDeleteSelected() {
+    var ids = [];
+    document.querySelectorAll('.pur-chk:checked').forEach(function (c) { ids.push(c.value); });
+    if (!ids.length) { showToast('No purchases selected', 'warning'); return; }
+    confirmDialog('Delete <strong>' + ids.length + '</strong> selected purchase(s)? This cannot be undone.', function () {
+      purShowOv('Deleting ' + ids.length + ' purchase(s)â€¦');
+      API.run
+        .withSuccessHandler(function (res) { purHideOv(); showToast(res.message || 'Done', 'success'); purLoad(); })
+        .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+        .purBulkDelete(ids);
+    });
+  }
+
+  APP.reload = purLoad;
+  APP.openAdd = { purchase: purOpenAdd };
+
+  /* â”€â”€ Print â”€â”€ */
+  function purPrint() {
+    if (!purAll || !purAll.length) { showToast('No data to print', 'warning'); return; }
+    var totalG = 0, totalR = 0;
+    var rows = purAll.map(function(d, i) {
+      totalG += parseFloat(d.grams) || 0;
+      totalR += parseFloat(d.rupees) || 0;
+      return '<tr><td>' + (i+1) + '</td>'
+        + '<td><code>' + _htmlEsc(d.purchaseId) + '</code></td>'
+        + '<td>' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyName) + '</td>'
+        + '<td>' + _htmlEsc(d.area) + '</td>'
+        + '<td class="num">' + (parseFloat(d.grams)||0).toFixed(3) + ' g</td>'
+        + '<td class="num">&#8377; ' + (parseFloat(d.rupees)||0).toLocaleString('en-IN', {minimumFractionDigits:2}) + '</td>'
+        + '<td class="num">' + _htmlEsc(d.rate10g) + '</td>'
+        + '<td>' + _htmlEsc(d.note||'') + '</td></tr>';
+    }).join('');
+    var foot = '<tr><td colspan="5"><strong>Totals (' + purAll.length + ' records)</strong></td>'
+      + '<td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td>'
+      + '<td class="num"><strong>&#8377; ' + totalR.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</strong></td>'
+      + '<td colspan="2"></td></tr>';
+    var meta = (purSearchQ ? 'Filter: \u201c' + _htmlEsc(purSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + purPage;
+    var tbl = '<table><thead><tr><th>#</th><th>Purchase ID</th><th>Date</th><th>Party Name</th><th>Area</th>'
+      + '<th class="num">Grams</th><th class="num">Rupees</th><th class="num">Rate/10g</th><th>Note</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
+    mobileSafePrint(_gkPrintWrap('Purchase Register', meta, tbl), 'Purchase Register \u2014 GajKesari Ornaments');
+  }
+
+  purLoad();
+</script>

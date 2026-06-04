@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/parties", "destination": "/parties.html" },
+    { "source": "/purchase", "destination": "/purchase.html" },
+    { "source": "/sales", "destination": "/sales.html" },
+    { "source": "/payments", "destination": "/payments.html" },
+    { "source": "/invoice", "destination": "/invoice.html" },
+    { "source": "/estimate", "destination": "/invoice.html" },
+    { "source": "/reports", "destination": "/reports.html" }
+  ]
+}

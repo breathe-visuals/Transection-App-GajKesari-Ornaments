@@ -1,0 +1,837 @@
+<style>
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px
+  }
+
+  .dash-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s
+  }
+
+  .dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .dash-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px
+  }
+
+  .dash-card-val {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1
+  }
+
+  .dash-card-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 4px
+  }
+
+  .dash-card-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px
+  }
+
+  .dash-ic-teal {
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  .dash-ic-blue {
+    background: rgba(37, 99, 235, .12);
+    color: #2563eb
+  }
+
+  .dash-ic-grn {
+    background: rgba(16, 185, 129, .12);
+    color: var(--success);
+  }
+
+  .dash-ic-org {
+    background: rgba(245, 158, 11, .12);
+    color: var(--warning);
+  }
+
+  .dash-ic-red {
+    background: rgba(239, 68, 68, .12);
+    color: var(--danger);
+  }
+
+  .dash-ic-pur {
+    background: rgba(139, 92, 246, .12);
+    color: #7c3aed
+  }
+
+  .dash-row2 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px
+  }
+
+  .dash-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden
+  }
+
+  .dash-ph {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px
+  }
+
+  .dash-ph i {
+    color: var(--accent);
+  }
+
+  .dash-pb {
+    padding: 18px
+  }
+
+  .dash-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bg);
+    font-size: 13px
+  }
+
+  .dash-stat-row:last-child {
+    border: none
+  }
+
+  .dash-stat-lbl {
+    color: var(--text-muted);
+  }
+
+  .dash-stat-val {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .dash-stat-pos {
+    color: var(--success);
+    font-weight: 600
+  }
+
+  .dash-stat-neg {
+    color: var(--danger);
+    font-weight: 600
+  }
+
+  .dash-qa-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
+  }
+
+  .dash-qa-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .2s;
+    width: 100%
+  }
+
+  .dash-qa-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  .dash-qa-btn i {
+    width: 20px;
+    text-align: center;
+    color: var(--accent);
+    font-size: 15px
+  }
+
+  .dash-out-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px
+  }
+
+  .dash-out-card {
+    border-radius: var(--radius);
+    padding: 18px;
+    position: relative
+  }
+
+  .dash-out-pos {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0
+  }
+
+  .dash-out-neg {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border: 1px solid #fecaca
+  }
+
+  .dash-out-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px
+  }
+
+  .dash-out-val {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 6px 0 2px
+  }
+
+  .dash-out-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .dash-sk {
+    background: var(--bg);
+    border-radius: 6px;
+    animation: dashSk 1.2s ease infinite alternate
+  }
+
+  @keyframes dashSk {
+    from {
+      opacity: .6
+    }
+
+    to {
+      opacity: 1
+    }
+  }
+
+  @media(max-width:900px) {
+    .dash-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .dash-card {
+      padding: 14px;
+    }
+
+    .dash-card-val {
+      font-size: 20px;
+    }
+
+    .dash-row2 {
+      grid-template-columns: 1fr
+    }
+
+    .dash-out-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .dash-out-card {
+      padding: 14px;
+    }
+
+    .dash-out-title {
+      font-size: 10.5px;
+    }
+
+    .dash-out-val {
+      font-size: 22px;
+    }
+  }
+
+  @media(max-width:480px) {
+    .dash-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .dash-card {
+      padding: 12px 10px;
+    }
+
+    .dash-card-icon {
+      width: 38px;
+      height: 38px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .dash-card-val {
+      font-size: 18px;
+    }
+
+    .dash-card-label {
+      font-size: 11.5px;
+    }
+
+    .dash-card-sub {
+      font-size: 10.5px;
+    }
+
+    .dash-out-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .dash-out-card {
+      padding: 12px 10px;
+    }
+
+    .dash-out-title {
+      font-size: 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .dash-out-val {
+      font-size: 18px;
+    }
+
+    .dash-out-sub {
+      font-size: 11px;
+    }
+
+    .dash-qa-grid {
+      grid-template-columns: 1fr
+    }
+  }
+</style>
+
+<!-- Page Header -->
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-chart-pie" style="color:var(--accent);margin-right:8px"></i>Dashboard</div>
+  <div class="app-subtitle">Business overview and quick actions</div>
+</div>
+
+<!-- Summary Cards -->
+<div class="dash-grid" id="dashCards">
+  <div class="dash-card">
+    <div class="dash-card-icon dash-ic-teal"><i class="fas fa-users"></i></div>
+    <div class="dash-card-label">Total Parties</div>
+    <div class="dash-card-val" id="dashParties">
+      <div class="dash-sk" style="height:24px;width:60px"></div>
+    </div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon dash-ic-blue"><i class="fas fa-cart-arrow-down"></i></div>
+    <div class="dash-card-label">Purchases</div>
+    <div class="dash-card-val" id="dashPurCount">
+      <div class="dash-sk" style="height:24px;width:40px"></div>
+    </div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon dash-ic-grn"><i class="fas fa-hand-holding-usd"></i></div>
+    <div class="dash-card-label">Sales</div>
+    <div class="dash-card-val" id="dashSaleCount">
+      <div class="dash-sk" style="height:24px;width:40px"></div>
+    </div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon dash-ic-org"><i class="fas fa-receipt"></i></div>
+    <div class="dash-card-label">Receipts</div>
+    <div class="dash-card-val" id="dashPayCount">
+      <div class="dash-sk" style="height:24px;width:40px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Outstanding Cards -->
+<div class="dash-out-grid">
+  <div class="dash-out-card dash-out-pos" id="dashOutSupRCard">
+    <div class="dash-out-title"><i class="fas fa-truck" style="margin-right:5px"></i>Supplier Outstanding â‚¹</div>
+    <div class="dash-out-val" id="dashOutSupR">â€”</div>
+    <div class="dash-out-sub">Amount owed to suppliers</div>
+  </div>
+  <div class="dash-out-card dash-out-pos" id="dashOutSupGCard">
+    <div class="dash-out-title"><i class="fas fa-weight-hanging" style="margin-right:5px"></i>Supplier Outstanding g
+    </div>
+    <div class="dash-out-val" id="dashOutSupG">â€”</div>
+    <div class="dash-out-sub">Grams owed to suppliers</div>
+  </div>
+  <div class="dash-out-card dash-out-pos" id="dashOutCustRCard">
+    <div class="dash-out-title"><i class="fas fa-user" style="margin-right:5px"></i>Customer Outstanding â‚¹</div>
+    <div class="dash-out-val" id="dashOutCustR">â€”</div>
+    <div class="dash-out-sub">Amount receivable from customers</div>
+  </div>
+  <div class="dash-out-card dash-out-pos" id="dashOutCustGCard">
+    <div class="dash-out-title"><i class="fas fa-gem" style="margin-right:5px"></i>Customer Outstanding g</div>
+    <div class="dash-out-val" id="dashOutCustG">â€”</div>
+    <div class="dash-out-sub">Grams receivable from customers</div>
+  </div>
+</div>
+
+<!-- Main Grid -->
+<div class="dash-row2">
+  <!-- Stats Panel -->
+  <div class="dash-panel">
+    <div class="dash-ph"><i class="fas fa-chart-line"></i> Business Overview</div>
+    <div class="dash-pb">
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-down"
+            style="color:var(--accent);margin-right:5px"></i>Total Purchase (â‚¹)</span><span class="dash-stat-val"
+          id="dashPurR">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-down"
+            style="color:var(--accent);margin-right:5px"></i>Total Purchase (g)</span><span class="dash-stat-val"
+          id="dashPurG">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-up"
+            style="color:#2563eb;margin-right:5px"></i>Total Sales (â‚¹)</span><span class="dash-stat-val"
+          id="dashSaleR">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-up"
+            style="color:#2563eb;margin-right:5px"></i>Total Sales (g)</span><span class="dash-stat-val"
+          id="dashSaleG">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-receipt"
+            style="color:#d97706;margin-right:5px"></i>Total Receipts (â‚¹)</span><span class="dash-stat-val"
+          id="dashPayR">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-cubes"
+            style="color:#7c3aed;margin-right:5px"></i>Stock Balance (g)</span><span class="dash-stat-val"
+          id="dashStock">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-percent"
+            style="color:var(--accent);margin-right:5px"></i>Avg Purchase Rate/10g</span><span class="dash-stat-val"
+          id="dashAvgRate">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-sack-dollar"
+            style="color:#059669;margin-right:5px"></i>Total Profit (â‚¹)</span><span class="dash-stat-val dash-stat-pos"
+          id="dashProfit">â€”</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-percent"
+            style="color:#059669;margin-right:5px"></i>Profit %</span><span class="dash-stat-val dash-stat-pos"
+          id="dashProfitPct">â€”</span></div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="dash-panel" id="dash-qa-panel">
+    <div class="dash-ph"><i class="fas fa-bolt"></i> Quick Actions</div>
+    <div class="dash-pb">
+      <div class="dash-qa-grid">
+        <button class="dash-qa-btn edit-only" onclick="dashQA('party')"><i class="fas fa-users"></i> Parties</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('purchase')"><i class="fas fa-cart-arrow-down"></i> Purchase</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('sale')"><i class="fas fa-hand-holding-usd"></i> Sales</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('payment')"><i class="fas fa-receipt"></i> Receipts &amp; Payments</button>
+        <button class="dash-qa-btn" onclick="dashQA('invoice')" style="grid-column:1/-1"><i
+            class="fas fa-file-invoice"></i> Invoice / Estimate</button>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="dashLoad()"><i
+            class="fas fa-rotate-right"></i> Refresh Dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* â”€â”€ Shared helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  var dashData = null, dashParties = [];
+  var dqFS = 'margin-top:4px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);width:100%;font-family:var(--font-main);font-size:13px;outline:none;box-sizing:border-box';
+  var dqLB = 'display:block;font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px';
+  function dqToday() { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
+  function dqFG(label, html) { return '<div style="display:flex;flex-direction:column;margin-bottom:12px"><label style="' + dqLB + '">' + label + '</label>' + html + '</div>'; }
+  function dqIN(id, type, ph, extra) { return '<input id="' + id + '" type="' + (type || 'text') + '" placeholder="' + (ph || '') + '" style="' + dqFS + '" ' + (extra ? extra + ' ' : '') + '/>'; }
+
+  function dqSEL(id, opts, extra) { return '<select id="' + id + '" style="' + dqFS + '" ' + (extra || '>') + '<option value="">Selectâ€¦</option>' + opts + '</select>'; }
+  function dqRow2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
+  function dashGenId_(p) { return p + Math.floor(10000 + Math.random() * 90000); }
+  function dashFmt(v, dp) { return 'â‚¹ ' + (parseFloat(v) || 0).toLocaleString('en-IN', { minimumFractionDigits: dp || 2, maximumFractionDigits: dp || 2 }); }
+  function dashFmtG(v) { return ((parseFloat(v) || 0).toFixed(3)) + ' g'; }
+
+  /* Override modal width for full forms */
+  function dqOpenWide(title, bodyHtml, footerHtml) {
+    var box = document.getElementById('modal-box');
+    if (box) {
+      /* On mobile use full-width, on desktop use 680px */
+      box.style.maxWidth = window.innerWidth < 700 ? '98vw' : '680px';
+    }
+    openModal(title, bodyHtml, footerHtml);
+  }
+
+  /* â”€â”€ Dashboard summary load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashLoad() {
+    try {
+      console.log('dashLoad: Fetching dashboard summary...');
+      if (typeof API === 'undefined') {
+        console.warn('google is undefined (local preview?)');
+        return;
+      }
+      API.run
+        .withSuccessHandler(function (r) {
+          console.log('dashLoad: Success received', r);
+          if (!r || !r.success) { showToast((r && r.message) || 'Dashboard load failed', 'error'); return; }
+          dashData = r;
+          document.getElementById('dashParties').textContent = r.parties;
+          document.getElementById('dashPurCount').textContent = r.purchases;
+          document.getElementById('dashSaleCount').textContent = r.sales;
+          document.getElementById('dashPayCount').textContent = r.payments;
+          document.getElementById('dashPurR').textContent = dashFmt(r.purRupees);
+          document.getElementById('dashPurG').textContent = dashFmtG(r.purGrams);
+          document.getElementById('dashSaleR').textContent = dashFmt(r.saleRupees);
+          document.getElementById('dashSaleG').textContent = dashFmtG(r.saleGrams);
+          document.getElementById('dashPayR').textContent = dashFmt(r.rcptRupees || r.payRupees || 0);
+          document.getElementById('dashStock').textContent = dashFmtG(r.stockGrams);
+          document.getElementById('dashAvgRate').textContent = dashFmt(r.avgPurRate);
+          document.getElementById('dashProfit').textContent = dashFmt(r.profitRupees);
+          document.getElementById('dashProfitPct').textContent = (r.profitPct || 0).toFixed(2) + '%';
+          // Supplier outstanding
+          var supR = parseFloat(r.outSupRupees) || 0;
+          var supG = parseFloat(r.outSupGrams) || 0;
+          document.getElementById('dashOutSupR').textContent = dashFmt(supR);
+          document.getElementById('dashOutSupG').textContent = dashFmtG(supG);
+          document.getElementById('dashOutSupRCard').className = 'dash-out-card ' + (supR >= 0 ? 'dash-out-pos' : 'dash-out-neg');
+          document.getElementById('dashOutSupGCard').className = 'dash-out-card ' + (supG >= 0 ? 'dash-out-pos' : 'dash-out-neg');
+          // Customer outstanding
+          var custR = parseFloat(r.outCustRupees) || 0;
+          var custG = parseFloat(r.outCustGrams) || 0;
+          document.getElementById('dashOutCustR').textContent = dashFmt(custR);
+          document.getElementById('dashOutCustG').textContent = dashFmtG(custG);
+          document.getElementById('dashOutCustRCard').className = 'dash-out-card ' + (custR >= 0 ? 'dash-out-pos' : 'dash-out-neg');
+          document.getElementById('dashOutCustGCard').className = 'dash-out-card ' + (custG >= 0 ? 'dash-out-pos' : 'dash-out-neg');
+        })
+        .withFailureHandler(function (e) { 
+          console.error('dashLoad: Failure handler triggered', e);
+          showToast(e.message, 'error'); 
+        })
+        .dashGetSummary();
+    } catch(err) {
+      console.error('dashLoad: Synchronous error:', err);
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  /* Register reload hook for topbar refresh button */
+  APP.reload = dashLoad;
+
+  /* â”€â”€ Party list for dropdowns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashLoadParties(cb) {
+    if (dashParties.length) { cb && cb(); return; }
+    API.run
+      .withSuccessHandler(function (r) { if (r && r.success) dashParties = r.data || []; cb && cb(); })
+      .withFailureHandler(function () { cb && cb(); })
+      .repGetPartyList();
+  }
+
+  /* â”€â”€ Quick Action dispatcher â€” opens modal forms in dashboard â”€â”€ */
+  function dashQA(type) {
+    if (type === 'invoice') { navTo('invoice'); return; }
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    /* Load parties then open form */
+    if (!dashParties._loaded) {
+      API.run
+        .withSuccessHandler(function (r) {
+          if (r && r.success) dashParties = r.data || [];
+          dashParties._loaded = true;
+          _dqOpen(type);
+        })
+        .withFailureHandler(function () { _dqOpen(type); })
+        .purGetPartiesForDropdown();
+    } else {
+      _dqOpen(type);
+    }
+  }
+
+  function _dqOpen(type) {
+    var opts = dashParties.map(function (p) {
+      var n = String(p.partyName || ''), id = p.partyId || '', ar = p.area || '';
+      return '<option value="' + n + '" data-id="' + id + '" data-area="' + ar + '">' + n + '</option>';
+    }).join('');
+    var fs = dqFS;
+    function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp||'text') + '" placeholder="' + (ph||'') + '" style="' + fs + '" ' + (ex||'') + '/>'; }
+    function sel(id, cont, ch) { return '<select id="' + id + '" style="' + fs + '" ' + (ch ? 'onchange="'+ch+'"' : '') + '>' + cont + '</select>'; }
+    function fg(lbl, html) { return '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px"><label style="' + dqLB + '">' + lbl + '</label>' + html + '</div>'; }
+    function row2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
+    function idr(inp, btn) { return '<div style="display:flex;gap:8px;align-items:center">' + inp + btn + '</div>'; }
+    function roFld(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph||'') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
+
+    /* â”€â”€ PARTY â”€â”€ */
+    if (type === 'party') {
+      var ptOpts = '<option value="">Selectâ€¦</option><option>Supplier</option><option>Customer</option><option>Both</option>';
+      dqOpenWide('Add New Party',
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">'
+        + '<div style="grid-column:1/-1">' + fg('Party ID', idr(roFld('dqPartId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPartGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) + '</div>'
+        + fg('Party Name *', fld('dqPartName','text','Enter party name'))
+        + fg('Party Type *', sel('dqPartType', ptOpts))
+        + fg('Area', fld('dqPartArea','text','Area'))
+        + fg('Owner Name', fld('dqPartOwner','text','Owner name'))
+        + fg('Mobile', fld('dqPartMobile','text','Mobile'))
+        + fg('Labour 999', fld('dqPartL999','number','0'))
+        + fg('Labour 925', fld('dqPartL925','number','0'))
+        + fg('Labour Other', fld('dqPartLOth','number','0'))
+        + fg('Outstanding â‚¹', fld('dqPartBalR','number','0'))
+        + fg('Outstanding g', fld('dqPartBalG','number','0'))
+        + '<div style="grid-column:1/-1">' + fg('Note', fld('dqPartNote','text','Optional')) + '</div>'
+        + '</div>',
+        '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+        '<button class="btn btn-primary" onclick="dashSaveParty()"><i class="fas fa-save"></i> Save Party</button>');
+      dqPartGenId(); return;
+    }
+
+    /* â”€â”€ PURCHASE â”€â”€ */
+    if (type === 'purchase') {
+      var pOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      dqOpenWide('Add New Purchase',
+        fg('Purchase ID', idr(roFld('dqPurId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPurGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqDate','date')), fg('Party Name *', sel('dqPurPN', pOpts, 'dqPurFetchParty()'))) +
+        row2(fg('Party ID', roFld('dqPurPID')), fg('Area', roFld('dqPurArea'))) +
+        row2(fg('Grams *', '<input id="dqG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcPurRate()" style="' + fs + '">'),
+             fg('Rupees *', '<input id="dqR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcPurRate()" style="' + fs + '">')) +
+        row2(fg('Rate/10g (Auto)', roFld('dqRate10','Auto')), fg('Avg Rate (Auto)', roFld('dqPurAvg','On save'))) +
+        fg('Note', fld('dqNote','text','Optional note')),
+        '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+        '<button class="btn btn-primary" onclick="dashSavePurchase()"><i class="fas fa-save"></i> Save</button>');
+      document.getElementById('dqDate').value = dqToday(); dqPurGenId(); return;
+    }
+
+    /* â”€â”€ SALE â”€â”€ */
+    if (type === 'sale') {
+      var sOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      dqOpenWide('Add New Sale',
+        fg('Sale ID', idr(roFld('dqSaleId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqSaleGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqSDate','date')), fg('Party Name *', sel('dqSPN', sOpts, 'dqSaleFetchParty()'))) +
+        row2(fg('Party ID', roFld('dqSPID')), fg('Area', roFld('dqSArea'))) +
+        row2(fg('Grams *', '<input id="dqSG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcSaleRate()" style="' + fs + '">'),
+             fg('Rupees *', '<input id="dqSR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcSaleRate()" style="' + fs + '">')) +
+        row2(fg('Sale Rate/10g (Auto)', roFld('dqSRate10','Auto')), fg('Avg Purchase Rate', roFld('dqSAvg',''))) +
+        row2(fg('Profit â‚¹ (Auto)', roFld('dqSProR','')), fg('Profit % (Auto)', roFld('dqSProP',''))) +
+        fg('Note', fld('dqSNote','text','Optional note')),
+        '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+        '<button class="btn btn-primary" onclick="dashSaveSale()"><i class="fas fa-save"></i> Save</button>');
+      document.getElementById('dqSDate').value = dqToday(); dqSaleGenId();
+      API.run.withSuccessHandler(function(r) { if(r&&r.success){ document.getElementById('dqSAvg').value=r.avgRate||0; dqCalcSaleRate(); } }).saleGetCalcData();
+      return;
+    }
+
+    /* â”€â”€ RECEIPT / PAYMENT â”€â”€ */
+    if (type === 'payment') {
+      var rOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      var typeBtns = '<div style="display:flex;gap:8px;margin-bottom:4px">'
+        + '<button type="button" id="dqTypeRcpt" onclick="dqSetType(\'Receipt\')" style="flex:1;padding:10px;border:2px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i class="fas fa-arrow-down"></i> Receipt (from Customer)</button>'
+        + '<button type="button" id="dqTypePay" onclick="dqSetType(\'Payment\')" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer"><i class="fas fa-arrow-up"></i> Payment (to Supplier)</button>'
+        + '</div>';
+      dqOpenWide('New Receipt / Payment',
+        fg('Type', typeBtns) +
+        fg('Receipt ID', idr(roFld('dqPayId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPayGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqPyDate','date')), fg('Party Name *', sel('dqPyPN', rOpts, 'dqPayFetchParty()'))) +
+        row2(fg('Party ID', roFld('dqPyPID')), fg('Area', roFld('dqPyArea'))) +
+        row2(fg('Rupees â‚¹', fld('dqPyR','number','0.00')), fg('Grams (g)', fld('dqPyG','number','0.000'))) +
+        fg('Note', fld('dqPyNote','text','Optional note')),
+        '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+        '<button class="btn btn-primary" onclick="dashSavePayment()"><i class="fas fa-save"></i> Save</button>');
+      document.getElementById('dqPyDate').value = dqToday();
+      dqPayGenId();
+      window._dqEntryType = 'Receipt';
+      return;
+    }
+  }
+
+  /* Toggle receipt/payment type buttons in dashboard modal */
+  function dqSetType(type) {
+    window._dqEntryType = type;
+    var rBtn = document.getElementById('dqTypeRcpt');
+    var pBtn = document.getElementById('dqTypePay');
+    if (!rBtn || !pBtn) return;
+    var activeStyle = 'flex:1;padding:10px;border:2px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer';
+    var inactiveStyle = 'flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer';
+    rBtn.style.cssText = (type === 'Receipt' ? activeStyle : inactiveStyle);
+    pBtn.style.cssText = (type === 'Payment' ? activeStyle : inactiveStyle);
+  }
+
+  /* â”€â”€ Party auto-fill helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dqPurFetchParty() {
+    var sel = document.getElementById('dqPurPN'), opt = sel.options[sel.selectedIndex];
+    document.getElementById('dqPurPID').value = opt ? opt.getAttribute('data-id') : '';
+    document.getElementById('dqPurArea').value = opt ? opt.getAttribute('data-area') : '';
+  }
+  function dqSaleFetchParty() {
+    var sel = document.getElementById('dqSPN'), opt = sel.options[sel.selectedIndex];
+    document.getElementById('dqSPID').value = opt ? opt.getAttribute('data-id') : '';
+    document.getElementById('dqSArea').value = opt ? opt.getAttribute('data-area') : '';
+  }
+  function dqPayFetchParty() {
+    var sel = document.getElementById('dqPyPN'), opt = sel.options[sel.selectedIndex];
+    document.getElementById('dqPyPID').value = opt ? opt.getAttribute('data-id') : '';
+    document.getElementById('dqPyArea').value = opt ? opt.getAttribute('data-area') : '';
+  }
+
+  /* â”€â”€ ID generators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dqPartGenId() {
+    document.getElementById('dqPartId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
+  }
+  function dqPurGenId() {
+    document.getElementById('dqPurId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
+  }
+  function dqSaleGenId() {
+    document.getElementById('dqSaleId').value = 'S' + Math.floor(10000 + Math.random() * 90000);
+  }
+  function dqPayGenId() {
+    document.getElementById('dqPayId').value = 'RC' + Math.floor(10000 + Math.random() * 90000);
+  }
+
+  /* â”€â”€ Live calculation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dqCalcPurRate() {
+    var g = parseFloat(document.getElementById('dqG').value) || 0;
+    var r = parseFloat(document.getElementById('dqR').value) || 0;
+    var el = document.getElementById('dqRate10');
+    if (el) el.value = g > 0 ? (r / g * 10).toFixed(2) : '';
+  }
+  function dqCalcSaleRate() {
+    var g = parseFloat(document.getElementById('dqSG').value) || 0;
+    var r = parseFloat(document.getElementById('dqSR').value) || 0;
+    var avg = parseFloat(document.getElementById('dqSAvg').value) || 0;
+    var rate = g > 0 ? Math.round((r / g) * 10 * 100) / 100 : 0;
+    var cost = Math.round((avg / 10) * g * 100) / 100;
+    var profR = Math.round((r - cost) * 100) / 100;
+    var profP = cost > 0 ? Math.round((profR / cost) * 100 * 100) / 100 : 0;
+    var re = document.getElementById('dqSRate10'), pr = document.getElementById('dqSProR'), pp = document.getElementById('dqSProP');
+    if (re) re.value = rate || '';
+    if (pr) pr.value = profR || '';
+    if (pp) pp.value = profP || '';
+  }
+
+  /* â”€â”€ Save: Party â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashSaveParty() {
+    var id = (document.getElementById('dqPartId').value || '').trim();
+    var nm = (document.getElementById('dqPartName').value || '').trim();
+    var tp = (document.getElementById('dqPartType').value || '').trim();
+    if (!id) { showToast('Generate a Party ID first', 'warning'); return; }
+    if (!nm) { showToast('Party Name is required', 'warning'); return; }
+    if (!tp) { showToast('Party Type is required', 'warning'); return; }
+    var payload = {
+      partyId: id,
+      partyName: nm,
+      partyType: tp,
+      area: (document.getElementById('dqPartArea').value || '').trim(),
+      ownerName: (document.getElementById('dqPartOwner').value || '').trim(),
+      mobileNumber: (document.getElementById('dqPartMobile').value || '').trim(),
+      labour999: document.getElementById('dqPartL999').value || '',
+      labour925: document.getElementById('dqPartL925').value || '',
+      labourOther: document.getElementById('dqPartLOth').value || '',
+      outstandingRupees: document.getElementById('dqPartBalR').value || '',
+      outstandingGrams: document.getElementById('dqPartBalG').value || '',
+      note: (document.getElementById('dqPartNote').value || '').trim()
+    };
+    closeModal(); showLoader();
+    API.run
+      .withSuccessHandler(function (r) { hideLoader(); if (r && r.success) { showToast('Party Added', 'success'); dashParties = []; dashParties._loaded = false; dashLoad(); } else showToast((r && r.message) || 'Error', 'error'); })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .partAddParty(payload);
+  }
+
+  /* â”€â”€ Save: Purchase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashSavePurchase() {
+    var id = (document.getElementById('dqPurId').value || '').trim();
+    var dt = document.getElementById('dqDate').value;
+    var pn = document.getElementById('dqPurPN').value;
+    var g = document.getElementById('dqG').value;
+    var r = document.getElementById('dqR').value;
+    if (!id) { showToast('Generate a Purchase ID first', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams must be > 0', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees must be > 0', 'warning'); return; }
+    var payload = {
+      purchaseId: id, date: dt,
+      partyId: document.getElementById('dqPurPID').value,
+      partyName: pn,
+      area: document.getElementById('dqPurArea').value,
+      grams: parseFloat(g), rupees: parseFloat(r),
+      note: (document.getElementById('dqNote').value || '').trim()
+    };
+    closeModal(); showLoader();
+    API.run
+      .withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Purchase Added', 'success'); dashLoad(); } else showToast((res && res.message) || 'Error', 'error'); })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .purAddPurchase(payload);
+  }
+
+  /* â”€â”€ Save: Sale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashSaveSale() {
+    var id = (document.getElementById('dqSaleId').value || '').trim();
+    var dt = document.getElementById('dqSDate').value;
+    var pn = document.getElementById('dqSPN').value;
+    var g = document.getElementById('dqSG').value;
+    var r = document.getElementById('dqSR').value;
+    if (!id) { showToast('Generate a Sale ID first', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams must be > 0', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees must be > 0', 'warning'); return; }
+    var payload = {
+      saleId: id, date: dt,
+      partyId: document.getElementById('dqSPID').value,
+      partyName: pn,
+      area: document.getElementById('dqSArea').value,
+      grams: parseFloat(g), rupees: parseFloat(r),
+      note: (document.getElementById('dqSNote').value || '').trim()
+    };
+    closeModal(); showLoader();
+    API.run
+      .withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Sale Added', 'success'); dashLoad(); } else showToast((res && res.message) || 'Error', 'error'); })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .saleAddSale(payload);
+  }
+
+  /* â”€â”€ Save: Receipt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function dashSavePayment() {
+    var id = (document.getElementById('dqPayId').value || '').trim();
+    var dt = document.getElementById('dqPyDate').value;
+    var pn = document.getElementById('dqPyPN').value;
+    var rr = parseFloat(document.getElementById('dqPyR').value) || 0;
+    var gr = parseFloat(document.getElementById('dqPyG').value) || 0;
+    var entryType = window._dqEntryType || 'Receipt';
+    if (!id) { showToast('Generate a Receipt ID first', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!rr && !gr) { showToast('Enter Rupees or Grams received', 'warning'); return; }
+    var payload = {
+      receiptId: id,
+      date: dt,
+      partyId: document.getElementById('dqPyPID').value,
+      partyName: pn,
+      area: document.getElementById('dqPyArea').value,
+      rupeesReceived: rr,
+      gramsReceived: gr,
+      entryType: entryType,
+      note: (document.getElementById('dqPyNote').value || '').trim()
+    };
+    closeModal(); showLoader();
+    API.run
+      .withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast(entryType + ' Added', 'success'); dashLoad(); } else showToast((res && res.message) || 'Error', 'error'); })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .rcptAddReceipt(payload);
+  }
+
+  dashLoad();
+</script>

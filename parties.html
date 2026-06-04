@@ -1,0 +1,439 @@
+<style>
+  .pt-sup {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .pt-cus {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .pt-both {
+    background: #fef3c7;
+    color: #92400e;
+  }
+</style>
+
+<!-- Processing Overlay -->
+<div class="app-overlay" id="partOverlay">
+  <div class="app-spin"></div>
+  <div class="app-spin-txt" id="partOverlayTxt">Processingâ€¦</div>
+</div>
+
+<!-- Page Header -->
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-users" style="color:var(--accent);margin-right:8px"></i>Parties</div>
+  <div class="app-subtitle">Add and manage your parties</div>
+</div>
+
+<!-- Controls Bar -->
+<div class="app-bar">
+  <!-- Row 1: Action buttons -->
+  <div class="app-bar-left">
+    <button class="btn btn-primary edit-only" onclick="partOpenAdd()"><i class="fas fa-plus"></i> New Party</button>
+    <button class="btn btn-danger" id="partDelRow" style="display:none" onclick="partDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span id="partSelCount">0</span>)</button>
+  </div>
+  <!-- Row 2: Search bar -->
+  <div class="app-bar-search">
+    <div class="app-search-wrap">
+      <i class="fas fa-search app-search-icon"></i>
+      <input class="app-search-inp" id="partSrchQ" type="text" placeholder="Search partiesâ€¦"
+        onkeydown="if(event.key==='Enter')partSearch()" oninput="partToggleClear()" />
+      <button class="app-search-clear" id="partClearBtn" onclick="partClear()" title="Clear" style="display:none"><i class="fas fa-xmark"></i></button>
+      <button class="app-search-btn" onclick="partSearch()" title="Search"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+  <!-- Row 3: Sort & Print -->
+  <div class="app-bar-print">
+    <select class="app-sel" id="partSrchCrit">
+      <option value="all">All Fields</option>
+      <option value="1">Party Name</option>
+      <option value="2">Party Type</option>
+      <option value="3">Area</option>
+      <option value="4">Owner Name</option>
+      <option value="5">Mobile</option>
+    </select>
+    <button class="btn btn-secondary" onclick="partPrint()"><i class="fas fa-print"></i> Print Party List</button>
+  </div>
+</div>
+
+
+<!-- Table -->
+<div class="app-wrap">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-table" style="color:var(--accent);margin-right:6px"></i>Party List</span>
+    <span class="app-count" id="partCount">Loadingâ€¦</span>
+  </div>
+  <div class="app-scroll">
+    <table id="partTable" class="app-table">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="partSelAll" onchange="partToggleAll(this)"
+              title="Select all" /></th>
+          <th>#</th>
+          <th>Party ID</th>
+          <th>Party Name</th>
+          <th>Party Type</th>
+          <th>Area</th>
+          <th>Owner Name</th>
+          <th>Mobile</th>
+          <th>L-999</th>
+          <th>L-925</th>
+          <th>L-Other</th>
+          <th>Outstanding â‚¹</th>
+          <th>Outstanding (g)</th>
+          <th>Note</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="partTbody"></tbody>
+    </table>
+  </div>
+  <div class="app-pag" id="partPag"></div>
+</div>
+
+<script>
+  var partAllData = [], partPage = 1, partPerPage = 25, partTotal = 0, partEditingId = null;
+  var partSearchCol = 'all', partSearchQ = '';
+  var _partOvTimer = null;
+
+  function partShowOv(txt) {
+    document.getElementById('partOverlayTxt').textContent = txt || 'Processingâ€¦';
+    document.getElementById('partOverlay').classList.add('show');
+    if (_partOvTimer) clearTimeout(_partOvTimer);
+    _partOvTimer = setTimeout(function () { partHideOv(); }, 15000);
+  }
+  function partHideOv() {
+    if (_partOvTimer) { clearTimeout(_partOvTimer); _partOvTimer = null; }
+    document.getElementById('partOverlay').classList.remove('show');
+  }
+
+  function partLoad() {
+    partPage = 1; partSearchCol = 'all'; partSearchQ = '';
+    document.getElementById('partSrchQ').value = '';
+    document.getElementById('partSrchCrit').value = 'all';
+    partLoadPage(1);
+  }
+
+  function partLoadPage(page) {
+    partPage = page;
+    document.getElementById('partCount').textContent = 'Loadingâ€¦';
+    if (typeof API === 'undefined') { partAllData = []; partTotal = 0; partRender(); return; }
+    try {
+      console.log('Fetching page:', page);
+      API.run
+        .withSuccessHandler(function (r) {
+          console.log('Success received:', r);
+          if (r && r.success) { partAllData = r.data || []; partTotal = r.total || 0; partPerPage = r.pageSize || partPerPage; partRender(); }
+          else { partAllData = []; partTotal = 0; partRender(); showToast((r && r.message) || 'Load failed', 'error'); }
+        })
+        .withFailureHandler(function (e) {
+          console.error('Failure handler triggered:', e);
+          partAllData = []; partTotal = 0; partRender(); showToast(e.message, 'error');
+        })
+        .partGetPage({ page: partPage, pageSize: partPerPage, searchCol: partSearchCol, searchQ: partSearchQ });
+    } catch (err) {
+      console.error('Synchronous error calling API.run:', err);
+      partAllData = []; partTotal = 0; partRender();
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  function partRender() {
+    var tb = document.getElementById('partTbody');
+    document.getElementById('partCount').textContent = partTotal + ' record' + (partTotal !== 1 ? 's' : '');
+    if (!partAllData.length) { tb.innerHTML = '<tr><td colspan="15" class="app-no-data"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db"></i>No records found</td></tr>'; partRenderPagination(0); return; }
+    var start = (partPage - 1) * partPerPage, rows = '';
+    for (var i = 0; i < partAllData.length; i++) {
+      var d = partAllData[i], sn = start + i + 1;
+      var badge = d.partyType === 'Supplier' ? 'pt-sup' : d.partyType === 'Customer' ? 'pt-cus' : 'pt-both';
+      rows += '<tr id="pt-row-' + d.partyId + '">'
+        + '<td><input type="checkbox" class="part-chk" value="' + _htmlEsc(d.partyId) + '" onchange="partChkChange()"/></td>'
+        + '<td>' + sn + '</td>'
+        + '<td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">' + _htmlEsc(d.partyId) + '</code></td>'
+        + '<td class="pt-c-partyName">' + _htmlEsc(d.partyName) + '</td>'
+        + '<td class="pt-c-partyType"><span class="app-badge ' + badge + '">' + _htmlEsc(d.partyType) + '</span></td>'
+        + '<td class="pt-c-area">' + _htmlEsc(d.area) + '</td>'
+        + '<td class="pt-c-ownerName">' + _htmlEsc(d.ownerName) + '</td>'
+        + '<td class="pt-c-mobileNumber">' + _htmlEsc(d.mobileNumber) + '</td>'
+        + '<td class="pt-c-labour999">' + partNum(d.labour999) + '</td>'
+        + '<td class="pt-c-labour925">' + partNum(d.labour925) + '</td>'
+        + '<td class="pt-c-labourOther">' + partNum(d.labourOther) + '</td>'
+        + '<td class="pt-c-outstandingRupees" style="font-weight:600;color:' + (Number(d.outstandingRupees || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmt(d.outstandingRupees) + '</td>'
+        + '<td class="pt-c-outstandingGrams" style="font-weight:600;color:' + (Number(d.outstandingGrams || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmtG(d.outstandingGrams) + '</td>'
+        + '<td class="pt-c-note">' + _htmlEsc(d.note) + '</td>'
+        + '<td style="min-width:160px">'
+        + '<div id="pt-view-' + d.partyId + '" style="display:flex;gap:5px">'
+        + '<button class="app-ab app-edit edit-only" onclick="partStartEdit(\'' + d.partyId + '\')"><i class="fas fa-pen"></i> Edit</button>'
+        + '<button class="app-ab app-del edit-only" onclick="partConfirmDel(\'' + d.partyId + '\')"><i class="fas fa-trash"></i> Delete</button>'
+        + '</div>'
+        + '<div id="app-edit-' + d.partyId + '" style="display:none;gap:5px">'
+        + '<button class="app-ab app-upd" onclick="partDoUpdate(\'' + d.partyId + '\')"><i class="fas fa-check"></i> Update</button>'
+        + '<button class="app-ab app-can" onclick="partCancelEdit(\'' + d.partyId + '\')"><i class="fas fa-xmark"></i> Cancel</button>'
+        + '</div></td></tr>';
+    }
+    tb.innerHTML = rows;
+    partRenderPagination(partTotal);
+  }
+
+  function partNum(v) { return (v === '' || v === null || v === undefined) ? '' : v; }
+  function partFmt(v) { var n = parseFloat(v) || 0; return n === 0 ? '0.00' : 'â‚¹ ' + n.toFixed(2); }
+  function partFmtG(v) { var n = parseFloat(v) || 0; return n === 0 ? '0.000' : n.toFixed(3) + ' g'; }
+
+  function partRenderPagination(total) {
+    if (typeof UI !== 'undefined') UI.renderPagination(total, partPage, partPerPage, 'partPag', 'partGoPage');
+    else document.getElementById('partPag').innerHTML = '';
+  }
+
+  function partGoPage(p) {
+    var pages = Math.ceil(partTotal / partPerPage) || 1;
+    p = Math.max(1, Math.min(p, pages));
+    if (p === partPage) return;
+    partLoadPage(p);
+  }
+
+  function partSearch() {
+    partSearchQ = document.getElementById('partSrchQ').value.trim().toLowerCase();
+    partSearchCol = document.getElementById('partSrchCrit').value;
+    partLoadPage(1);
+  }
+
+  function partClear() {
+    document.getElementById('partSrchQ').value = '';
+    document.getElementById('partSrchCrit').value = 'all';
+    var cb = document.getElementById('partClearBtn'); if (cb) cb.style.display = 'none';
+    partSearchQ = ''; partSearchCol = 'all';
+    partLoadPage(1);
+  }
+
+  function partToggleClear() {
+    var v = document.getElementById('partSrchQ').value;
+    var cb = document.getElementById('partClearBtn');
+    if (cb) cb.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  /* â”€â”€ Add Party Modal â”€â”€ */
+  function partOpenAdd() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    var body = '<div class="app-form-grid">'
+      + '<div class="app-fg full"><label class="app-label"><i class="fas fa-hashtag"></i> Party ID</label><div class="app-id-row"><input class="app-field" id="pfPartyId" readonly placeholder="Click Generate"/><button class="btn btn-secondary btn-sm" onclick="partGenId()"><i class="fas fa-rotate-right"></i> Generate</button></div></div>'
+      + '<div class="app-fg"><label class="app-label">Party Name *</label><input class="app-field" id="pfName" type="text" placeholder="Enter party name"/></div>'
+      + '<div class="app-fg"><label class="app-label">Party Type *</label><select class="app-field" id="pfType"><option value="">Selectâ€¦</option><option>Supplier</option><option>Customer</option><option>Both</option></select></div>'
+      + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="pfArea" type="text" placeholder="Area"/></div>'
+      + '<div class="app-fg"><label class="app-label">Owner Name</label><input class="app-field" id="pfOwner" type="text" placeholder="Owner name"/></div>'
+      + '<div class="app-fg"><label class="app-label">Mobile Number</label><input class="app-field" id="pfMobile" type="text" placeholder="Mobile"/></div>'
+      + '<div class="app-fg"><label class="app-label">Labour 999</label><input class="app-field" id="pfL999" type="number" placeholder="0"/></div>'
+      + '<div class="app-fg"><label class="app-label">Labour 925</label><input class="app-field" id="pfL925" type="number" placeholder="0"/></div>'
+      + '<div class="app-fg"><label class="app-label">Labour Other</label><input class="app-field" id="pfLOth" type="number" placeholder="0"/></div>'
+      + '<div class="app-fg"><label class="app-label">Outstanding â‚¹ <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalR" type="number" placeholder="0" title="Set initial outstanding. After this, it updates automatically via Sales and Payments."/></div>'
+      + '<div class="app-fg"><label class="app-label">Outstanding (g) <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalG" type="number" placeholder="0" title="Set initial outstanding grams."/></div>'
+      + '<div class="app-fg full"><label class="app-label">Note</label><input class="app-field" id="pfNote" type="text" placeholder="Note"/></div>'
+      + '</div>';
+    var foot = '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>'
+      + '<button class="btn btn-primary" onclick="partSaveNew()"><i class="fas fa-save"></i> Save</button>';
+    openModal('Add New Party', body, foot);
+    partGenId();
+  }
+
+  function partGenId() {
+    document.getElementById('pfPartyId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
+  }
+
+
+  function partSaveNew() {
+    var id = document.getElementById('pfPartyId').value.trim();
+    var nm = document.getElementById('pfName').value.trim();
+    var tp = document.getElementById('pfType').value;
+    if (!id) { showToast('Please generate a Party ID', 'warning'); return; }
+    if (!nm) { showToast('Party Name is required', 'warning'); return; }
+    if (!tp) { showToast('Party Type is required', 'warning'); return; }
+    closeModal();
+    partShowOv('Savingâ€¦');
+    var d = {
+      partyId: id, partyName: nm, partyType: tp,
+      area: document.getElementById('pfArea').value.trim(),
+      ownerName: document.getElementById('pfOwner').value.trim(),
+      mobileNumber: document.getElementById('pfMobile').value.trim(),
+      labour999: document.getElementById('pfL999').value,
+      labour925: document.getElementById('pfL925').value,
+      labourOther: document.getElementById('pfLOth').value,
+      outstandingRupees: document.getElementById('pfBalR').value,
+      outstandingGrams: document.getElementById('pfBalG').value,
+      note: document.getElementById('pfNote').value.trim()
+    };
+    API.run
+      .withSuccessHandler(function (r) {
+        partHideOv();
+        if (r && r.success) { showToast('New Party Added', 'success'); partLoad(); }
+        else showToast((r && r.message) || 'Error saving', 'error');
+      })
+      .withFailureHandler(function (e) { partHideOv(); showToast(e.message, 'error'); })
+      .partAddParty(d);
+  }
+
+  /* â”€â”€ Inline Edit â”€â”€ */
+  function partStartEdit(id) {
+    if (partEditingId && partEditingId !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; }
+    partEditingId = id;
+    var d = partAllData.find(function (x) { return x.partyId === id; });
+    if (!d) return;
+    partShowOv('Loadingâ€¦');
+    setTimeout(function () {
+      var row = document.getElementById('pt-row-' + id);
+      if (!row) { partHideOv(); return; }
+      row.classList.add('app-editing');
+      partSetCell(row, 'pt-c-partyName', 'input', 'text', d.partyName);
+      partSetCell(row, 'pt-c-partyType', 'select', '', d.partyType);
+      partSetCell(row, 'pt-c-area', 'input', 'text', d.area);
+      partSetCell(row, 'pt-c-ownerName', 'input', 'text', d.ownerName);
+      partSetCell(row, 'pt-c-mobileNumber', 'input', 'text', d.mobileNumber);
+      partSetCell(row, 'pt-c-labour999', 'input', 'number', d.labour999);
+      partSetCell(row, 'pt-c-labour925', 'input', 'number', d.labour925);
+      partSetCell(row, 'pt-c-labourOther', 'input', 'number', d.labourOther);
+      /* Outstanding columns are READ-ONLY â€” managed by Sales & Payments automatically */
+      var outRTd = row.querySelector('.pt-c-outstandingRupees');
+      var outGTd = row.querySelector('.pt-c-outstandingGrams');
+      /* Keep them as display text, do not make them editable */
+      partSetCell(row, 'pt-c-note', 'input', 'text', d.note);
+      document.getElementById('pt-view-' + id).style.display = 'none';
+      document.getElementById('app-edit-' + id).style.display = 'flex';
+      partHideOv();
+    }, 150);
+  }
+
+  function partSetCell(row, cls, tag, type, val) {
+    var td = row.querySelector('.' + cls);
+    if (!td) return;
+    td.setAttribute('data-orig', td.innerHTML);
+    if (tag === 'select') {
+      td.innerHTML = '<select class="app-edit-sel"><option>Supplier</option><option>Customer</option><option>Both</option></select>';
+      td.querySelector('select').value = val || '';
+    } else {
+      td.innerHTML = '<input class="app-edit-inp" type="' + type + '" value="' + _htmlEsc(String(val || '')) + '"/>';
+    }
+  }
+
+  function partGetCell(row, cls) {
+    var td = row.querySelector('.' + cls);
+    if (!td) return '';
+    var inp = td.querySelector('input') || td.querySelector('select');
+    return inp ? inp.value : '';
+  }
+
+  function partCancelEdit(id) {
+    var row = document.getElementById('pt-row-' + id);
+    if (!row) return;
+    row.classList.remove('app-editing');
+    var cols = ['pt-c-partyName', 'pt-c-partyType', 'pt-c-area', 'pt-c-ownerName', 'pt-c-mobileNumber',
+      'pt-c-labour999', 'pt-c-labour925', 'pt-c-labourOther', 'pt-c-note'];
+    cols.forEach(function (c) {
+      var td = row.querySelector('.' + c);
+      if (td && td.getAttribute('data-orig') !== null) td.innerHTML = td.getAttribute('data-orig');
+    });
+    document.getElementById('pt-view-' + id).style.display = 'flex';
+    document.getElementById('app-edit-' + id).style.display = 'none';
+    partEditingId = null;
+  }
+
+  function partDoUpdate(id) {
+    var row = document.getElementById('pt-row-' + id);
+    if (!row) return;
+    var nm = partGetCell(row, 'pt-c-partyName').trim();
+    var tp = partGetCell(row, 'pt-c-partyType');
+    if (!nm) { showToast('Party Name is required', 'warning'); return; }
+    if (!tp) { showToast('Party Type is required', 'warning'); return; }
+    partShowOv('Updatingâ€¦');
+    var d = {
+      partyId: id,
+      partyName: nm,
+      partyType: tp,
+      area: partGetCell(row, 'pt-c-area'),
+      ownerName: partGetCell(row, 'pt-c-ownerName'),
+      mobileNumber: partGetCell(row, 'pt-c-mobileNumber'),
+      labour999: partGetCell(row, 'pt-c-labour999'),
+      labour925: partGetCell(row, 'pt-c-labour925'),
+      labourOther: partGetCell(row, 'pt-c-labourOther'),
+      /* outstandingRupees & outstandingGrams are preserved server-side automatically */
+      note: partGetCell(row, 'pt-c-note')
+    };
+    API.run
+      .withSuccessHandler(function (r) {
+        partHideOv();
+        if (r && r.success) { showToast('Party Details Updated', 'success'); partEditingId = null; partLoadPage(partPage); }
+        else showToast((r && r.message) || 'Update failed', 'error');
+      })
+      .withFailureHandler(function (e) { partHideOv(); showToast(e.message, 'error'); })
+      .partUpdateParty(d);
+  }
+
+  /* â”€â”€ Delete â”€â”€ */
+  function partConfirmDel(id) {
+    var d = partAllData.find(function (x) { return x.partyId === id; });
+    var nm = d ? d.partyName : id;
+    confirmDialog('Delete party <strong>' + _htmlEsc(nm) + '</strong>? This action cannot be undone.', function () {
+      partShowOv('Deletingâ€¦');
+      API.run
+        .withSuccessHandler(function (r) {
+          partHideOv();
+          if (r && r.success) { showToast('Party deleted', 'success'); partLoad(); }
+          else showToast((r && r.message) || 'Delete failed', 'error');
+        })
+        .withFailureHandler(function (e) { partHideOv(); showToast(e.message, 'error'); })
+        .partDeleteParty(id);
+    });
+  }
+
+  /* â”€â”€ Init â”€â”€ */
+  APP.reload = partLoad;
+  APP.openAdd = { party: partOpenAdd };
+
+  /* â”€â”€ Print â”€â”€ */
+  function partPrint() {
+    if (!partAllData || !partAllData.length) { showToast('No data to print', 'warning'); return; }
+    var rows = partAllData.map(function(d, i) {
+      var typeClass = d.partyType === 'Supplier' ? 'badge-buy' : d.partyType === 'Customer' ? 'badge-sell' : 'badge-adj';
+      return '<tr><td>' + (i+1) + '</td>'
+        + '<td><code>' + _htmlEsc(d.partyId) + '</code></td>'
+        + '<td><strong>' + _htmlEsc(d.partyName) + '</strong></td>'
+        + '<td><span class="gk-badge ' + typeClass + '">' + _htmlEsc(d.partyType) + '</span></td>'
+        + '<td>' + _htmlEsc(d.area) + '</td>'
+        + '<td>' + _htmlEsc(d.ownerName) + '</td>'
+        + '<td>' + _htmlEsc(d.mobileNumber) + '</td>'
+        + '<td class="num">' + (parseFloat(d.outstandingRupees)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
+        + '<td class="num">' + (parseFloat(d.outstandingGrams)||0).toFixed(3) + ' g</td>'
+        + '</tr>';
+    }).join('');
+    var meta = (partSearchQ ? 'Filter: \u201c' + _htmlEsc(partSearchQ) + '\u201d' : 'All parties') + '  \u00b7  ' + partAllData.length + ' records';
+    var tbl = '<table><thead><tr><th>#</th><th>Party ID</th><th>Party Name</th><th>Type</th><th>Area</th>'
+      + '<th>Owner</th><th>Mobile</th><th class="num">Outstanding \u20b9</th><th class="num">Outstanding g</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody></table>';
+    mobileSafePrint(_gkPrintWrap('Party Directory', meta, tbl), 'Party Directory \u2014 GajKesari Ornaments');
+  }
+
+  partLoad();
+
+  function partToggleAll(cb) {
+    document.querySelectorAll('.part-chk').forEach(function (c) { c.checked = cb.checked; });
+    partChkChange();
+  }
+  function partChkChange() {
+    var sel = document.querySelectorAll('.part-chk:checked').length;
+    var row = document.getElementById('partDelRow');
+    var sc = document.getElementById('partSelCount');
+    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (sc) sc.textContent = sel;
+  }
+  function partDeleteSelected() {
+    var ids = [];
+    document.querySelectorAll('.part-chk:checked').forEach(function (c) { ids.push(c.value); });
+    if (!ids.length) { showToast('No parties selected', 'warning'); return; }
+    confirmDialog('Delete <strong>' + ids.length + '</strong> selected party(ies)? Parties with outstanding balance will be skipped.', function () {
+      partShowOv('Deletingâ€¦');
+      API.run
+        .withSuccessHandler(function (res) { partHideOv(); showToast(res.message || 'Done', 'success'); partLoad(); })
+        .withFailureHandler(function (e) { partHideOv(); showToast(e.message, 'error'); })
+        .partBulkDelete(ids);
+    });
+  }
+</script>

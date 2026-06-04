@@ -1,0 +1,3673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>GajKesari Ornaments â€” Business App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&family=Montserrat:wght@400;500;600;700&display=swap"
+rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+:root {
+--bg: #f5f7fa;
+--sidebar-bg: #0f1117;
+--sidebar-width: 248px;
+--topbar-h: 58px;
+--accent: #0d9488;
+--accent-light: #14b8a6;
+--accent-glow: rgba(13, 148, 136, .18);
+--text: #1a1d23;
+--text-muted: #6b7280;
+--text-sidebar: #c9cdd6;
+--border: #e5e7eb;
+--white: #ffffff;
+--card: #ffffff;
+--danger: #ef4444;
+--warning: #f59e0b;
+--success: #10b981;
+--sidebar-hover: rgba(255, 255, 255, .06);
+--sidebar-active: rgba(13, 148, 136, .22);
+--radius: 10px;
+--shadow: 0 1px 4px rgba(0, 0, 0, .08);
+--shadow-md: 0 4px 16px rgba(0, 0, 0, .10);
+--transition: .22s ease;
+--font-main: 'Poppins', sans-serif;
+--font-mono: 'Roboto', sans-serif;
+}
+html,
+body {
+height: 100%;
+font-family: var(--font-main);
+background: var(--bg);
+color: var(--text);
+overflow-x: hidden;
+overscroll-behavior-y: contain;
+}
+a {
+text-decoration: none;
+color: inherit;
+}
+button {
+cursor: pointer;
+font-family: var(--font-main);
+touch-action: manipulation;
+}
+#global-loader {
+position: fixed;
+inset: 0;
+z-index: 9999;
+background: rgba(15, 17, 23, .72);
+display: flex;
+align-items: center;
+justify-content: center;
+backdrop-filter: blur(4px);
+transition: opacity .3s;
+}
+#global-loader.hidden {
+opacity: 0;
+pointer-events: none;
+}
+.loader-ring {
+width: 52px;
+height: 52px;
+border: 4px solid rgba(255, 255, 255, .15);
+border-top-color: var(--accent-light);
+border-radius: 50%;
+animation: spin .8s linear infinite;
+}
+@keyframes spin {
+to {
+transform: rotate(360deg);
+}
+}
+#app-shell {
+display: flex;
+min-height: 100vh;
+}
+#sidebar {
+width: var(--sidebar-width);
+background: var(--sidebar-bg);
+display: flex;
+flex-direction: column;
+position: fixed;
+top: 0;
+left: 0;
+bottom: 0;
+z-index: 200;
+transition: transform var(--transition);
+overflow: hidden;
+}
+#sidebar-brand {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 20px 18px 16px;
+border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+#sidebar-brand .brand-icon {
+width: 36px;
+height: 36px;
+border-radius: 9px;
+background: linear-gradient(135deg, var(--accent), #0891b2);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 16px;
+color: #fff;
+flex-shrink: 0;
+}
+#sidebar-brand .brand-text {
+font-family: 'Montserrat', sans-serif;
+font-size: 13px;
+font-weight: 700;
+color: #fff;
+line-height: 1.3;
+}
+#sidebar-brand .brand-text span {
+display: block;
+font-size: 10px;
+font-weight: 400;
+color: var(--text-sidebar);
+letter-spacing: .5px;
+}
+#sidebar-nav {
+flex: 1;
+overflow-y: auto;
+padding: 10px 0;
+scrollbar-width: thin;
+scrollbar-color: rgba(255, 255, 255, .1) transparent;
+}
+.nav-section-label {
+font-size: 9.5px;
+font-weight: 600;
+letter-spacing: 1.2px;
+color: rgba(255, 255, 255, .28);
+padding: 14px 20px 4px;
+text-transform: uppercase;
+}
+.nav-item {
+display: flex;
+align-items: center;
+gap: 11px;
+padding: 10px 18px;
+margin: 1px 8px;
+border-radius: 8px;
+color: var(--text-sidebar);
+font-size: 13.5px;
+font-weight: 400;
+transition: background var(--transition), color var(--transition);
+position: relative;
+}
+.nav-item i {
+width: 18px;
+text-align: center;
+font-size: 14px;
+flex-shrink: 0;
+}
+.nav-item:hover {
+background: var(--sidebar-hover);
+color: #fff;
+}
+.nav-item.active {
+background: var(--sidebar-active);
+color: var(--accent-light);
+font-weight: 500;
+}
+.nav-item.active::before {
+content: '';
+position: absolute;
+left: 0;
+top: 20%;
+bottom: 20%;
+width: 3px;
+border-radius: 0 3px 3px 0;
+background: var(--accent-light);
+}
+#sidebar-footer {
+padding: 14px 18px;
+border-top: 1px solid rgba(255, 255, 255, .07);
+font-size: 11px;
+color: rgba(255, 255, 255, .3);
+}
+#main-area {
+margin-left: var(--sidebar-width);
+flex: 1;
+display: flex;
+flex-direction: column;
+min-height: 100vh;
+min-width: 0;
+transition: margin-left var(--transition);
+}
+#topbar {
+height: var(--topbar-h);
+background: var(--white);
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 22px;
+position: sticky;
+top: 0;
+z-index: 100;
+box-shadow: var(--shadow);
+}
+#topbar-left {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+#menu-toggle {
+display: none;
+background: none;
+border: none;
+font-size: 18px;
+color: var(--text-muted);
+padding: 6px;
+}
+#page-title {
+font-family: 'Montserrat', sans-serif;
+font-size: 16px;
+font-weight: 700;
+color: var(--text);
+}
+#page-breadcrumb {
+font-size: 12px;
+color: var(--text-muted);
+}
+#topbar-right {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+#edit-mode-btn {
+display: flex;
+align-items: center;
+gap: 7px;
+padding: 7px 14px;
+border-radius: 20px;
+border: 1.5px solid var(--border);
+background: var(--white);
+font-size: 12.5px;
+font-weight: 500;
+color: var(--text-muted);
+transition: all var(--transition);
+}
+#edit-mode-btn.active {
+border-color: var(--accent);
+background: var(--accent-glow);
+color: var(--accent);
+}
+#edit-mode-btn i {
+font-size: 13px;
+}
+.toggle-dot {
+width: 30px;
+height: 16px;
+border-radius: 8px;
+background: #d1d5db;
+position: relative;
+transition: background var(--transition);
+}
+.toggle-dot::after {
+content: '';
+position: absolute;
+left: 2px;
+top: 2px;
+width: 12px;
+height: 12px;
+border-radius: 50%;
+background: #fff;
+transition: transform var(--transition);
+box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+}
+#edit-mode-btn.active .toggle-dot {
+background: var(--accent);
+}
+#edit-mode-btn.active .toggle-dot::after {
+transform: translateX(14px);
+}
+#edit-mode-banner {
+display: none;
+padding: 7px 22px;
+background: linear-gradient(90deg, rgba(13, 148, 136, .12), transparent);
+border-bottom: 1px solid rgba(13, 148, 136, .2);
+font-size: 12px;
+color: var(--accent);
+align-items: center;
+gap: 8px;
+}
+#edit-mode-banner.show {
+display: flex;
+}
+#edit-mode-banner i {
+animation: pulse 1.6s ease infinite;
+}
+@keyframes pulse {
+0%,
+100% {
+opacity: 1;
+}
+50% {
+opacity: .4;
+}
+}
+.topbar-btn {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+border: none;
+background: transparent;
+color: var(--text-muted);
+font-size: 15px;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: background var(--transition), color var(--transition);
+}
+.topbar-btn:hover {
+background: var(--bg);
+color: var(--accent);
+}
+#page-content {
+flex: 1;
+padding: 24px;
+overflow-x: hidden;
+-webkit-overflow-scrolling: touch;
+}
+input,
+select,
+textarea {
+min-width: 0;
+max-width: 100%;
+box-sizing: border-box;
+}
+#modal-overlay {
+position: fixed;
+inset: 0;
+z-index: 800;
+background: rgba(0, 0, 0, .45);
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0;
+pointer-events: none;
+transition: opacity .12s;
+}
+#modal-overlay.open {
+opacity: 1;
+pointer-events: all;
+}
+.modal-box {
+background: var(--white);
+border-radius: 14px;
+width: 100%;
+max-width: 560px;
+max-height: 92vh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+transform: translateY(10px) scale(.98);
+transition: transform .12s;
+}
+#modal-overlay.open .modal-box {
+transform: translateY(0) scale(1);
+}
+.modal-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 18px 22px;
+border-bottom: 1px solid var(--border);
+}
+.modal-title {
+font-size: 15px;
+font-weight: 600;
+color: var(--text);
+}
+.modal-close {
+background: none;
+border: none;
+font-size: 18px;
+color: var(--text-muted);
+width: 32px;
+height: 32px;
+border-radius: 6px;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: background var(--transition);
+}
+.modal-close:hover {
+background: var(--bg);
+}
+.modal-body {
+padding: 20px 22px;
+overflow-y: auto;
+flex: 1;
+}
+.modal-footer {
+padding: 14px 22px;
+border-top: 1px solid var(--border);
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+flex-shrink: 0;
+}
+#sidebar-overlay {
+display: none;
+position: fixed;
+inset: 0;
+z-index: 199;
+background: rgba(0, 0, 0, .5);
+touch-action: none;
+}
+.btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+padding: 8px 16px;
+border-radius: 8px;
+border: none;
+font-size: 13px;
+font-weight: 500;
+transition: all var(--transition);
+touch-action: manipulation;
+-webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
+user-select: none;
+-webkit-user-select: none;
+white-space: nowrap;
+}
+.btn-primary {
+background: var(--accent);
+color: #fff;
+}
+.btn-primary:hover {
+background: #0f766e;
+}
+.btn-secondary {
+background: var(--bg);
+color: var(--text);
+border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+background: var(--border);
+}
+.btn-danger {
+background: var(--danger);
+color: #fff;
+}
+.btn-danger:hover {
+background: #dc2626;
+}
+.btn-sm {
+padding: 5px 11px;
+font-size: 12px;
+}
+body.view-only .edit-only {
+display: none !important;
+}
+body.edit-mode .edit-only {
+display: inline-flex;
+}
+#toast-container {
+position: fixed;
+bottom: 22px;
+right: 22px;
+z-index: 9000;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.toast {
+padding: 11px 18px;
+border-radius: 9px;
+font-size: 13px;
+font-weight: 500;
+color: #fff;
+box-shadow: var(--shadow-md);
+display: flex;
+align-items: center;
+gap: 9px;
+animation: slideUp .3s ease;
+min-width: 220px;
+}
+@keyframes slideUp {
+from {
+opacity: 0;
+transform: translateY(12px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.toast.success {
+background: #059669;
+}
+.toast.error {
+background: #dc2626;
+}
+.toast.info {
+background: #2563eb;
+}
+.toast.warning {
+background: #d97706;
+}
+@media(max-width:768px) {
+#sidebar {
+transform: translateX(-100%);
+}
+#sidebar.open {
+transform: translateX(0);
+}
+#sidebar-overlay.open {
+display: block;
+}
+#main-area {
+margin-left: 0;
+}
+#menu-toggle {
+display: flex;
+}
+#page-content {
+padding: 14px;
+padding-bottom: 84px;
+}
+.modal-box {
+width: 100%;
+max-width: 100%;
+height: 100%;
+max-height: 100vh;
+margin: 0;
+border-radius: 0;
+display: flex;
+flex-direction: column;
+}
+.modal-body {
+flex: 1;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+padding: 16px;
+}
+.app-form-grid,
+div[style*="grid-template-columns: 1fr 1fr"] {
+grid-template-columns: 1fr !important;
+}
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+min-height: 44px;
+padding: 10px 16px;
+font-size: 13px;
+}
+.app-sel,
+.app-field {
+min-height: 44px;
+font-size: 16px;
+}
+.app-table td,
+.app-table th {
+padding: 12px 10px;
+}
+.app-ab {
+min-height: 40px;
+padding: 8px 12px;
+}
+#dash-qa-panel {
+display: none !important;
+}
+}
+#qa-fab-wrap {
+display: none;
+position: fixed;
+bottom: 20px;
+right: 18px;
+z-index: 600;
+flex-direction: column-reverse;
+align-items: flex-end;
+gap: 10px;
+pointer-events: none;
+}
+@media(max-width:768px) {
+#qa-fab-wrap {
+display: flex;
+}
+}
+#qa-fab-btn {
+width: 54px;
+height: 54px;
+border-radius: 50%;
+border: none;
+background: linear-gradient(135deg, #0d9488, #0891b2);
+color: #fff;
+font-size: 22px;
+box-shadow: 0 6px 20px rgba(13, 148, 136, .45);
+display: flex;
+align-items: center;
+justify-content: center;
+transition: transform .25s ease, box-shadow .25s ease;
+flex-shrink: 0;
+pointer-events: auto;
+}
+#qa-fab-btn:hover {
+box-shadow: 0 8px 28px rgba(13, 148, 136, .55);
+}
+#qa-fab-btn.open {
+transform: rotate(45deg);
+}
+#qa-fab-menu {
+display: flex;
+flex-direction: column-reverse;
+gap: 8px;
+opacity: 0;
+pointer-events: none;
+transform: translateY(10px);
+transition: opacity .12s ease, transform .12s ease;
+}
+#qa-fab-menu.open {
+opacity: 1;
+pointer-events: auto;
+transform: translateY(0);
+}
+.qa-fab-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 0;
+border: none;
+background: transparent;
+flex-direction: row-reverse;
+justify-content: flex-start;
+}
+.qa-fab-label {
+background: rgba(15, 17, 23, .85);
+backdrop-filter: blur(8px);
+color: #fff;
+font-size: 12px;
+font-weight: 500;
+padding: 5px 11px;
+border-radius: 20px;
+white-space: nowrap;
+box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+}
+.qa-fab-icon {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 15px;
+color: #fff;
+box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+flex-shrink: 0;
+}
+.qa-fab-icon.ic-party {
+background: #6366f1;
+}
+.qa-fab-icon.ic-pur {
+background: #0891b2;
+}
+.qa-fab-icon.ic-sale {
+background: #059669;
+}
+.qa-fab-icon.ic-rcpt {
+background: #d97706;
+}
+.qa-fab-icon.ic-est {
+background: #7c3aed;
+}
+#qa-fab-backdrop {
+display: none;
+position: fixed;
+inset: 0;
+z-index: 599;
+touch-action: none;
+pointer-events: none;
+}
+#qa-fab-backdrop.open {
+display: block;
+pointer-events: auto;
+}
+.confirm-dialog-icon {
+width: 52px;
+height: 52px;
+background: linear-gradient(135deg, #fee2e2, #fecaca);
+border-radius: 14px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 22px;
+color: #dc2626;
+margin: 0 auto 14px;
+}
+@media(max-width:480px) {
+#topbar {
+padding: 0 10px;
+}
+#page-title {
+font-size: 13px;
+}
+#edit-mode-btn span,
+#edit-mode-btn .toggle-dot {
+display: none;
+}
+#edit-mode-btn {
+padding: 6px 10px;
+}
+#page-content {
+padding: 10px;
+}
+.modal-box {
+margin: 16px;
+width: calc(100% - 32px);
+}
+#pw-modal-box {
+margin: 16px;
+width: calc(100% - 32px);
+}
+#toast-container {
+left: 16px;
+right: 16px;
+bottom: 16px;
+}
+.toast {
+min-width: 0;
+width: 100%;
+box-sizing: border-box;
+}
+}
+#gs-mobile-btn {
+display: none;
+background: none;
+border: none;
+font-size: 16px;
+color: var(--text-muted);
+padding: 6px 8px;
+cursor: pointer;
+}
+#gs-mobile-btn:hover {
+color: var(--accent);
+}
+#gs-wrap.mobile-open {
+position: fixed;
+top: var(--topbar-h);
+left: 0;
+right: 0;
+max-width: none;
+margin: 0;
+padding: 10px 14px;
+background: #fff;
+border-bottom: 1px solid var(--border);
+z-index: 150;
+box-shadow: var(--shadow-md);
+}
+#gs-wrap {
+position: relative;
+flex: 1;
+max-width: 420px;
+margin: 0 16px;
+}
+#gs-input {
+width: 100%;
+padding: 7px 14px 7px 36px;
+border: 1.5px solid var(--border);
+border-radius: 22px;
+font-family: var(--font-main);
+font-size: 13px;
+outline: none;
+background: var(--bg);
+color: var(--text);
+transition: border-color var(--transition), box-shadow var(--transition);
+}
+#gs-input:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 3px rgba(13, 148, 136, .12);
+background: #fff;
+}
+#gs-icon {
+position: absolute;
+left: 11px;
+top: 50%;
+transform: translateY(-50%);
+color: var(--text-muted);
+font-size: 13px;
+pointer-events: none;
+}
+#gs-spinner {
+position: absolute;
+right: 11px;
+top: 50%;
+transform: translateY(-50%);
+width: 14px;
+height: 14px;
+border: 2px solid rgba(13, 148, 136, .2);
+border-top-color: var(--accent);
+border-radius: 50%;
+animation: gsSpin .6s linear infinite;
+display: none;
+}
+@keyframes gsSpin {
+from {
+transform: translateY(-50%) rotate(0deg);
+}
+to {
+transform: translateY(-50%) rotate(360deg);
+}
+}
+#gs-dropdown {
+display: none;
+position: absolute;
+top: calc(100% + 6px);
+left: 0;
+right: 0;
+background: #fff;
+border: 1px solid var(--border);
+border-radius: 12px;
+box-shadow: var(--shadow-md);
+max-height: 420px;
+overflow-y: auto;
+z-index: 3000;
+animation: gsFadeIn .15s ease;
+}
+@keyframes gsFadeIn {
+from {
+opacity: 0;
+transform: translateY(-4px)
+}
+to {
+opacity: 1;
+transform: none
+}
+}
+#gs-dropdown.open {
+display: block;
+}
+.gs-group-title {
+padding: 8px 14px 4px;
+font-size: 10.5px;
+font-weight: 700;
+color: var(--accent);
+text-transform: uppercase;
+letter-spacing: .5px;
+border-top: 1px solid #f3f4f6;
+}
+.gs-group-title:first-child {
+border-top: none;
+}
+.gs-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 9px 14px;
+cursor: pointer;
+transition: background var(--transition);
+font-size: 13px;
+}
+.gs-item:hover,
+.gs-item.focused {
+background: #f0fdf9;
+}
+.gs-item-icon {
+width: 28px;
+height: 28px;
+border-radius: 7px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+flex-shrink: 0;
+}
+.gs-ic-party {
+background: rgba(13, 148, 136, .12);
+color: #0d9488
+}
+.gs-ic-pur {
+background: rgba(37, 99, 235, .12);
+color: #2563eb
+}
+.gs-ic-sale {
+background: rgba(16, 185, 129, .12);
+color: #059669
+}
+.gs-ic-pay {
+background: rgba(245, 158, 11, .12);
+color: #d97706
+}
+.gs-ic-est {
+background: rgba(139, 92, 246, .12);
+color: #7c3aed
+}
+.gs-item-main {
+flex: 1;
+min-width: 0;
+}
+.gs-item-title {
+font-weight: 600;
+color: var(--text);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.gs-item-sub {
+font-size: 11.5px;
+color: var(--text-muted);
+margin-top: 1px;
+}
+.gs-empty {
+padding: 20px 14px;
+text-align: center;
+color: var(--text-muted);
+font-size: 13px;
+}
+.gs-footer {
+padding: 8px 14px;
+border-top: 1px solid #f3f4f6;
+font-size: 11px;
+color: var(--text-muted);
+text-align: center;
+}
+@media(max-width:768px) {
+#gs-wrap {
+max-width: none;
+margin: 0 8px;
+}
+}
+@media(max-width:540px) {
+#gs-wrap {
+display: none;
+}
+#gs-mobile-btn {
+display: flex !important;
+align-items: center;
+justify-content: center;
+}
+#gs-wrap.mobile-open {
+display: block !important;
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+margin: 0;
+padding: 12px 16px;
+background: var(--white);
+border-top: 1px solid var(--border);
+box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+z-index: 1000;
+}
+#gs-wrap.mobile-open #gs-icon {
+left: 27px;
+}
+#gs-wrap.mobile-open #gs-spinner {
+right: 27px;
+}
+}
+#pw-modal-overlay {
+position: fixed;
+inset: 0;
+z-index: 9500;
+background: rgba(15, 17, 23, .65);
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0;
+pointer-events: none;
+transition: opacity .22s;
+backdrop-filter: blur(6px);
+}
+#pw-modal-overlay.open {
+opacity: 1;
+pointer-events: all;
+}
+#pw-modal-box {
+background: #fff;
+border-radius: 16px;
+width: 100%;
+max-width: 370px;
+padding: 32px 28px 24px;
+box-shadow: 0 24px 64px rgba(0, 0, 0, .22);
+transform: translateY(20px) scale(.97);
+transition: transform .22s;
+text-align: center;
+}
+#pw-modal-overlay.open #pw-modal-box {
+transform: translateY(0) scale(1);
+}
+.pw-lock-icon {
+width: 56px;
+height: 56px;
+background: linear-gradient(135deg, #0d9488, #0891b2);
+border-radius: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 24px;
+color: #fff;
+margin: 0 auto 16px;
+}
+.pw-title {
+font-family: 'Montserrat', sans-serif;
+font-size: 17px;
+font-weight: 700;
+color: #1a1d23;
+margin-bottom: 6px;
+}
+.pw-sub {
+font-size: 12.5px;
+color: #6b7280;
+margin-bottom: 20px;
+line-height: 1.5;
+}
+.pw-inp-wrap {
+position: relative;
+margin-bottom: 6px;
+}
+#pw-input {
+width: 100%;
+padding: 11px 42px 11px 14px;
+border: 1.5px solid #e5e7eb;
+border-radius: 10px;
+font-family: 'Poppins', sans-serif;
+font-size: 14px;
+outline: none;
+color: #1a1d23;
+transition: border-color .2s, box-shadow .2s;
+letter-spacing: .06em;
+box-sizing: border-box;
+}
+#pw-input:focus {
+border-color: #0d9488;
+box-shadow: 0 0 0 3px rgba(13, 148, 136, .12);
+}
+#pw-input.pw-err {
+border-color: #ef4444;
+box-shadow: 0 0 0 3px rgba(239, 68, 68, .1);
+animation: pwShake .35s ease;
+}
+@keyframes pwShake {
+0%,
+100% {
+transform: translateX(0)
+}
+25% {
+transform: translateX(-6px)
+}
+75% {
+transform: translateX(6px)
+}
+}
+.pw-eye {
+position: absolute;
+right: 12px;
+top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+color: #9ca3af;
+font-size: 14px;
+cursor: pointer;
+padding: 4px;
+}
+.pw-eye:hover {
+color: #0d9488;
+}
+.pw-errmsg {
+font-size: 12px;
+color: #ef4444;
+min-height: 18px;
+text-align: left;
+margin-bottom: 14px;
+padding-left: 2px;
+}
+.pw-actions {
+display: flex;
+gap: 10px;
+}
+.pw-actions button {
+flex: 1;
+padding: 10px;
+border-radius: 9px;
+font-size: 13.5px;
+font-weight: 600;
+font-family: 'Poppins', sans-serif;
+border: none;
+cursor: pointer;
+transition: all .2s;
+}
+#pw-cancel-btn {
+background: #f3f4f6;
+color: #374151;
+}
+#pw-cancel-btn:hover {
+background: #e5e7eb;
+}
+#pw-submit-btn {
+background: linear-gradient(135deg, #0d9488, #0891b2);
+color: #fff;
+}
+#pw-submit-btn:hover {
+opacity: .9;
+}
+#pw-submit-btn:disabled {
+opacity: .6;
+cursor: not-allowed;
+}
+.app-header {
+margin-bottom: 22px;
+}
+.app-title {
+font-family: 'Montserrat', sans-serif;
+font-size: 22px;
+font-weight: 700;
+color: #1a1d23;
+display: flex;
+align-items: center;
+}
+.app-subtitle {
+font-size: 13px;
+color: #6b7280;
+margin-top: 4px;
+}
+.app-bar {
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-items: center;
+background: #fff;
+padding: 12px 16px;
+border-radius: 10px;
+box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+margin-bottom: 16px;
+gap: 10px;
+}
+.app-bar-left {
+display: flex;
+gap: 8px;
+align-items: center;
+flex-wrap: wrap;
+order: 1;
+}
+.app-bar-print {
+display: flex;
+gap: 8px;
+align-items: center;
+width: auto;
+order: 2;
+}
+.app-bar-print .btn {
+width: auto;
+justify-content: center;
+min-height: 40px;
+}
+.app-bar-delete {
+display: flex;
+gap: 8px;
+align-items: center;
+width: auto;
+order: 3;
+}
+.app-bar-delete .btn {
+width: auto;
+justify-content: center;
+min-height: 40px;
+}
+.app-bar-search {
+width: 100%;
+order: 4;
+}
+.app-search-wrap {
+display: flex;
+align-items: center;
+position: relative;
+background: #f9fafb;
+border: 1.5px solid #e5e7eb;
+border-radius: 10px;
+overflow: hidden;
+transition: border-color .2s, box-shadow .2s;
+}
+.app-search-wrap:focus-within {
+border-color: #0d9488;
+box-shadow: 0 0 0 3px rgba(13, 148, 136, .12);
+background: #fff;
+}
+.app-search-icon {
+padding: 0 10px 0 14px;
+color: #9ca3af;
+font-size: 13px;
+pointer-events: none;
+flex-shrink: 0;
+}
+.app-search-inp {
+flex: 1;
+border: none;
+background: transparent;
+outline: none;
+font-family: 'Poppins', sans-serif;
+font-size: 13px;
+color: #1a1d23;
+padding: 9px 0;
+min-width: 0;
+}
+.app-search-inp::placeholder {
+color: #9ca3af;
+}
+.app-search-clear {
+border: none;
+background: transparent;
+color: #9ca3af;
+font-size: 13px;
+padding: 0 8px;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+flex-shrink: 0;
+transition: color .15s;
+}
+.app-search-clear:hover {
+color: #ef4444;
+}
+.app-search-btn {
+border: none;
+background: #0d9488;
+color: #fff;
+font-size: 13px;
+padding: 0 16px;
+height: 100%;
+min-height: 40px;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+flex-shrink: 0;
+transition: background .15s;
+border-radius: 0 8px 8px 0;
+}
+.app-search-btn:hover {
+background: #0f766e;
+}
+@media (max-width: 768px) {
+  .app-bar {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .app-bar-left,
+  .app-bar-print,
+  .app-bar-delete {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 8px;
+  }
+  .app-bar-left>*,
+  .app-bar-print>*,
+  .app-bar-delete>* {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .app-bar-left {
+    order: 1;
+  }
+  .app-bar-search {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+  }
+  .app-search-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+  .app-bar-print {
+    order: 3;
+  }
+  .app-bar-delete {
+    order: 4;
+  }
+}
+.app-sel {
+padding: 7px 11px;
+border: 1px solid var(--border);
+border-radius: var(--radius);
+font-family: var(--font-main);
+font-size: 13px;
+background: #f9fafb;
+outline: none;
+color: var(--text);
+transition: border-color var(--transition);
+}
+.app-sel:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.app-wrap {
+background: #fff;
+border-radius: 10px;
+box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+overflow: hidden;
+max-width: 100%;
+min-width: 0;
+}
+.app-thead {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 16px 20px;
+border-bottom: 1px solid #e5e7eb;
+}
+.app-thead-title {
+font-size: 13.5px;
+font-weight: 600;
+color: #1a1d23;
+display: flex;
+align-items: center;
+}
+.app-count {
+font-size: 12px;
+color: #6b7280;
+background: #f3f4f6;
+padding: 2px 10px;
+border-radius: 20px;
+}
+.app-scroll {
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+width: 100%;
+padding-bottom: 5px;
+}
+.app-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 13px;
+}
+.app-table th {
+background: #f8fafb;
+color: #374151;
+font-weight: 600;
+padding: 14px 16px;
+text-align: left;
+border-bottom: 2px solid #e5e7eb;
+white-space: nowrap;
+font-size: 12px;
+text-transform: uppercase;
+letter-spacing: .3px;
+}
+.app-table td {
+padding: 14px 16px;
+border-bottom: 1px solid #e5e7eb;
+color: #374151;
+vertical-align: middle;
+white-space: nowrap;
+}
+.app-table tr:last-child td {
+border-bottom: none;
+}
+.app-table tr:hover td {
+background: #f9fafb;
+}
+.app-table tr.app-editing td {
+background: #f0fdf9;
+}
+.app-badge {
+display: inline-flex;
+padding: 2px 10px;
+border-radius: 20px;
+font-size: 11px;
+font-weight: 600;
+}
+.app-ab {
+padding: 5px 10px;
+border-radius: 6px;
+border: none;
+font-size: 11.5px;
+font-weight: 500;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+gap: 4px;
+transition: all .15s;
+}
+.app-edit {
+background: #e0f2fe;
+color: #0369a1;
+}
+.app-edit:hover {
+background: #bae6fd;
+}
+.app-upd {
+background: #dcfce7;
+color: #166534;
+}
+.app-upd:hover {
+background: #bbf7d0;
+}
+.app-del {
+background: #fee2e2;
+color: #dc2626;
+}
+.app-del:hover {
+background: #fecaca;
+}
+.app-can {
+background: #f3f4f6;
+color: #374151;
+}
+.app-can:hover {
+background: #e5e7eb;
+}
+.app-edit-inp,
+.app-edit-sel {
+width: 100%;
+padding: 5px 8px;
+border: 1.5px solid #0d9488;
+border-radius: 5px;
+font-size: 12px;
+font-family: 'Poppins', sans-serif;
+outline: none;
+background: #fff;
+}
+.app-pag {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 12px 18px;
+border-top: 1px solid #f3f4f6;
+flex-wrap: wrap;
+gap: 8px;
+}
+.app-pag-info {
+font-size: 12px;
+color: #6b7280;
+}
+.app-pag-btns {
+display: flex;
+gap: 4px;
+}
+.app-pag-btn {
+padding: 5px 12px;
+border: 1px solid #e5e7eb;
+border-radius: 6px;
+background: #fff;
+font-size: 12px;
+cursor: pointer;
+transition: all .15s;
+font-family: 'Poppins', sans-serif;
+}
+.app-pag-btn:hover {
+background: #f0fdf9;
+border-color: #0d9488;
+color: #0d9488;
+}
+.app-pag-btn.active {
+background: #0d9488;
+color: #fff;
+border-color: #0d9488;
+}
+.app-pag-btn:disabled {
+opacity: .4;
+cursor: not-allowed;
+}
+.app-overlay {
+display: none;
+position: fixed;
+inset: 0;
+z-index: 700;
+background: rgba(15, 17, 23, .48);
+align-items: center;
+justify-content: center;
+flex-direction: column;
+gap: 12px;
+}
+.app-overlay.show {
+display: flex;
+}
+.app-spin {
+width: 44px;
+height: 44px;
+border: 4px solid rgba(255, 255, 255, .2);
+border-top-color: #14b8a6;
+border-radius: 50%;
+animation: appSpin .75s linear infinite;
+}
+@keyframes appSpin {
+to {
+transform: rotate(360deg);
+}
+}
+.app-spin-txt {
+color: #fff;
+font-size: 13px;
+letter-spacing: .4px;
+}
+.app-form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 18px 20px;
+min-width: 0;
+overflow: hidden;
+}
+.app-fg {
+display: flex;
+flex-direction: column;
+gap: 5px;
+min-width: 0;
+overflow: hidden;
+}
+.app-fg.full {
+grid-column: 1 / -1;
+}
+.app-label {
+font-size: 11.5px;
+font-weight: 600;
+color: #374151;
+text-transform: uppercase;
+letter-spacing: .3px;
+}
+.app-field {
+padding: 8px 12px;
+border: 1px solid #e5e7eb;
+border-radius: 8px;
+font-family: 'Poppins', sans-serif;
+font-size: 13px;
+outline: none;
+width: 100%;
+box-sizing: border-box;
+transition: border-color .2s, box-shadow .2s;
+}
+.app-field:focus {
+border-color: #0d9488;
+box-shadow: 0 0 0 3px rgba(13, 148, 136, .12);
+}
+.app-field[readonly] {
+background: #f9fafb;
+color: #6b7280;
+}
+.app-id-row {
+display: flex;
+gap: 8px;
+align-items: center;
+}
+.app-id-row .app-field {
+flex: 1;
+}
+.app-no-data {
+text-align: center;
+padding: 48px 20px;
+color: #9ca3af;
+font-size: 14px;
+}
+/* Vertical spacing for sibling form blocks inside modal body and invoice body */
+.modal-body > .app-fg,
+.modal-body > .app-form-grid,
+.inv-body > .app-fg,
+.inv-body > .app-form-grid {
+  margin-bottom: 18px;
+}
+.modal-body > .app-fg:last-child,
+.modal-body > .app-form-grid:last-child,
+.inv-body > .app-fg:last-child,
+.inv-body > .app-form-grid:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 900px) and (min-width: 601px) {
+  .app-bar-left .btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .app-search-inp {
+    font-size: 16px;
+  }
+  .app-search-btn {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+}
+@media (max-width: 600px) {
+  .app-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px 16px;
+  }
+  .app-fg {
+    gap: 8px;
+  }
+  .app-search-inp {
+    font-size: 16px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+  .app-search-btn {
+    min-height: 48px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+  .app-search-clear {
+    padding: 0 10px;
+    font-size: 15px;
+  }
+  .app-bar-print .btn {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .app-table th,
+  .app-table td {
+    padding: 8px;
+    font-size: 11.5px;
+  }
+  .app-pag {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .app-pag-btns {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .app-thead {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  input[type="date"],
+  .app-field,
+  .app-sel {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .rep-filters {
+    grid-template-columns: 1fr !important;
+  }
+  .rep-filters .app-field,
+  .rep-filters input,
+  .rep-filters select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+@media (max-width: 1024px) {
+#page-content {
+padding: 18px;
+}
+.app-header {
+margin-bottom: 16px;
+}
+.app-title {
+font-size: 19px;
+line-height: 1.25;
+}
+.app-subtitle {
+font-size: 12.5px;
+}
+.app-wrap,
+.inv-list-w {
+border-radius: 8px;
+}
+.app-table {
+min-width: 760px;
+}
+.app-scroll,
+.inv-items-wrap,
+.inv-list-w > div[style*="overflow-x"] {
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+}
+.modal-box {
+max-width: min(640px, calc(100vw - 28px));
+}
+}
+@media (max-width: 768px) {
+#topbar {
+gap: 8px;
+}
+#topbar-left {
+min-width: 0;
+}
+#page-title,
+#page-breadcrumb {
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+#topbar-right {
+gap: 4px;
+}
+.topbar-btn {
+width: 40px;
+height: 40px;
+}
+.app-header {
+margin-bottom: 14px;
+}
+.app-title {
+font-size: 17px;
+}
+.app-wrap,
+.inv-list-w {
+box-shadow: none;
+border: 1px solid #e5e7eb;
+}
+.app-thead,
+.inv-list-wh {
+align-items: flex-start;
+gap: 8px;
+}
+.app-count,
+#invListCnt {
+line-height: 1.6;
+}
+.app-pag {
+align-items: stretch;
+}
+.app-pag span,
+.app-pag-info {
+font-size: 12px;
+}
+.app-pag-btns,
+.app-pag > div {
+width: 100%;
+}
+.app-pag-btn {
+min-height: 38px;
+}
+.btn-sm {
+min-height: 38px;
+}
+}
+@media (max-width: 480px) {
+#page-breadcrumb {
+display: none;
+}
+.app-title {
+font-size: 16px;
+}
+.app-subtitle {
+display: none;
+}
+
+.app-search-wrap {
+border-radius: 8px;
+}
+.app-search-btn {
+min-width: 50px;
+padding: 0 14px;
+}
+.app-table {
+min-width: 680px;
+}
+.app-pag {
+padding: 10px 12px;
+}
+.modal-footer {
+flex-direction: column-reverse;
+}
+.modal-footer .btn {
+width: 100%;
+}
+}
+
+/* -- Party Searchable Combobox -- */
+.party-combo-wrap {
+  position: relative;
+  width: 100%;
+}
+.party-combo-inp {
+  padding: 8px 36px 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: var(--font-main, 'Poppins', sans-serif);
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .2s, box-shadow .2s;
+  background: #fff;
+}
+.party-combo-inp:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, .12);
+}
+.party-combo-inp::placeholder { color: #9ca3af; }
+.party-combo-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 12px;
+  display: none;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 3px;
+  transition: color .15s;
+}
+.party-combo-clear:hover { color: #ef4444; }
+.party-combo-drop {
+  display: none;
+  position: absolute;
+  left: 0; right: 0; top: calc(100% + 4px);
+  background: #fff;
+  border: 1.5px solid #0d9488;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.13);
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  animation: comboSlide .12s ease;
+}
+.party-combo-drop.open { display: block; }
+@keyframes comboSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.party-combo-item {
+  padding: 9px 14px;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background .1s;
+}
+.party-combo-item:last-child { border-bottom: none; }
+.party-combo-item:hover,
+.party-combo-item.focused {
+  background: #f0fdf9;
+}
+.party-combo-item-name {
+  font-weight: 600;
+  color: #1a1d23;
+}
+.party-combo-item-sub {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 1px;
+}
+.party-combo-empty {
+  padding: 14px;
+  font-size: 12.5px;
+  color: #9ca3af;
+  text-align: center;
+}
+.party-combo-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0fdf9;
+  border: 1px solid #99f6e4;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: #0f766e;
+  margin-top: 4px;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .party-combo-inp { font-size: 16px; min-height: 44px; }
+}
+@keyframes partyComboShake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-4px)}
+}
+.party-combo-portal {
+  position: fixed !important;
+  z-index: 99999 !important;
+  display: none;
+}
+.party-combo-portal.open { display: block !important; }
+</style>
+
+</head>
+<body class="view-only">
+<div id="global-loader" class="hidden">
+<div style="text-align:center">
+<div class="loader-ring"></div>
+<div style="color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;letter-spacing:.5px;">Loadingâ€¦</div>
+</div>
+</div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="app-shell">
+<nav id="sidebar">
+<div id="sidebar-brand">
+<div class="brand-icon" id="sidebar-brand-icon"><i class="fas fa-gem"></i></div>
+<img id="sidebar-brand-logo" src="" alt="logo"
+style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;display:none;"
+onerror="this.style.display='none';document.getElementById('sidebar-brand-icon').style.display='flex'" />
+<div class="brand-text">
+<span id="sidebar-brand-name">GajKesari Ornaments</span>
+<span id="sidebar-brand-sub">Jewellery Business App</span>
+</div>
+</div>
+<div id="sidebar-nav">
+<div class="nav-section-label">Main Menu</div>
+<a href="javascript:void(0)" onclick="navTo('dashboard')" class="nav-item" data-page="dashboard">
+<i class="fas fa-chart-pie"></i> Dashboard
+</a>
+<a href="javascript:void(0)" onclick="navTo('parties')" class="nav-item" data-page="parties">
+<i class="fas fa-users"></i> Parties
+</a>
+<a href="javascript:void(0)" onclick="navTo('purchase')" class="nav-item" data-page="purchase">
+<i class="fas fa-cart-arrow-down"></i> Purchase
+</a>
+<a href="javascript:void(0)" onclick="navTo('sales')" class="nav-item" data-page="sales">
+<i class="fas fa-hand-holding-usd"></i> Sales
+</a>
+<a href="javascript:void(0)" onclick="navTo('payments')" class="nav-item" data-page="payments">
+<i class="fas fa-receipt"></i> Receipts & Payments
+</a>
+<div class="nav-section-label">Estimates &amp; Reports</div>
+<a href="javascript:void(0)" onclick="navTo('invoice')" class="nav-item" data-page="invoice">
+<i class="fas fa-file-invoice"></i> Estimates
+</a>
+<a href="javascript:void(0)" onclick="navTo('reports')" class="nav-item" data-page="reports">
+<i class="fas fa-chart-bar"></i> Reports
+</a>
+</div>
+<div id="sidebar-footer">
+<i class="fas fa-shield-alt" style="margin-right:5px;"></i>
+v1.0.0 &nbsp;Â·&nbsp; GajKesari
+</div>
+</nav>
+<div id="main-area">
+<header id="topbar">
+<div id="topbar-left">
+<button id="menu-toggle" onclick="toggleSidebar()" title="Toggle Menu">
+<i class="fas fa-bars"></i>
+</button>
+<div>
+<div id="page-title">Dashboard</div>
+<div id="page-breadcrumb">Home &rsaquo; Dashboard</div>
+</div>
+</div>
+<div id="gs-wrap">
+<i class="fas fa-search" id="gs-icon"></i>
+<input id="gs-input" type="text" placeholder="Search parties, purchases, salesâ€¦" autocomplete="off" />
+<div id="gs-spinner"></div>
+<div id="gs-dropdown"></div>
+</div>
+<div id="topbar-right">
+<button class="topbar-btn" id="gs-mobile-btn" title="Search" onclick="toggleMobileSearch()">
+<i class="fas fa-search"></i>
+</button>
+<button class="topbar-btn" id="app-reload-btn" title="Refresh Current Page" onclick="appReload()">
+<i class="fas fa-rotate-right"></i>
+</button>
+<button id="edit-mode-btn" onclick="handleEditModeToggle()" title="Toggle Edit Mode">
+<i class="fas fa-pen-to-square"></i>
+<span id="edit-mode-label">View Only</span>
+<div class="toggle-dot"></div>
+</button>
+</div>
+</header>
+<div id="edit-mode-banner">
+<i class="fas fa-circle-dot"></i>
+<strong>Edit Mode Active</strong> â€” You can add, edit, and delete records.
+</div>
+<script>
+const APP = {"editMode":false,"scriptUrl":"","apiBaseUrl":"/api/gas","routerMode":"static","businessName":"GajKesari Ornaments","businessSub":"Fine Jewellery","logoUrl":"","version":"1.0.0","currencySymbol":"₹","printDisclaimer":"","primaryColor":"#0d9488","sidebarColor":"#0f1117","fontFamily":"Poppins,sans-serif","borderRadius":"10px","currentPage":"purchase"};
+const SCRIPT_URL = APP.scriptUrl || '';
+(function applyConfigTheme() {
+document.body.className = APP.editMode ? 'edit-mode-active' : 'view-only';
+var r = document.documentElement;
+if (APP.primaryColor) { r.style.setProperty('--accent', APP.primaryColor); r.style.setProperty('--sidebar-active', APP.primaryColor + '38'); }
+if (APP.sidebarColor) { r.style.setProperty('--sidebar-bg', APP.sidebarColor); }
+if (APP.fontFamily) { r.style.setProperty('--font-main', APP.fontFamily); }
+if (APP.borderRadius) { r.style.setProperty('--radius', APP.borderRadius); }
+var nameEl = document.getElementById('sidebar-brand-name');
+var subEl = document.getElementById('sidebar-brand-sub');
+if (nameEl && APP.businessName) nameEl.textContent = APP.businessName;
+if (subEl && APP.businessSub) subEl.textContent = APP.businessSub;
+if (APP.logoUrl) {
+var limg = document.getElementById('sidebar-brand-logo');
+var licon = document.getElementById('sidebar-brand-icon');
+if (limg) { limg.src = APP.logoUrl; limg.style.display = ''; }
+if (licon) licon.style.display = 'none';
+}
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var DEFAULT_TIMEOUT_MS = 30000;
+
+  function apiBaseUrl() {
+    if (window.__API_BASE_URL__) return window.__API_BASE_URL__;
+    if (window.APP && APP.apiBaseUrl) return APP.apiBaseUrl;
+    try {
+      var stored = window.localStorage && localStorage.getItem('GKO_API_BASE_URL');
+      if (stored) return stored;
+    } catch (e) {}
+    return '/api/gas';
+  }
+
+  function normalizeError(err) {
+    if (!err) return new Error('Request failed');
+    if (err.name === 'AbortError') return new Error('Request timed out');
+    if (err instanceof Error) return err;
+    return new Error(String(err));
+  }
+
+  function parseJson(text) {
+    if (!text) return null;
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      throw new Error('Backend returned invalid JSON');
+    }
+  }
+
+  function call(functionName, args, options) {
+    if (!functionName || typeof functionName !== 'string') {
+      return Promise.reject(new Error('Missing API function name'));
+    }
+
+    var timeout = (options && options.timeoutMs) || DEFAULT_TIMEOUT_MS;
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeout);
+
+    return fetch(apiBaseUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      signal: controller.signal,
+      body: JSON.stringify({ functionName: functionName, args: Array.isArray(args) ? args : [] })
+    })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          var body = parseJson(text);
+          if (!res.ok) {
+            var message = (body && (body.message || body.error)) || ('HTTP ' + res.status);
+            throw new Error(message);
+          }
+          if (!body || typeof body !== 'object' || !Object.prototype.hasOwnProperty.call(body, 'result')) {
+            throw new Error('Backend response is missing result');
+          }
+          return body.result;
+        });
+      })
+      .catch(function (err) {
+        throw normalizeError(err);
+      })
+      .finally(function () {
+        clearTimeout(timer);
+      });
+  }
+
+  function createRunner() {
+    var successHandler = null;
+    var failureHandler = null;
+
+    var runner = {
+      withSuccessHandler: function (fn) {
+        successHandler = typeof fn === 'function' ? fn : null;
+        return proxy;
+      },
+      withFailureHandler: function (fn) {
+        failureHandler = typeof fn === 'function' ? fn : null;
+        return proxy;
+      }
+    };
+
+    var proxy = new Proxy(runner, {
+      get: function (target, prop) {
+        if (prop in target) return target[prop];
+        if (typeof prop !== 'string') return undefined;
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          call(prop, args)
+            .then(function (result) {
+              if (successHandler) successHandler(result);
+            })
+            .catch(function (err) {
+              if (failureHandler) {
+                failureHandler(err);
+              } else if (window.showToast) {
+                showToast(err.message || 'Request failed', 'error');
+              } else {
+                console.error(err);
+              }
+            });
+          return proxy;
+        };
+      }
+    });
+
+    return proxy;
+  }
+
+  window.API = {
+    call: call,
+    get baseUrl() { return apiBaseUrl(); },
+    get run() { return createRunner(); }
+  };
+})();
+</script>
+
+<main id="page-content">
+<div class="app-overlay" id="purOv">
+  <div class="app-spin"></div>
+  <div class="app-spin-txt" id="purOvTxt">Processingâ€¦</div>
+</div>
+
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-cart-arrow-down" style="color:var(--accent);margin-right:8px"></i>Purchase</div>
+  <div class="app-subtitle">Add and manage purchase entries</div>
+</div>
+
+<div class="app-bar">
+  <!-- Row 1: Action buttons -->
+  <div class="app-bar-left">
+    <button class="btn btn-primary edit-only" onclick="purOpenAdd()"><i class="fas fa-plus"></i> New Purchase</button>
+    <button class="btn btn-danger" id="purDelRow" style="display:none" onclick="purDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span id="purSelCount">0</span>)</button>
+  </div>
+  <!-- Row 2: Search bar -->
+  <div class="app-bar-search">
+    <div class="app-search-wrap">
+      <i class="fas fa-search app-search-icon"></i>
+      <input class="app-search-inp" id="purSrchQ" type="text" placeholder="Search purchasesâ€¦"
+        onkeydown="if(event.key==='Enter')purSearch()" oninput="purToggleClear()" />
+      <button class="app-search-clear" id="purClearBtn" onclick="purClear()" title="Clear" style="display:none"><i class="fas fa-xmark"></i></button>
+      <button class="app-search-btn" onclick="purSearch()" title="Search"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+  <!-- Row 3: Sort & Print -->
+  <div class="app-bar-print">
+    <select class="app-sel" id="purSrchCrit">
+      <option value="all">All Fields</option>
+      <option value="0">Purchase ID</option>
+      <option value="3">Party Name</option>
+      <option value="4">Area</option>
+    </select>
+    <button class="btn btn-secondary" onclick="purPrint()"><i class="fas fa-print"></i> Print Purchase List</button>
+  </div>
+</div>
+
+
+<div class="app-wrap">
+  <div class="app-thead">
+    <span class="app-thead-title"><i class="fas fa-table" style="color:var(--accent);margin-right:6px"></i>Purchase List</span>
+    <span class="app-count" id="purCnt">Loadingâ€¦</span>
+  </div>
+  <div class="app-scroll">
+    <table id="purTable" class="app-table">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="purSelAll" onchange="purToggleAll(this)"
+              title="Select all" /></th>
+          <th>#</th>
+          <th>Purchase ID</th>
+          <th>Date</th>
+          <th>Party ID</th>
+          <th>Party Name</th>
+          <th>Area</th>
+          <th>Grams</th>
+          <th>Rupees</th>
+          <th>Rate/10g</th>
+          <th>Avg Rate</th>
+          <th>Stock (g)</th>
+          <th>Note</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="purTbody"></tbody>
+    </table>
+  </div>
+  <div class="app-pag" id="purPag"></div>
+</div>
+
+<script>
+  /* â”€â”€ State â”€â”€ */
+  var purAll = [], purPage = 1, purPer = 25, purTotal = 0, purEditing = null, purParties = [], purCombo = null;
+  var purSearchCol = 'all', purSearchQ = '';
+  var _purOvTimer = null;
+
+  /* â”€â”€ Overlay â”€â”€ */
+  function purShowOv(t) {
+    document.getElementById('purOvTxt').textContent = t || 'Processingâ€¦';
+    document.getElementById('purOv').classList.add('show');
+    if (_purOvTimer) clearTimeout(_purOvTimer);
+    _purOvTimer = setTimeout(function () { purHideOv(); }, 15000);
+  }
+  function purHideOv() {
+    if (_purOvTimer) { clearTimeout(_purOvTimer); _purOvTimer = null; }
+    document.getElementById('purOv').classList.remove('show');
+  }
+
+  /* â”€â”€ Load â”€â”€ */
+  function purLoad() {
+    purPage = 1; purSearchCol = 'all'; purSearchQ = '';
+    var qEl = document.getElementById('purSrchQ'), cEl = document.getElementById('purSrchCrit');
+    if (qEl) qEl.value = ''; if (cEl) cEl.value = 'all';
+    purLoadPage(1);
+  }
+
+  function purLoadPage(page) {
+    purPage = page;
+    document.getElementById('purCnt').textContent = 'Loadingâ€¦';
+    if (typeof API === 'undefined') { purAll = []; purTotal = 0; purRender(); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        if (r && r.success) { purAll = r.data || []; purTotal = r.total || 0; purPer = r.pageSize || purPer; purRender(); }
+        else { purAll = []; purTotal = 0; purRender(); showToast((r && r.message) || 'Load failed', 'error'); }
+      })
+      .withFailureHandler(function (e) { purAll = []; purTotal = 0; purRender(); showToast(e.message, 'error'); })
+      .purGetPage({ page: purPage, pageSize: purPer, searchCol: purSearchCol, searchQ: purSearchQ });
+  }
+
+  function purRender() {
+    var tb = document.getElementById('purTbody'), tot = purTotal;
+    document.getElementById('purCnt').textContent = tot + ' record' + (tot !== 1 ? 's' : '');
+    if (!purAll.length) { tb.innerHTML = '<tr><td colspan="14" class="app-no-data"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db"></i>No records found</td></tr>'; purRenderPagination(0); return; }
+    var start = (purPage - 1) * purPer, rows = '';
+    for (var i = 0; i < purAll.length; i++) {
+      var d = purAll[i];
+      rows += '<tr id="app-form-grid-' + _htmlEsc(d.purchaseId) + '">'
+        + '<td><input type="checkbox" class="pur-chk" value="' + _htmlEsc(d.purchaseId) + '" onchange="purChkChange()"/></td>'
+        + '<td>' + (start + i + 1) + '</td>'
+        + '<td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">' + _htmlEsc(d.purchaseId) + '</code></td>'
+        + '<td class="pur-cd">' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyId) + '</td>'
+        + '<td class="pur-cpn">' + _htmlEsc(d.partyName) + '</td>'
+        + '<td class="pur-ca">' + _htmlEsc(d.area) + '</td>'
+        + '<td class="pur-cg">' + _htmlEsc(d.grams) + '</td>'
+        + '<td class="pur-cr">' + _htmlEsc(d.rupees) + '</td>'
+        + '<td>' + _htmlEsc(d.rate10g) + '</td>'
+        + '<td>' + _htmlEsc(d.avgPurRate) + '</td>'
+        + '<td>' + _htmlEsc(d.stockBalGrams) + '</td>'
+        + '<td class="pur-cn">' + (d.isPaid ? '<span class="app-badge" style="background:#dcfce7;color:#166534;margin-right:4px">PAID</span>' : '') + _htmlEsc(d.note) + '</td>'
+        + '<td style="min-width:160px">'
+        + '<div id="pur-view-' + _htmlEsc(d.purchaseId) + '" style="display:flex;gap:5px">'
+        + '<button class="app-ab app-edit edit-only" onclick="purStartEdit(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-pen"></i> Edit</button>'
+        + '<button class="app-ab app-del edit-only" onclick="purConfirmDel(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-trash"></i> Delete</button>'
+        + '</div>'
+        + '<div id="app-edit-' + _htmlEsc(d.purchaseId) + '" style="display:none;gap:5px">'
+        + '<button class="app-ab app-upd" onclick="purDoUpdate(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-check"></i> Update</button>'
+        + '<button class="app-ab app-can" onclick="purCancelEdit(\'' + _htmlEsc(d.purchaseId) + '\')"><i class="fas fa-xmark"></i> Cancel</button>'
+        + '</div></td></tr>';
+    }
+    tb.innerHTML = rows; purRenderPagination(purTotal);
+  }
+
+  function purRenderPagination(tot) {
+    if (typeof UI !== 'undefined') UI.renderPagination(tot, purPage, purPer, 'purPag', 'purGoPage');
+    else document.getElementById('purPag').innerHTML = '';
+  }
+  function purGoPage(p) { var pages = Math.ceil(purTotal / purPer) || 1; p = Math.max(1, Math.min(p, pages)); if (p === purPage) return; purLoadPage(p); }
+
+  function purSearch() {
+    purSearchQ = document.getElementById('purSrchQ').value.trim().toLowerCase();
+    purSearchCol = document.getElementById('purSrchCrit').value;
+    purLoadPage(1);
+  }
+  function purClear() {
+    document.getElementById('purSrchQ').value = '';
+    document.getElementById('purSrchCrit').value = 'all';
+    var cb = document.getElementById('purClearBtn'); if (cb) cb.style.display = 'none';
+    purSearchQ = ''; purSearchCol = 'all';
+    purLoadPage(1);
+  }
+  function purToggleClear() {
+    var v = document.getElementById('purSrchQ').value;
+    var cb = document.getElementById('purClearBtn');
+    if (cb) cb.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  /* â”€â”€ Load Parties â”€â”€ */
+  function purLoadParties(cb) {
+    if (purParties.length) { cb && cb(); return; }
+    try {
+      API.run
+        .withSuccessHandler(function (r) { if (r && r.success) purParties = r.data || []; cb && cb(); })
+        .withFailureHandler(function () { cb && cb(); })
+        .purGetPartiesForDropdown();
+    } catch (ex) { cb && cb(); }
+  }
+
+  /* â”€â”€ Add Modal â”€â”€ */
+  function purOpenAdd() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    purLoadParties(function () {
+      var body = '<div class="app-fg"><label class="app-label">Purchase ID</label>'
+        + '<div class="app-id-row"><input class="app-field" id="pfPurId" readonly placeholder="Click Generate"/>'
+        + '<button class="btn btn-secondary btn-sm" onclick="purGenId()"><i class="fas fa-rotate-right"></i> Generate</button></div></div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Date *</label><input class="app-field" id="pfDate" type="date"/></div>'
+        + '<div class="app-fg"><label class="app-label">Party Name *</label><div id="pfPartyNameWrap"></div></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Party ID</label><input class="app-field" id="pfPartyId" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="pfArea" readonly/></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Grams *</label><input class="app-field" id="pfGrams" type="number" step="0.001" oninput="purCalcRate()"/></div>'
+        + '<div class="app-fg"><label class="app-label">Rupees *</label><input class="app-field" id="pfRupees" type="number" step="0.01" oninput="purCalcRate()"/></div>'
+        + '</div>'
+        + '<div class="app-form-grid">'
+        + '<div class="app-fg"><label class="app-label">Rate/10g (Auto)</label><input class="app-field" id="pfRate" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Avg Rate (Auto)</label><input class="app-field" id="pfAvg" readonly placeholder="Calculated on save"/></div>'
+        + '</div>'
+        + '<div class="app-fg"><label class="app-label">Stock Balance g (Auto)</label><input class="app-field" id="pfStock" readonly placeholder="Calculated on save"/></div>'
+        + '<div class="app-fg"><label class="app-label">Note</label><input class="app-field" id="pfNote" type="text" placeholder="Optional note"/></div>'
+        + '<div class="app-fg" style="margin-top:10px;"><label class="app-label" style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pfIsPaid" style="margin-right:8px;width:18px;height:18px;cursor:pointer;accent-color:var(--accent);"> <span style="font-size:14px;font-weight:500;color:#1a1d23">Mark as Paid (Skip adding to Outstanding)</span></label></div>';
+      var foot = '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>'
+        + '<button class="btn btn-primary" onclick="purSaveNew()"><i class="fas fa-save"></i> Save</button>';
+      openModal('Add New Purchase', body, foot);
+      var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+      document.getElementById('pfDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+      /* build searchable party combobox */
+      var wrap = document.getElementById('pfPartyNameWrap');
+      if (wrap) {
+        purCombo = makePartyCombo({
+          wrap: wrap,
+          inputId: 'pfPartyName',
+          parties: purParties,
+          placeholder: 'Type to search partyâ€¦',
+          onSelect: function(p) {
+            document.getElementById('pfPartyId').value = p ? p.partyId : '';
+            document.getElementById('pfArea').value = p ? p.area : '';
+          }
+        });
+      }
+      purGenId();
+    });
+  }
+
+  function purFetchParty() { /* now handled by combobox onSelect */ }
+
+  function purCalcRate() {
+    var g = parseFloat(document.getElementById('pfGrams').value) || 0;
+    var r = parseFloat(document.getElementById('pfRupees').value) || 0;
+    var rate = g > 0 ? Math.round((r / g) * 10 * 100) / 100 : 0;
+    document.getElementById('pfRate').value = rate || '';
+  }
+
+  function purGenId() {
+    document.getElementById('pfPurId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
+  }
+
+
+  function purSaveNew() {
+    var id = document.getElementById('pfPurId').value.trim();
+    var dt = document.getElementById('pfDate').value;
+    var pn = purCombo ? purCombo.getValue() : '';
+    var g = document.getElementById('pfGrams').value;
+    var r = document.getElementById('pfRupees').value;
+    if (!id) { showToast('Generate a Purchase ID first', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!purCombo || !purCombo.getSelected()) { showToast('Please select a party from the dropdown list', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams must be greater than 0', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees must be greater than 0', 'warning'); return; }
+    closeModal(); purShowOv('Savingâ€¦');
+    var d = {
+      purchaseId: id, date: dt,
+      partyId: document.getElementById('pfPartyId').value,
+      partyName: pn, area: document.getElementById('pfArea').value,
+      grams: g, rupees: r,
+      note: document.getElementById('pfNote').value.trim(),
+      isPaid: document.getElementById('pfIsPaid') ? document.getElementById('pfIsPaid').checked : false
+    };
+    API.run
+      .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('New Purchase Added', 'success'); purLoad(); } else showToast((res && res.message) || 'Save failed', 'error'); })
+      .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+      .purAddPurchase(d);
+  }
+
+  /* â”€â”€ Inline Edit â”€â”€ */
+  function purStartEdit(id) {
+    if (purEditing && purEditing !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; }
+    purEditing = id;
+    var d = purAll.find(function (x) { return x.purchaseId === id; }); if (!d) return;
+    purShowOv('Loadingâ€¦');
+    purLoadParties(function () {
+      setTimeout(function () {
+        var row = document.getElementById('app-form-grid-' + id); if (!row) { purHideOv(); return; }
+        row.classList.add('app-editing');
+        var tdD = row.querySelector('.pur-cd'); tdD.setAttribute('data-orig', tdD.innerHTML); tdD.innerHTML = '<input class="app-edit-inp" type="date" value="' + _htmlEsc(d.dateRaw) + '"/>';
+        var opts = purParties.map(function (p) { return '<option value="' + _htmlEsc(p.partyName) + '" data-id="' + _htmlEsc(p.partyId) + '" data-area="' + _htmlEsc(p.area) + '"' + (p.partyName === d.partyName ? ' selected' : '') + '>' + _htmlEsc(p.partyName) + '</option>'; }).join('');
+        var tdP = row.querySelector('.pur-cpn'); tdP.setAttribute('data-orig', tdP.innerHTML); tdP.innerHTML = '<select class="app-edit-inp" onchange="purEditPartyChange(\'' + id + '\',this)"><option value="">Selectâ€¦</option>' + opts + '</select>';
+        var tdA = row.querySelector('.pur-ca'); tdA.setAttribute('data-orig', tdA.innerHTML);
+        [['pur-cg', d.grams, 'number'], ['pur-cr', d.rupees, 'number'], ['pur-cn', d.note, 'text']].forEach(function (x) {
+          var td = row.querySelector('.' + x[0]); td.setAttribute('data-orig', td.innerHTML); td.innerHTML = '<input class="app-edit-inp" type="' + x[2] + '" value="' + _htmlEsc(String(x[1] || '')) + '"/>';
+        });
+        document.getElementById('pur-view-' + id).style.display = 'none';
+        document.getElementById('app-edit-' + id).style.display = 'flex';
+        purHideOv();
+      }, 150);
+    });
+  }
+
+  function purEditPartyChange(rowId, sel) {
+    var opt = sel.options[sel.selectedIndex];
+    var row = document.getElementById('app-form-grid-' + rowId);
+    if (row) { var tdA = row.querySelector('.pur-ca'); tdA.textContent = opt ? opt.getAttribute('data-area') : ''; }
+  }
+
+  function purCancelEdit(id) {
+    var row = document.getElementById('app-form-grid-' + id); if (!row) return;
+    row.classList.remove('app-editing');
+    ['pur-cd', 'pur-cpn', 'pur-ca', 'pur-cg', 'pur-cr', 'pur-cn'].forEach(function (c) {
+      var td = row.querySelector('.' + c); if (td && td.getAttribute('data-orig') !== null) td.innerHTML = td.getAttribute('data-orig');
+    });
+    document.getElementById('pur-view-' + id).style.display = 'flex';
+    document.getElementById('app-edit-' + id).style.display = 'none';
+    purEditing = null;
+  }
+
+  function purGetCell(row, cls) { var td = row.querySelector('.' + cls); if (!td) return ''; var el = td.querySelector('input') || td.querySelector('select'); return el ? el.value : td.textContent; }
+
+  function purDoUpdate(id) {
+    var row = document.getElementById('app-form-grid-' + id); if (!row) return;
+    var dt = purGetCell(row, 'pur-cd'), pn = purGetCell(row, 'pur-cpn');
+    var g = purGetCell(row, 'pur-cg'), r = purGetCell(row, 'pur-cr');
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!g || parseFloat(g) <= 0) { showToast('Grams required', 'warning'); return; }
+    if (!r || parseFloat(r) <= 0) { showToast('Rupees required', 'warning'); return; }
+    var party = purParties.find(function (p) { return p.partyName === pn; }) || {};
+    purShowOv('Updatingâ€¦');
+    var origData = purAll.find(function(x) { return x.purchaseId === id; }) || {};
+    var d = {
+      purchaseId: id, date: dt,
+      partyId: party.partyId || '', partyName: pn, area: party.area || purGetCell(row, 'pur-ca'),
+      grams: g, rupees: r, note: purGetCell(row, 'pur-cn'),
+      isPaid: !!origData.isPaid
+    };
+    API.run
+      .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('Purchase Updated', 'success'); purEditing = null; purLoadPage(purPage); } else showToast((res && res.message) || 'Update failed', 'error'); })
+      .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+      .purUpdatePurchase(d);
+  }
+
+  /* â”€â”€ Delete â”€â”€ */
+  function purConfirmDel(id) {
+    var d = purAll.find(function (x) { return x.purchaseId === id; });
+    confirmDialog('Delete purchase <strong>' + _htmlEsc(id) + '</strong>' + (d ? ' (' + _htmlEsc(d.partyName) + ')?' : '?'), function () {
+      purShowOv('Deletingâ€¦');
+      API.run
+        .withSuccessHandler(function (res) { purHideOv(); if (res && res.success) { showToast('Purchase Deleted', 'success'); purLoadPage(purPage); } else showToast((res && res.message) || 'Delete failed', 'error'); })
+        .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+        .purDeletePurchase(id);
+    });
+  }
+
+  function purToggleAll(cb) {
+    document.querySelectorAll('.pur-chk').forEach(function (c) { c.checked = cb.checked; });
+    purChkChange();
+  }
+  function purChkChange() {
+    var sel = document.querySelectorAll('.pur-chk:checked').length;
+    var row = document.getElementById('purDelRow');
+    var sc = document.getElementById('purSelCount');
+    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (sc) sc.textContent = sel;
+  }
+  function purDeleteSelected() {
+    var ids = [];
+    document.querySelectorAll('.pur-chk:checked').forEach(function (c) { ids.push(c.value); });
+    if (!ids.length) { showToast('No purchases selected', 'warning'); return; }
+    confirmDialog('Delete <strong>' + ids.length + '</strong> selected purchase(s)? This cannot be undone.', function () {
+      purShowOv('Deleting ' + ids.length + ' purchase(s)â€¦');
+      API.run
+        .withSuccessHandler(function (res) { purHideOv(); showToast(res.message || 'Done', 'success'); purLoad(); })
+        .withFailureHandler(function (e) { purHideOv(); showToast(e.message, 'error'); })
+        .purBulkDelete(ids);
+    });
+  }
+
+  APP.reload = purLoad;
+  APP.openAdd = { purchase: purOpenAdd };
+
+  /* â”€â”€ Print â”€â”€ */
+  function purPrint() {
+    if (!purAll || !purAll.length) { showToast('No data to print', 'warning'); return; }
+    var totalG = 0, totalR = 0;
+    var rows = purAll.map(function(d, i) {
+      totalG += parseFloat(d.grams) || 0;
+      totalR += parseFloat(d.rupees) || 0;
+      return '<tr><td>' + (i+1) + '</td>'
+        + '<td><code>' + _htmlEsc(d.purchaseId) + '</code></td>'
+        + '<td>' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyName) + '</td>'
+        + '<td>' + _htmlEsc(d.area) + '</td>'
+        + '<td class="num">' + (parseFloat(d.grams)||0).toFixed(3) + ' g</td>'
+        + '<td class="num">&#8377; ' + (parseFloat(d.rupees)||0).toLocaleString('en-IN', {minimumFractionDigits:2}) + '</td>'
+        + '<td class="num">' + _htmlEsc(d.rate10g) + '</td>'
+        + '<td>' + _htmlEsc(d.note||'') + '</td></tr>';
+    }).join('');
+    var foot = '<tr><td colspan="5"><strong>Totals (' + purAll.length + ' records)</strong></td>'
+      + '<td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td>'
+      + '<td class="num"><strong>&#8377; ' + totalR.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</strong></td>'
+      + '<td colspan="2"></td></tr>';
+    var meta = (purSearchQ ? 'Filter: \u201c' + _htmlEsc(purSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + purPage;
+    var tbl = '<table><thead><tr><th>#</th><th>Purchase ID</th><th>Date</th><th>Party Name</th><th>Area</th>'
+      + '<th class="num">Grams</th><th class="num">Rupees</th><th class="num">Rate/10g</th><th>Note</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
+    mobileSafePrint(_gkPrintWrap('Purchase Register', meta, tbl), 'Purchase Register \u2014 GajKesari Ornaments');
+  }
+
+  purLoad();
+</script>
+
+</main>
+</div><!-- /main-area -->
+</div><!-- /app-shell -->
+<div id="qa-fab-backdrop" onclick="closeQaFab()"></div>
+<div id="qa-fab-wrap">
+<button id="qa-fab-btn" onclick="toggleQaFab()" title="Quick Actions" aria-label="Quick Actions">
+<i class="fas fa-plus" id="qa-fab-icon"></i>
+</button>
+<div id="qa-fab-menu" role="menu">
+<button class="qa-fab-item edit-only" onclick="qaFabAction('party')" title="Parties">
+<span class="qa-fab-icon ic-party"><i class="fas fa-users"></i></span>
+<span class="qa-fab-label">Parties</span>
+</button>
+<button class="qa-fab-item edit-only" onclick="qaFabAction('purchase')" title="Purchase">
+<span class="qa-fab-icon ic-pur"><i class="fas fa-cart-arrow-down"></i></span>
+<span class="qa-fab-label">Purchase</span>
+</button>
+<button class="qa-fab-item edit-only" onclick="qaFabAction('sale')" title="Sales">
+<span class="qa-fab-icon ic-sale"><i class="fas fa-hand-holding-usd"></i></span>
+<span class="qa-fab-label">Sales</span>
+</button>
+<button class="qa-fab-item edit-only" onclick="qaFabAction('payment')" title="Receipts &amp; Payments">
+<span class="qa-fab-icon ic-rcpt"><i class="fas fa-receipt"></i></span>
+<span class="qa-fab-label">Receipts &amp; Payments</span>
+</button>
+<button class="qa-fab-item" onclick="qaFabAction('invoice')" title="Invoice / Estimate">
+<span class="qa-fab-icon ic-est"><i class="fas fa-file-invoice"></i></span>
+<span class="qa-fab-label">Invoice / Estimate</span>
+</button>
+</div>
+</div>
+<div id="modal-overlay" onclick="handleModalOverlayClick(event)">
+<div class="modal-box" id="modal-box">
+<div class="modal-header">
+<span class="modal-title" id="modal-title">Modal</span>
+<button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+</div>
+<div class="modal-body" id="modal-body"></div>
+<div class="modal-footer" id="modal-footer"></div>
+</div>
+</div>
+<div id="toast-container"></div>
+<div id="pw-modal-overlay">
+<div id="pw-modal-box">
+<div class="pw-lock-icon"><i class="fas fa-lock"></i></div>
+<div class="pw-title">Admin Verification</div>
+<div class="pw-sub">Enter the Admin Password to<br>enable Edit Mode.</div>
+<div class="pw-inp-wrap">
+<input id="pw-input" type="password" placeholder="Enter passwordâ€¦" autocomplete="off" />
+<button class="pw-eye" type="button" onclick="pwToggleEye()" tabindex="-1">
+<i class="fas fa-eye" id="pw-eye-icon"></i>
+</button>
+</div>
+<div class="pw-errmsg" id="pw-errmsg"></div>
+<div class="pw-actions">
+<button id="pw-cancel-btn" onclick="closePwModal()"><i class="fas fa-xmark"
+style="margin-right:5px"></i>Cancel</button>
+<button id="pw-submit-btn" onclick="submitEditPassword()"><i class="fas fa-unlock"
+style="margin-right:5px"></i>Unlock</button>
+</div>
+</div>
+</div>
+<script>
+const UI = {
+showOverlay: function (overlayId, textId, text) {
+var txtEl = document.getElementById(textId);
+if (txtEl) txtEl.textContent = text || 'Processingâ€¦';
+var ov = document.getElementById(overlayId);
+if (ov) ov.classList.add('show');
+},
+hideOverlay: function (overlayId) {
+var ov = document.getElementById(overlayId);
+if (ov) ov.classList.remove('show');
+},
+renderPagination: function (total, page, pageSize, wrapperId, callbackName) {
+var pages = Math.ceil(total / pageSize) || 1;
+var pag = document.getElementById(wrapperId);
+if (!pag) return;
+if (pages <= 1 && total <= pageSize) { pag.innerHTML = ''; return; }
+var start = (page - 1) * pageSize + 1;
+var end = Math.min(page * pageSize, total);
+var html = '<span class="app-pag-info">Showing ' + start + 'â€“' + end + ' of ' + total + '</span><div class="app-pag-btns">';
+html += '<button class="app-pag-btn" onclick="' + callbackName + '(' + (page - 1) + ')" ' + (page === 1 ? 'disabled' : '') + '>â€¹ Prev</button>';
+var lo = Math.max(1, page - 2);
+var hi = Math.min(pages, page + 2);
+for (var p = lo; p <= hi; p++) {
+var active = (p === page) ? ' active' : '';
+html += '<button class="app-pag-btn' + active + '" onclick="' + callbackName + '(' + p + ')">' + p + '</button>';
+}
+html += '<button class="app-pag-btn" onclick="' + callbackName + '(' + (page + 1) + ')" ' + (page === pages ? 'disabled' : '') + '>Next â€º</button></div>';
+pag.innerHTML = html;
+},
+renderForm: function (config) {
+var html = '<div class="app-form-grid">';
+for (var i = 0; i < config.fields.length; i++) {
+var f = config.fields[i];
+var full = f.full ? ' full' : '';
+html += '<div class="app-fg' + full + '">';
+html += '<label class="app-label">' + (f.icon ? '<i class="' + f.icon + '"></i> ' : '') + f.label + '</label>';
+if (f.custom) {
+html += f.custom;
+} else if (f.type === 'select') {
+html += '<select class="app-field" id="' + f.id + '">';
+html += '<option value="">Selectâ€¦</option>';
+for (var j = 0; j < f.options.length; j++) {
+html += '<option value="' + f.options[j] + '">' + f.options[j] + '</option>';
+}
+html += '</select>';
+} else {
+var ro = f.readonly ? ' readonly' : '';
+var ph = f.placeholder ? ' placeholder="' + f.placeholder + '"' : '';
+var ttl = f.title ? ' title="' + f.title + '"' : '';
+html += '<input class="app-field" id="' + f.id + '" type="' + f.type + '"' + ph + ro + ttl + ' />';
+}
+html += '</div>';
+}
+html += '</div>';
+return html;
+},
+renderTable: function (containerId, config) {
+var container = document.getElementById(containerId);
+if (!container) return;
+var html = '<div class="app-wrap">';
+if (config.title) {
+html += '<div class="app-thead">';
+html += '<span class="app-thead-title">' + (config.icon ? '<i class="' + config.icon + '" style="color:#0d9488;margin-right:6px"></i>' : '') + config.title + '</span>';
+if (config.countId) {
+html += '<span class="app-count" id="' + config.countId + '">Loadingâ€¦</span>';
+}
+html += '</div>';
+}
+html += '<div class="app-scroll">';
+html += '<table id="' + (config.tableId || 'appTable') + '" class="app-table">';
+html += '<thead><tr>';
+if (config.selectable) {
+html += '<th style="width:36px"><input type="checkbox" id="' + (config.selectAllId || 'selAll') + '" onchange="if(typeof ' + config.onSelectAll + ' === \'function\') ' + config.onSelectAll + '(this)" title="Select all" /></th>';
+}
+if (config.showIndex) { html += '<th>#</th>'; }
+for (var i = 0; i < config.columns.length; i++) {
+html += '<th>' + (config.columns[i].label || '') + '</th>';
+}
+if (config.actions) { html += '<th>Actions</th>'; }
+html += '</tr></thead>';
+html += '<tbody id="' + (config.tbodyId || 'appTbody') + '"></tbody>';
+html += '</table></div>';
+if (config.paginationId) {
+html += '<div class="app-pag" id="' + config.paginationId + '"></div>';
+}
+html += '</div>';
+container.innerHTML = html;
+}
+};
+function showLoader() {
+document.getElementById('global-loader').classList.remove('hidden');
+}
+function hideLoader() {
+document.getElementById('global-loader').classList.add('hidden');
+}
+function toggleSidebar() {
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+document.getElementById('sidebar').classList.remove('open');
+document.getElementById('sidebar-overlay').classList.remove('open');
+}
+window.addEventListener('resize', function () {
+if (window.innerWidth > 768) closeSidebar();
+});
+function setActiveNav(page) {
+document.querySelectorAll('.nav-item').forEach(function (el) {
+el.classList.toggle('active', el.dataset.page === page);
+});
+}
+var _qaFabOpen = false;
+function toggleQaFab() {
+_qaFabOpen ? closeQaFab() : openQaFab();
+}
+function openQaFab() {
+_qaFabOpen = true;
+document.getElementById('qa-fab-btn').classList.add('open');
+document.getElementById('qa-fab-menu').classList.add('open');
+document.getElementById('qa-fab-backdrop').classList.add('open');
+}
+function closeQaFab() {
+_qaFabOpen = false;
+document.getElementById('qa-fab-btn').classList.remove('open');
+document.getElementById('qa-fab-menu').classList.remove('open');
+document.getElementById('qa-fab-backdrop').classList.remove('open');
+}
+var QA_MAP = {
+party: { page: 'parties', key: 'party' },
+purchase: { page: 'purchase', key: 'purchase' },
+sale: { page: 'sales', key: 'sale' },
+payment: { page: 'payments', key: 'payment' },
+invoice: { page: 'invoice', key: 'invoice' }
+};
+function qaFabAction(type) {
+closeQaFab();
+if (typeof APP !== 'undefined' && APP.openAdd && typeof APP.openAdd[type] === 'function') {
+APP.openAdd[type]();
+return;
+}
+if (type === 'invoice') {
+var target = QA_MAP['invoice'];
+if (target) navToAndOpen(target.page, target.key);
+return;
+}
+if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+_fabLoadPartiesThen(type);
+}
+var _fabParties = [];
+var _fabPartiesLoaded = false;
+function _fabLoadPartiesThen(type) {
+if (_fabPartiesLoaded) { _fabOpenModal(type); return; }
+API.run
+.withSuccessHandler(function (r) {
+if (r && r.success) _fabParties = r.data || [];
+_fabPartiesLoaded = true;
+_fabOpenModal(type);
+})
+.withFailureHandler(function () { _fabOpenModal(type); })
+.purGetPartiesForDropdown();
+}
+function _fabOpenModal(type) {
+var partyOpts = _fabParties.map(function (p) {
+var n = String(p.partyName || ''), id = p.partyId || '', ar = p.area || '';
+return '<option value="' + n + '" data-id="' + id + '" data-area="' + ar + '">' + n + '</option>';
+}).join('');
+var fs = 'margin-top:4px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;width:100%;font-family:Poppins,sans-serif;font-size:16px;outline:none;box-sizing:border-box';
+var lb = 'display:block;font-size:11.5px;font-weight:600;color:#374151;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px';
+function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp || 'text') + '" placeholder="' + (ph || '') + '" style="' + fs + '" ' + (ex || '') + '/>'; }
+function sel(id, cont, ch) { return '<select id="' + id + '" style="' + fs + '" ' + (ch ? 'onchange="' + ch + '"' : '') + '>' + cont + '</select>'; }
+function fg(lbl, html) { return '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px"><label style="' + lb + '">' + lbl + '</label>' + html + '</div>'; }
+function row2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
+function idr(inp, btn) { return '<div style="display:flex;gap:8px;align-items:center">' + inp + btn + '</div>'; }
+function ro(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph || '') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
+function genBtn(fn) { return '<button class="btn btn-secondary btn-sm" onclick="' + fn + '"><i class="fas fa-rotate-right"></i> Gen</button>'; }
+function today() { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
+if (type === 'party') {
+var ptOpts = '<option value="">Selectâ€¦</option><option>Supplier</option><option>Customer</option><option>Both</option>';
+openModal('Add New Party',
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px">'
++ '<div style="grid-column:1/-1">' + fg('Party ID', idr(ro('_fabPartId', 'Click Gen'), genBtn('_fabPartGenId()'))) + '</div>'
++ fg('Party Name *', fld('_fabPartName', 'text', 'Name'))
++ fg('Party Type *', sel('_fabPartType', ptOpts))
++ fg('Area', fld('_fabPartArea', 'text', 'Area'))
++ fg('Owner Name', fld('_fabPartOwner', 'text', 'Owner'))
++ fg('Mobile', fld('_fabPartMobile', 'text', 'Mobile'))
++ fg('Labour 999', fld('_fabPartL999', 'number', '0'))
++ fg('Labour 925', fld('_fabPartL925', 'number', '0'))
++ fg('Labour Other', fld('_fabPartLOth', 'number', '0'))
++ fg('Outstanding ?', fld('_fabPartBalR', 'number', '0'))
++ fg('Outstanding g', fld('_fabPartBalG', 'number', '0'))
++ '<div style="grid-column:1/-1">' + fg('Note', fld('_fabPartNote', 'text', 'Optional')) + '</div>'
++ '</div>',
+'<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+'<button class="btn btn-primary" onclick="_fabSaveParty()"><i class="fas fa-save"></i> Save</button>');
+_fabPartGenId(); return;
+}
+if (type === 'purchase') {
+var pOpts = '<option value="">Select Partyâ€¦</option>' + partyOpts;
+openModal('Add New Purchase',
+fg('Purchase ID', idr(ro('_fabPurId', 'Click Gen'), genBtn('_fabPurGenId()'))) +
+row2(fg('Date *', fld('_fabDate', 'date')), fg('Party *', sel('_fabPurPN', pOpts, '_fabPurFetch()'))) +
+row2(fg('Party ID', ro('_fabPurPID')), fg('Area', ro('_fabPurArea'))) +
+row2(fg('Grams *', '<input id="_fabG" type="number" step="0.001" placeholder="0.000" oninput="_fabCalcPurRate()" style="' + fs + '">'),
+fg('Rupees *', '<input id="_fabR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcPurRate()" style="' + fs + '">')) +
+fg('Rate/10g (Auto)', ro('_fabRate10', 'Auto')) +
+fg('Note', fld('_fabNote', 'text', 'Optional')),
+'<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+'<button class="btn btn-primary" onclick="_fabSavePurchase()"><i class="fas fa-save"></i> Save</button>');
+document.getElementById('_fabDate').value = today(); _fabPurGenId(); return;
+}
+if (type === 'sale') {
+var sOpts = '<option value="">Select Partyâ€¦</option>' + partyOpts;
+openModal('Add New Sale',
+fg('Sale ID', idr(ro('_fabSaleId', 'Click Gen'), genBtn('_fabSaleGenId()'))) +
+row2(fg('Date *', fld('_fabSDate', 'date')), fg('Party *', sel('_fabSPN', sOpts, '_fabSaleFetch()'))) +
+row2(fg('Party ID', ro('_fabSPID')), fg('Area', ro('_fabSArea'))) +
+row2(fg('Grams *', '<input id="_fabSG" type="number" step="0.001" placeholder="0.000" oninput="_fabCalcSaleRate()" style="' + fs + '">'),
+fg('Rupees *', '<input id="_fabSR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcSaleRate()" style="' + fs + '">')) +
+row2(fg('Sale Rate/10g (Auto)', ro('_fabSRate10', 'Auto')), fg('Avg Purchase Rate', ro('_fabSAvg', ''))) +
+row2(fg('Profit ? (Auto)', ro('_fabSProR', '')), fg('Profit % (Auto)', ro('_fabSProP', ''))) +
+fg('Note', fld('_fabSNote', 'text', 'Optional')),
+'<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+'<button class="btn btn-primary" onclick="_fabSaveSale()"><i class="fas fa-save"></i> Save</button>');
+document.getElementById('_fabSDate').value = today(); _fabSaleGenId();
+API.run.withSuccessHandler(function (r) { if (r && r.success) { document.getElementById('_fabSAvg').value = r.avgRate || 0; _fabCalcSaleRate(); } }).saleGetCalcData();
+return;
+}
+if (type === 'payment') {
+var rOpts = '<option value="">Select Partyâ€¦</option>' + partyOpts;
+var tBtns = '<div style="display:flex;gap:8px;margin-bottom:4px">'
++ '<button type="button" id="_fabTypeRcpt" onclick="_fabSetType(\'Receipt\')" style="flex:1;padding:10px;border:2px solid #0d9488;border-radius:8px;background:#0d9488;color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i class="fas fa-arrow-down"></i> Receipt</button>'
++ '<button type="button" id="_fabTypePay" onclick="_fabSetType(\'Payment\')" style="flex:1;padding:10px;border:2px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:500;cursor:pointer"><i class="fas fa-arrow-up"></i> Payment</button>'
++ '</div>';
+openModal('New Receipt / Payment',
+fg('Type', tBtns) +
+fg('ID', idr(ro('_fabPayId', 'Click Gen'), genBtn('_fabPayGenId()'))) +
+row2(fg('Date *', fld('_fabPyDate', 'date')), fg('Party *', sel('_fabPyPN', rOpts, '_fabPayFetch()'))) +
+row2(fg('Party ID', ro('_fabPyPID')), fg('Area', ro('_fabPyArea'))) +
+row2(fg('Rupees ?', fld('_fabPyR', 'number', '0.00')), fg('Grams (g)', fld('_fabPyG', 'number', '0.000'))) +
+fg('Note', fld('_fabPyNote', 'text', 'Optional')),
+'<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
+'<button class="btn btn-primary" onclick="_fabSavePayment()"><i class="fas fa-save"></i> Save</button>');
+document.getElementById('_fabPyDate').value = today();
+_fabPayGenId();
+window._fabEntryType = 'Receipt';
+return;
+}
+}
+function _fabGenId(pfx) { return pfx + Math.floor(10000 + Math.random() * 90000); }
+function _fabPartGenId() { var el = document.getElementById('_fabPartId'); if (el) el.value = _fabGenId('P'); }
+function _fabPurGenId() { var el = document.getElementById('_fabPurId'); if (el) el.value = _fabGenId('P'); }
+function _fabSaleGenId() { var el = document.getElementById('_fabSaleId'); if (el) el.value = _fabGenId('S'); }
+function _fabPayGenId() { var el = document.getElementById('_fabPayId'); if (el) el.value = _fabGenId('R'); }
+function _fabPurFetch() { var s = document.getElementById('_fabPurPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabPurPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabPurArea').value = o.getAttribute('data-area') || ''; }
+function _fabSaleFetch() { var s = document.getElementById('_fabSPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabSPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabSArea').value = o.getAttribute('data-area') || ''; }
+function _fabPayFetch() { var s = document.getElementById('_fabPyPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabPyPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabPyArea').value = o.getAttribute('data-area') || ''; }
+function _fabCalcPurRate() {
+var g = parseFloat(document.getElementById('_fabG').value) || 0, r = parseFloat(document.getElementById('_fabR').value) || 0;
+var el = document.getElementById('_fabRate10'); if (el) el.value = g ? ((r / g) * 10).toFixed(2) : '';
+}
+function _fabCalcSaleRate() {
+var g = parseFloat(document.getElementById('_fabSG').value) || 0, r = parseFloat(document.getElementById('_fabSR').value) || 0;
+var avg = parseFloat(document.getElementById('_fabSAvg').value) || 0;
+var rate10 = g ? ((r / g) * 10) : 0;
+var el = document.getElementById('_fabSRate10'); if (el) el.value = rate10.toFixed(2);
+var profR = (r - (avg / 10 * g)), profP = avg ? ((profR / r) * 100) : 0;
+var elR = document.getElementById('_fabSProR'); if (elR) elR.value = profR.toFixed(2);
+var elP = document.getElementById('_fabSProP'); if (elP) elP.value = profP.toFixed(2);
+}
+function _fabSetType(type) {
+window._fabEntryType = type;
+var aS = 'flex:1;padding:10px;border:2px solid #0d9488;border-radius:8px;background:#0d9488;color:#fff;font-size:13px;font-weight:600;cursor:pointer';
+var iS = 'flex:1;padding:10px;border:2px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:500;cursor:pointer';
+var r = document.getElementById('_fabTypeRcpt'), p = document.getElementById('_fabTypePay');
+if (r) r.style.cssText = (type === 'Receipt' ? aS : iS);
+if (p) p.style.cssText = (type === 'Payment' ? aS : iS);
+}
+function _fabSaveParty() {
+var id = (document.getElementById('_fabPartId').value || '').trim();
+var nm = (document.getElementById('_fabPartName').value || '').trim();
+var tp = (document.getElementById('_fabPartType').value || '').trim();
+if (!id) { showToast('Generate an ID first', 'warning'); return; }
+if (!nm) { showToast('Party Name required', 'warning'); return; }
+if (!tp) { showToast('Party Type required', 'warning'); return; }
+var payload = { partyId: id, partyName: nm, partyType: tp, area: (document.getElementById('_fabPartArea').value || '').trim(), ownerName: (document.getElementById('_fabPartOwner').value || '').trim(), mobileNumber: (document.getElementById('_fabPartMobile').value || '').trim(), labour999: document.getElementById('_fabPartL999').value || '', labour925: document.getElementById('_fabPartL925').value || '', labourOther: document.getElementById('_fabPartLOth').value || '', outstandingRupees: document.getElementById('_fabPartBalR').value || '0', outstandingGrams: document.getElementById('_fabPartBalG').value || '0', note: (document.getElementById('_fabPartNote').value || '').trim() };
+closeModal(); showLoader();
+API.run.withSuccessHandler(function (r) { hideLoader(); if (r && r.success) { showToast('Party Added', 'success'); _fabPartiesLoaded = false; } else showToast((r && r.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).partAddParty(payload);
+}
+function _fabSavePurchase() {
+var id = (document.getElementById('_fabPurId').value || '').trim();
+var dt = document.getElementById('_fabDate').value;
+var pn = document.getElementById('_fabPurPN').value;
+var g = parseFloat(document.getElementById('_fabG').value) || 0;
+var r = parseFloat(document.getElementById('_fabR').value) || 0;
+if (!id) { showToast('Generate an ID first', 'warning'); return; }
+if (!dt) { showToast('Date required', 'warning'); return; }
+if (!pn) { showToast('Select a Party', 'warning'); return; }
+if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
+var payload = { purchaseId: id, date: dt, partyId: document.getElementById('_fabPurPID').value, partyName: pn, area: document.getElementById('_fabPurArea').value, grams: g, rupees: r, note: (document.getElementById('_fabNote').value || '').trim() };
+closeModal(); showLoader();
+API.run.withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Purchase Added', 'success'); } else showToast((res && res.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).purAddPurchase(payload);
+}
+function _fabSaveSale() {
+var id = (document.getElementById('_fabSaleId').value || '').trim();
+var dt = document.getElementById('_fabSDate').value;
+var pn = document.getElementById('_fabSPN').value;
+var g = parseFloat(document.getElementById('_fabSG').value) || 0;
+var r = parseFloat(document.getElementById('_fabSR').value) || 0;
+if (!id) { showToast('Generate an ID first', 'warning'); return; }
+if (!dt) { showToast('Date required', 'warning'); return; }
+if (!pn) { showToast('Select a Party', 'warning'); return; }
+if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
+var payload = { saleId: id, date: dt, partyId: document.getElementById('_fabSPID').value, partyName: pn, area: document.getElementById('_fabSArea').value, grams: g, rupees: r, note: (document.getElementById('_fabSNote').value || '').trim() };
+closeModal(); showLoader();
+API.run.withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Sale Added', 'success'); } else showToast((res && res.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).saleAddSale(payload);
+}
+function _fabSavePayment() {
+var id = (document.getElementById('_fabPayId').value || '').trim();
+var dt = document.getElementById('_fabPyDate').value;
+var pn = document.getElementById('_fabPyPN').value;
+var rr = parseFloat(document.getElementById('_fabPyR').value) || 0;
+var gr = parseFloat(document.getElementById('_fabPyG').value) || 0;
+var et = window._fabEntryType || 'Receipt';
+if (!id) { showToast('Generate an ID first', 'warning'); return; }
+if (!dt) { showToast('Date required', 'warning'); return; }
+if (!pn) { showToast('Select a Party', 'warning'); return; }
+if (!rr && !gr) { showToast('Enter Rupees or Grams', 'warning'); return; }
+var payload = { receiptId: id, date: dt, partyId: document.getElementById('_fabPyPID').value, partyName: pn, area: document.getElementById('_fabPyArea').value, rupeesReceived: rr, gramsReceived: gr, entryType: et, note: (document.getElementById('_fabPyNote').value || '').trim() };
+closeModal(); showLoader();
+API.run.withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast(et + ' Added', 'success'); } else showToast((res && res.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).rcptAddReceipt(payload);
+}
+function _appBaseUrl_() {
+var base = '';
+if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL && SCRIPT_URL.length > 10 && SCRIPT_URL.indexOf('script.google.com') !== -1) {
+base = SCRIPT_URL.split('?')[0];
+} else {
+var href = '';
+try { href = window.top.location.href; } catch (e) { }
+if (!href) href = window.location.href;
+base = href.split('?')[0];
+}
+return base;
+}
+function _appPageUrl_(page, params) {
+params = params || {};
+var q = [];
+Object.keys(params).forEach(function (key) {
+if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+q.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+}
+});
+if (typeof APP !== 'undefined' && APP.routerMode === 'static') {
+var path = page === 'dashboard' ? '/' : '/' + encodeURIComponent(page);
+return path + (q.length ? '?' + q.join('&') : '');
+}
+var base = _appBaseUrl_();
+if (!base || base.length < 5) return '';
+q.unshift('page=' + encodeURIComponent(page));
+return base + '?' + q.join('&');
+}
+function _delayedShowLoader_() {
+clearTimeout(window.__appLoaderTimer);
+window.__appLoaderTimer = setTimeout(showLoader, 120);
+}
+function navToAndOpen(page, key) {
+if (APP.currentPage === page && APP.openAdd && typeof APP.openAdd[key] === 'function') {
+APP.openAdd[key]();
+return;
+}
+_delayedShowLoader_();
+var url = _appPageUrl_(page, { openAdd: key, edit: (typeof APP !== 'undefined' && APP.editMode) ? '1' : '0' });
+if (!url) { clearTimeout(window.__appLoaderTimer); return; }
+try { window.top.location.href = url; } catch (e) { window.location.href = url; }
+}
+function syncFabEditMode(isEdit) {
+var items = document.querySelectorAll('#qa-fab-menu .edit-only');
+items.forEach(function (el) {
+el.style.display = isEdit ? '' : 'none';
+});
+var fab = document.getElementById('qa-fab-wrap');
+if (fab) fab.style.opacity = '1';
+}
+function appReload() {
+if (APP._reloading) return;
+APP._reloading = true;
+var btn = document.getElementById('app-reload-btn');
+if (btn) {
+var icon = btn.querySelector('i');
+if (icon) {
+icon.style.transition = 'transform .5s ease';
+icon.style.transform = 'rotate(360deg)';
+setTimeout(function () { icon.style.transform = ''; }, 500);
+}
+}
+if (typeof APP !== 'undefined' && typeof APP.reload === 'function') {
+try {
+APP.reload();
+} finally {
+setTimeout(function () { APP._reloading = false; }, 600);
+}
+} else {
+location.reload();
+}
+}
+function mobileSafePrint(htmlContent, title) {
+title = title || 'Print - GajKesari Ornaments';
+var existing = document.getElementById('_print_frame');
+if (existing) existing.remove();
+var iframe = document.createElement('iframe');
+iframe.id = '_print_frame';
+iframe.style.cssText = 'position:absolute;width:1px;height:1px;z-index:-100;opacity:0.01;pointer-events:none;';
+document.body.appendChild(iframe);
+iframe.contentWindow.document.write(htmlContent);
+iframe.contentWindow.document.close();
+setTimeout(function () {
+try {
+iframe.contentWindow.focus();
+iframe.contentWindow.print();
+} catch (e) {
+showToast('Print failed.', 'warning');
+}
+setTimeout(function () {
+if (iframe.parentNode) iframe.remove();
+}, 10000);
+}, 800);
+}
+function _gkPrintWrap(title, meta, bodyHtml) {
+var css = [
+'body{font-family:Poppins,sans-serif;margin:0;padding:0;color:#1a1d23;font-size:9.5pt;background:#fff;}',
+'@page{size:A4 landscape;margin:10mm 12mm;}',
+'.gk-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #1a1d23;margin-bottom:16px;}',
+'.gk-biz{font-family:Montserrat,sans-serif;font-size:22px;font-weight:800;color:#1a1d23;letter-spacing:-0.5px;}',
+'.gk-biz-sub{font-size:10px;color:#6b7280;margin-top:2px;}',
+'.gk-hdr-right{text-align:right;}',
+'.gk-rep-title{font-family:Montserrat,sans-serif;font-size:18px;font-weight:800;color:#1a1d23;letter-spacing:1px;text-transform:uppercase;}',
+'.gk-rep-meta{font-size:9px;color:#6b7280;margin-top:6px;font-weight:600;}',
+'table{width:100%;border-collapse:collapse;font-size:9pt;margin-bottom:0;}',
+'thead th{background:#f3f4f6!important;color:#374151!important;padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:8.5pt;text-transform:uppercase;border-bottom:2px solid #1a1d23;}',
+'thead th.num{text-align:right;}',
+'tbody td{padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#1a1d23;vertical-align:middle;}',
+'tfoot td{background:#f9fafb!important;font-weight:700;color:#1a1d23;border-top:2px dashed #1a1d23;border-bottom:1px solid #1a1d23;padding:8px 10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+'td.num{text-align:right;}',
+'code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:8pt;font-family:monospace;}',
+'.gk-badge{display:inline-flex;padding:1px 7px;border-radius:10px;font-size:7.5pt;font-weight:600;}',
+'.badge-buy{background:#dbeafe;color:#1e40af;}',
+'.badge-sell{background:#dcfce7;color:#166534;}',
+'.badge-rcpt{background:#d1fae5;color:#065f46;}',
+'.badge-pay{background:#fee2e2;color:#dc2626;}',
+'.badge-adj{background:#fef3c7;color:#92400e;}',
+'.gk-footer{margin-top:24px;padding-top:10px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:8pt;color:#6b7280;}',
+].join('');
+return '<!DOCTYPE html><html><head>'
++ '<meta charset="UTF-8">'
++ '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">'
++ '<title>' + title + ' \u2014 GajKesari Ornaments</title>'
++ '<style>' + css + '</style>'
++ '</head><body>'
++ '<div class="gk-hdr">'
++ '<div><div class="gk-biz">GajKesari Ornaments</div>'
++ '<div class="gk-biz-sub">Fine Jewellery and Ornaments</div></div>'
++ '<div class="gk-hdr-right">'
++ '<div class="gk-rep-title">' + title + '</div>'
++ '<div class="gk-rep-meta">' + (meta || '') + '</div>'
++ '</div></div>'
++ bodyHtml
++ '<div class="gk-footer">'
++ '<span>GajKesari Ornaments \u2014 Confidential</span>'
++ '<span>Printed: ' + new Date().toLocaleString('en-IN') + '</span>'
++ '</div>'
++ '</body></html>';
+}
+const PAGE_TITLES = {
+dashboard: { title: 'Dashboard', crumb: 'Home â€º Dashboard' },
+parties: { title: 'Parties', crumb: 'Home â€º Parties' },
+purchase: { title: 'Purchase', crumb: 'Home â€º Purchase' },
+sales: { title: 'Sales', crumb: 'Home â€º Sales' },
+payments: { title: 'Receipts & Payments', crumb: 'Home â€º Receipts & Payments' },
+invoice: { title: 'Estimates', crumb: 'Home â€º Estimates' },
+reports: { title: 'Reports', crumb: 'Home â€º Reports' }
+};
+function updatePageMeta(page) {
+const meta = PAGE_TITLES[page] || { title: 'Page', crumb: 'Home' };
+document.getElementById('page-title').textContent = meta.title;
+document.getElementById('page-breadcrumb').textContent = meta.crumb;
+document.title = meta.title + ' â€” GajKesari Ornaments';
+}
+function applyEditMode(isOn) {
+APP.editMode = isOn;
+const btn = document.getElementById('edit-mode-btn');
+const label = document.getElementById('edit-mode-label');
+const banner = document.getElementById('edit-mode-banner');
+if (isOn) {
+document.body.classList.remove('view-only');
+document.body.classList.add('edit-mode');
+btn.classList.add('active');
+label.textContent = 'Edit Mode';
+banner.classList.add('show');
+} else {
+document.body.classList.add('view-only');
+document.body.classList.remove('edit-mode');
+btn.classList.remove('active');
+label.textContent = 'View Only';
+banner.classList.remove('show');
+}
+try { syncFabEditMode(isOn); } catch (e) { }
+}
+function handleEditModeToggle() {
+if (APP.editMode) {
+showLoader();
+API.run
+.withSuccessHandler(function (res) {
+hideLoader();
+if (res && res.success) { applyEditMode(false); showToast('View-only mode restored', 'info'); }
+else showToast('Could not disable edit mode', 'error');
+})
+.withFailureHandler(function (err) { hideLoader(); showToast('Error: ' + err.message, 'error'); })
+.toggleEditMode();
+} else {
+openPwModal();
+}
+}
+function openPwModal() {
+var inp = document.getElementById('pw-input');
+var err = document.getElementById('pw-errmsg');
+inp.value = ''; inp.type = 'password';
+document.getElementById('pw-eye-icon').className = 'fas fa-eye';
+err.textContent = '';
+inp.classList.remove('pw-err');
+var btn = document.getElementById('pw-submit-btn');
+btn.disabled = false;
+btn.innerHTML = '<i class="fas fa-unlock" style="margin-right:5px"></i>Unlock';
+document.getElementById('pw-modal-overlay').classList.add('open');
+setTimeout(function () { inp.focus(); }, 50);
+}
+function closePwModal() {
+document.getElementById('pw-modal-overlay').classList.remove('open');
+}
+function pwToggleEye() {
+var inp = document.getElementById('pw-input');
+var icon = document.getElementById('pw-eye-icon');
+if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+else { inp.type = 'password'; icon.className = 'fas fa-eye'; }
+inp.focus();
+}
+function submitEditPassword() {
+var inp = document.getElementById('pw-input');
+var err = document.getElementById('pw-errmsg');
+var btn = document.getElementById('pw-submit-btn');
+var pw = inp ? inp.value : '';
+if (!pw) {
+err.textContent = 'Password cannot be empty.';
+inp.classList.add('pw-err');
+setTimeout(function () { inp.classList.remove('pw-err'); }, 600);
+inp.focus(); return;
+}
+err.textContent = '';
+btn.disabled = true;
+btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:5px"></i>Verifyingâ€¦';
+API.run
+.withSuccessHandler(function (res) {
+btn.disabled = false;
+btn.innerHTML = '<i class="fas fa-unlock" style="margin-right:5px"></i>Unlock';
+if (!res || !res.success) {
+err.textContent = (res && res.message) || 'Verification error.';
+inp.classList.add('pw-err');
+setTimeout(function () { inp.classList.remove('pw-err'); }, 600);
+return;
+}
+if (!res.match) {
+err.textContent = 'Incorrect password. Please try again.';
+inp.value = '';
+inp.classList.add('pw-err');
+setTimeout(function () { inp.classList.remove('pw-err'); inp.focus(); }, 600);
+return;
+}
+closePwModal();
+showLoader();
+API.run
+.withSuccessHandler(function (r) {
+hideLoader();
+if (r && r.success) { applyEditMode(true); showToast('Edit Mode enabled', 'success'); }
+else showToast('Could not enable edit mode', 'error');
+})
+.withFailureHandler(function (e) { hideLoader(); showToast('Error: ' + e.message, 'error'); })
+.toggleEditMode();
+})
+.withFailureHandler(function (e) {
+btn.disabled = false;
+btn.innerHTML = '<i class="fas fa-unlock" style="margin-right:5px"></i>Unlock';
+err.textContent = 'Server error: ' + e.message;
+})
+.verifyAdminPassword(pw);
+}
+document.addEventListener('keydown', function (e) {
+if (e.key === 'Escape') closePwModal();
+if (e.key === 'Enter') {
+var ov = document.getElementById('pw-modal-overlay');
+if (ov && ov.classList.contains('open')) { e.preventDefault(); submitEditPassword(); }
+}
+});
+document.getElementById('pw-modal-overlay').addEventListener('click', function (e) {
+if (e.target === this) closePwModal();
+});
+function openModal(title, bodyHtml, footerHtml) {
+document.getElementById('modal-title').textContent = title || 'Dialog';
+document.getElementById('modal-body').innerHTML = bodyHtml || '';
+document.getElementById('modal-footer').innerHTML = footerHtml || '';
+document.getElementById('modal-overlay').classList.add('open');
+var modalBox = document.getElementById('modal-box');
+if (modalBox._enterHandler) modalBox.removeEventListener('keydown', modalBox._enterHandler);
+modalBox._enterHandler = function (e) {
+if (e.key !== 'Enter') return;
+var tag = e.target.tagName;
+if (tag !== 'INPUT' && tag !== 'SELECT') return;
+if (e.target.readOnly) return;
+e.preventDefault();
+var fields = Array.prototype.slice.call(
+modalBox.querySelectorAll('input:not([readonly]):not([disabled]), select:not([disabled])')
+).filter(function (el) { return el.offsetParent !== null; });
+var idx = fields.indexOf(e.target);
+if (idx >= 0 && idx < fields.length - 1) {
+fields[idx + 1].focus();
+if (fields[idx + 1].select) fields[idx + 1].select();
+} else {
+var saveBtn = document.querySelector('#modal-footer .btn-primary');
+if (saveBtn) saveBtn.click();
+}
+};
+modalBox.addEventListener('keydown', modalBox._enterHandler);
+setTimeout(function () {
+var first = modalBox.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+if (first) first.focus();
+}, 0);
+}
+function closeModal() {
+destroyPartyCombos();
+document.getElementById('modal-overlay').classList.remove('open');
+}
+function handleModalOverlayClick(e) {
+if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+function _htmlEsc(v) {
+return String(v || '')
+.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+.replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function confirmDialog(message, onConfirm) {
+var icon = '<div class="confirm-dialog-icon"><i class="fas fa-triangle-exclamation"></i></div>';
+openModal(
+'Confirm Action',
+icon + '<p style="font-size:13.5px;color:var(--text-muted);line-height:1.65;text-align:center;">' + message + '</p>',
+'<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Cancel</button>' +
+'<button class="btn btn-danger" id="confirm-ok-btn"><i class="fas fa-trash"></i> Confirm</button>'
+);
+var btn = document.getElementById('confirm-ok-btn');
+var fresh = btn.cloneNode(true);
+btn.parentNode.replaceChild(fresh, btn);
+fresh.addEventListener('click', function () {
+closeModal();
+if (typeof onConfirm === 'function') onConfirm();
+});
+}
+function showToast(message, type, duration) {
+type = type || 'info';
+duration = duration || 3500;
+const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
+const t = document.createElement('div');
+t.className = 'toast ' + type;
+const ic = document.createElement('i');
+ic.className = 'fas ' + (icons[type] || 'fa-circle-info');
+t.appendChild(ic);
+t.appendChild(document.createTextNode(' ' + String(message || '')));
+document.getElementById('toast-container').appendChild(t);
+setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; t.style.transition = '.3s'; setTimeout(function () { t.remove(); }, 300); }, duration);
+}
+function navTo(page) {
+if (APP.currentPage === page) {
+if (typeof APP.reload === 'function') APP.reload();
+return;
+}
+_delayedShowLoader_();
+var url = _appPageUrl_(page, { edit: (typeof APP !== 'undefined' && APP.editMode) ? '1' : '0' });
+if (!url) {
+clearTimeout(window.__appLoaderTimer);
+showToast('Navigation error - please use the URL bar', 'error');
+return;
+}
+try {
+window.top.location.href = url;
+} catch (e) {
+window.location.href = url;
+}
+}
+(function init() {
+hideLoader();
+try {
+const page = APP.currentPage || 'dashboard';
+setActiveNav(page);
+updatePageMeta(page);
+applyEditMode(APP.editMode);
+} catch (e) {
+console.warn('Nav/meta init error:', e);
+}
+try {
+var urlParams = new URLSearchParams(window.location.search);
+var openAddKey = urlParams.get('openAdd');
+if (openAddKey) {
+var _openAddAttempts = 0;
+var _openAddTimer = setInterval(function () {
+_openAddAttempts++;
+if (typeof APP !== 'undefined' && APP.openAdd && typeof APP.openAdd[openAddKey] === 'function') {
+clearInterval(_openAddTimer);
+APP.openAdd[openAddKey]();
+} else if (_openAddAttempts > 30) {
+clearInterval(_openAddTimer); /* give up after 3s */
+}
+}, 100);
+}
+} catch (e) { console.warn('openAdd init error:', e); }
+try {
+if (typeof API !== 'undefined') {
+API.run
+.withSuccessHandler(function (meta) {
+try {
+if (meta && meta.success) {
+applyEditMode(meta.editMode);
+var root = document.documentElement;
+if (meta.primaryColor) { root.style.setProperty('--accent', meta.primaryColor); root.style.setProperty('--sidebar-active', meta.primaryColor + '38'); }
+if (meta.sidebarColor) { root.style.setProperty('--sidebar-bg', meta.sidebarColor); }
+if (meta.fontFamily) { root.style.setProperty('--font-main', meta.fontFamily); }
+if (meta.borderRadius) { root.style.setProperty('--radius', meta.borderRadius); }
+var nameEl = document.getElementById('sidebar-brand-name');
+var subEl = document.getElementById('sidebar-brand-sub');
+if (nameEl && meta.businessName) nameEl.textContent = meta.businessName;
+if (subEl && meta.businessSub) subEl.textContent = meta.businessSub;
+if (meta.businessLogoUrl) {
+var limg = document.getElementById('sidebar-brand-logo');
+var licon = document.getElementById('sidebar-brand-icon');
+if (limg) { limg.src = meta.businessLogoUrl; limg.style.display = ''; }
+if (licon) licon.style.display = 'none';
+}
+if (typeof APP !== 'undefined') {
+if (meta.currencySymbol) APP.currencySymbol = meta.currencySymbol;
+if (meta.printDisclaimer) APP.printDisclaimer = meta.printDisclaimer;
+if (meta.version) APP.version = meta.version;
+}
+}
+} catch (e) {
+console.warn('applyEditMode error:', e);
+}
+})
+.withFailureHandler(function (err) {
+console.warn('getAppMeta failed:', err && err.message);
+})
+.getAppMeta();
+}
+} catch (e) {
+console.warn('API.run not available:', e);
+}
+})();
+function toggleMobileSearch() {
+var wrap = document.getElementById('gs-wrap');
+var inp = document.getElementById('gs-input');
+if (!wrap) return;
+wrap.classList.toggle('mobile-open');
+if (wrap.classList.contains('mobile-open') && inp) {
+inp.focus();
+}
+}
+(function initGlobalSearch() {
+var inp = document.getElementById('gs-input');
+var drop = document.getElementById('gs-dropdown');
+var spin = document.getElementById('gs-spinner');
+if (!inp) return;
+var _timer = null, _last = '', _focus = -1;
+var MODS = [
+{ key: 'parties', label: 'Parties', icon: 'fas fa-users', cls: 'gs-ic-party', page: 'parties' },
+{ key: 'purchases', label: 'Purchase', icon: 'fas fa-cart-arrow-down', cls: 'gs-ic-pur', page: 'purchase' },
+{ key: 'sales', label: 'Sales', icon: 'fas fa-hand-holding-usd', cls: 'gs-ic-sale', page: 'sales' },
+{ key: 'payments', label: 'Receipts', icon: 'fas fa-receipt', cls: 'gs-ic-pay', page: 'payments' },
+{ key: 'estimates', label: 'Estimates', icon: 'fas fa-file-invoice', cls: 'gs-ic-est', page: 'estimate' }
+];
+function gsOpen() { drop.classList.add('open'); }
+function gsClose() {
+drop.classList.remove('open');
+_focus = -1;
+var wrap = document.getElementById('gs-wrap');
+if (wrap && wrap.classList.contains('mobile-open')) {
+wrap.classList.remove('mobile-open');
+}
+}
+function gsBusy(v) { spin.style.display = v ? 'block' : 'none'; }
+function gsEsc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function gsRender(groups) {
+var total = 0, html = '';
+MODS.forEach(function (mod) {
+var rows = groups[mod.key] || []; if (!rows.length) return;
+total += rows.length;
+html += '<div class="gs-group-title"><i class="' + mod.icon + '" style="margin-right:5px"></i>' + mod.label + '</div>';
+rows.forEach(function (r) {
+html += '<div class="gs-item" data-page="' + mod.page + '" data-id="' + (r.id || '') + '">'
++ '<div class="gs-item-icon ' + mod.cls + '"><i class="' + mod.icon + '"></i></div>'
++ '<div class="gs-item-main">'
++ '<div class="gs-item-title">' + gsEsc(r.title) + '</div>'
++ '<div class="gs-item-sub">' + gsEsc(r.sub || '') + '</div></div></div>';
+});
+});
+drop.innerHTML = total
+? html + '<div class="gs-footer">' + total + ' result' + (total !== 1 ? 's' : '') + ' \u2014 click to open</div>'
+: '<div class="gs-empty"><i class="fas fa-search" style="margin-right:6px"></i>No results found</div>';
+drop.querySelectorAll('.gs-item').forEach(function (el) {
+el.addEventListener('click', function () {
+var pg = el.getAttribute('data-page'), id = el.getAttribute('data-id');
+gsClose(); inp.value = '';
+if (id) { try { sessionStorage.setItem('gsHighlight_' + pg, id); } catch (e) { } }
+navTo(pg);
+});
+});
+gsOpen(); _focus = -1;
+}
+function gsSearch(q) {
+if (q === _last) return; _last = q; clearTimeout(_timer);
+if (q.length < 2) { gsClose(); gsBusy(false); return; }
+gsBusy(true);
+_timer = setTimeout(function () {
+try {
+API.run
+.withSuccessHandler(function (res) { gsBusy(false); gsRender((res && res.success) ? res.groups : {}); })
+.withFailureHandler(function () { gsBusy(false); drop.innerHTML = '<div class="gs-empty">Search unavailable</div>'; gsOpen(); })
+.globalSearch(q);
+} catch (e) { gsBusy(false); }
+}, 350);
+}
+if (!inp._gsInit) {
+inp._gsInit = true;
+inp.addEventListener('input', function () { gsSearch(inp.value.trim().toLowerCase()); });
+inp.addEventListener('keydown', function (e) {
+var items = drop.querySelectorAll('.gs-item');
+if (e.key === 'Escape') { gsClose(); inp.blur(); return; }
+if (!items.length) return;
+if (e.key === 'ArrowDown') { e.preventDefault(); _focus = Math.min(_focus + 1, items.length - 1); }
+else if (e.key === 'ArrowUp') { e.preventDefault(); _focus = Math.max(_focus - 1, 0); }
+else if (e.key === 'Enter' && _focus >= 0) { e.preventDefault(); items[_focus].click(); return; }
+items.forEach(function (el, i) { el.classList.toggle('focused', i === _focus); });
+});
+document.addEventListener('click', function (e) {
+var w = document.getElementById('gs-wrap');
+var btn = document.getElementById('gs-mobile-btn');
+if (w && !w.contains(e.target) && (!btn || !btn.contains(e.target))) gsClose();
+});
+}
+})();
+
+function _htmlEsc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* -- Global: Searchable Party Combobox -- */
+function makePartyCombo(cfg) {
+  var wrap = cfg.wrap;
+  var parties = cfg.parties || [];
+  var filter   = cfg.filter || null;
+  var onSelect = cfg.onSelect || function(){};
+  var placeholder = cfg.placeholder || 'Type to search party\u2026';
+  var inputId = cfg.inputId || ('pc_' + Math.random().toString(36).slice(2));
+
+  wrap.className = 'party-combo-wrap';
+  wrap.innerHTML =
+    '<input class="party-combo-inp" id="' + inputId + '" type="text" placeholder="' + placeholder + '" autocomplete="off"/>' +
+    '<button type="button" class="party-combo-clear" tabindex="-1"><i class="fas fa-xmark"></i></button>';
+
+  var inp = wrap.querySelector('.party-combo-inp');
+  var clr = wrap.querySelector('.party-combo-clear');
+
+  /* Portal dropdown to <body> so modal overflow:hidden cannot clip it */
+  var drop = document.createElement('div');
+  drop.className = 'party-combo-drop party-combo-portal';
+  document.body.appendChild(drop);
+
+  var _selected = null;
+  var _focusIdx = -1;
+  var _open = false;
+  var _destroyed = false;
+
+  function reposition() {
+    var r = inp.getBoundingClientRect();
+    var spaceBelow = window.innerHeight - r.bottom;
+    drop.style.width = r.width + 'px';
+    drop.style.left  = (r.left + window.scrollX) + 'px';
+    if (spaceBelow >= 120) {
+      drop.style.top    = (r.bottom + window.scrollY + 4) + 'px';
+      drop.style.bottom = 'auto';
+    } else {
+      drop.style.top    = 'auto';
+      drop.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    }
+  }
+
+  function getFiltered(q) {
+    var base = filter ? parties.filter(filter) : parties;
+    if (!q) return base;
+    var ql = q.toLowerCase();
+    return base.filter(function(p) {
+      return (p.partyName || '').toLowerCase().indexOf(ql) !== -1 ||
+             (p.area || '').toLowerCase().indexOf(ql) !== -1;
+    });
+  }
+
+  function renderDrop(q) {
+    var list = getFiltered(q);
+    if (!list.length) {
+      drop.innerHTML = '<div class="party-combo-empty"><i class="fas fa-search" style="margin-right:6px"></i>' +
+        (q ? 'No match for "' + _htmlEsc(q) + '"' : 'No parties available') + '</div>';
+    } else {
+      drop.innerHTML = list.map(function(p, i) {
+        return '<div class="party-combo-item" data-idx="' + i + '">' +
+               '<span class="party-combo-item-name">' + _htmlEsc(p.partyName) + '</span>' +
+               '<span class="party-combo-item-sub">' + _htmlEsc(p.area || '') +
+               (p.partyType ? ' \u00b7 ' + _htmlEsc(p.partyType) : '') + '</span>' +
+               '</div>';
+      }).join('');
+      drop.querySelectorAll('.party-combo-item').forEach(function(el, i) {
+        el.addEventListener('mousedown', function(e) { e.preventDefault(); selectByIndex(i, list); });
+      });
+    }
+    _focusIdx = -1;
+  }
+
+  function selectByIndex(i, list) {
+    list = list || getFiltered(inp.value.trim());
+    var p = list[i];
+    if (!p) return;
+    _selected = p;
+    inp.value = p.partyName;
+    inp.style.borderColor = '';
+    inp.style.boxShadow   = '';
+    clr.style.display = 'inline-flex';
+    closeDrop();
+    onSelect(p);
+  }
+
+  function openDrop() {
+    if (_destroyed) return;
+    renderDrop(inp.value.trim());
+    drop.classList.add('open');
+    _open = true;
+    reposition();
+  }
+
+  function closeDrop() {
+    drop.classList.remove('open');
+    _open = false;
+    _focusIdx = -1;
+  }
+
+  function moveFocus(dir) {
+    var items = drop.querySelectorAll('.party-combo-item');
+    if (!items.length) return;
+    _focusIdx = Math.max(0, Math.min(_focusIdx + dir, items.length - 1));
+    items.forEach(function(el, i) { el.classList.toggle('focused', i === _focusIdx); });
+    if (items[_focusIdx]) items[_focusIdx].scrollIntoView({ block: 'nearest' });
+  }
+
+  /* Reject typed text that wasn't picked from the list */
+  function rejectInvalid() {
+    if (inp.value.trim() && !_selected) {
+      inp.style.borderColor = '#ef4444';
+      inp.style.boxShadow   = '0 0 0 3px rgba(239,68,68,.18)';
+      inp.style.animation   = 'partyComboShake .35s ease';
+      setTimeout(function() {
+        inp.value = '';
+        clr.style.display = 'none';
+        inp.style.borderColor = '';
+        inp.style.boxShadow   = '';
+        inp.style.animation   = '';
+      }, 380);
+    }
+  }
+
+  inp.addEventListener('input', function() {
+    var q = inp.value.trim();
+    clr.style.display = q ? 'inline-flex' : 'none';
+    if (_selected && _selected.partyName !== inp.value) { _selected = null; onSelect(null); }
+    inp.style.borderColor = '';
+    inp.style.boxShadow   = '';
+    openDrop();
+  });
+
+  inp.addEventListener('focus', function() { openDrop(); });
+
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (!_open) openDrop(); else moveFocus(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (_open && _focusIdx >= 0) {
+        selectByIndex(_focusIdx, getFiltered(inp.value.trim()));
+      } else if (_open) {
+        var lst = getFiltered(inp.value.trim());
+        if (lst.length === 1) selectByIndex(0, lst);
+      }
+    } else if (e.key === 'Escape') { closeDrop(); }
+  });
+
+  inp.addEventListener('blur', function() {
+    setTimeout(function() {
+      closeDrop();
+      rejectInvalid();
+    }, 200);
+  });
+
+  clr.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    inp.value = '';
+    clr.style.display = 'none';
+    inp.style.borderColor = '';
+    inp.style.boxShadow   = '';
+    _selected = null;
+    onSelect(null);
+    closeDrop();
+    inp.focus();
+  });
+
+  var _reposH = function() { if (_open) reposition(); };
+  window.addEventListener('scroll', _reposH, true);
+  window.addEventListener('resize', _reposH);
+
+  var _docH = function(e) {
+    if (!wrap.contains(e.target) && !drop.contains(e.target)) closeDrop();
+  };
+  document.addEventListener('click', _docH);
+
+  var api = {
+    getValue:    function() { return _selected ? _selected.partyName : inp.value.trim(); },
+    getSelected: function() { return _selected; },
+    setValue: function(partyName) {
+      inp.value = partyName || '';
+      clr.style.display = partyName ? 'inline-flex' : 'none';
+      _selected = parties.find(function(p) { return p.partyName === partyName; }) || null;
+    },
+    clearValue: function() {
+      inp.value = '';
+      clr.style.display    = 'none';
+      inp.style.borderColor = '';
+      inp.style.boxShadow   = '';
+      _selected = null;
+    },
+    setParties: function(np) { parties = np; },
+    setFilter:  function(fn) { filter = fn; },
+    focus:      function() { inp.focus(); },
+    destroy: function() {
+      if (_destroyed) return;
+      _destroyed = true;
+      closeDrop();
+      if (drop.parentNode) drop.parentNode.removeChild(drop);
+      window.removeEventListener('scroll', _reposH, true);
+      window.removeEventListener('resize', _reposH);
+      document.removeEventListener('click', _docH);
+    }
+  };
+  window.__partyCombos = window.__partyCombos || [];
+  window.__partyCombos.push(api);
+  return api;
+}
+function destroyPartyCombos() {
+  var list = window.__partyCombos || [];
+  for (var i = 0; i < list.length; i++) {
+    try { list[i].destroy(); } catch (e) {}
+  }
+  window.__partyCombos = [];
+}
+</script>
+
+</body>
+</html>

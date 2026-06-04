@@ -1,0 +1,633 @@
+<style>
+  /* â”€â”€ Receipt / Payment type toggle â”€â”€ */
+  .rcpt-type-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .rcpt-type-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .rcpt-type-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .rcpt-type-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px var(--accent-glow);
+  }
+
+  /* â”€â”€ Outstanding preview / adjustment cards â”€â”€ */
+  .rcpt-out-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fef9c3;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+  }
+  .rcpt-out-card.credit { background:#ede9fe; border-color:#c4b5fd; }
+  .rcpt-out-sep { width:1px; height:36px; background:#fde68a; }
+  .rcpt-out-card-lbl { font-size:11px; color:#92400e; margin-bottom:2px; }
+  .rcpt-out-card-val { font-size:15px; font-weight:700; color:#92400e; }
+  .rcpt-out-card-val.credit { color:#6d28d9; }
+
+  .rcpt-preview-card {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+  }
+  .rcpt-preview-lbl { font-size:11px; color:#0f766e; margin-bottom:2px; }
+  .rcpt-preview-val { font-size:14px; font-weight:700; }
+
+  /* â”€â”€ entry type badges in table â”€â”€ */
+  .rcpt-badge-r { background:#dcfce7; color:#166534; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+  .rcpt-badge-p { background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+  .rcpt-badge-a { background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+  .rcpt-credit { color:#7c3aed; font-weight:600; }
+  .rcpt-neg    { color:var(--danger); font-weight:600; }
+  .rcpt-pos    { color:var(--success); font-weight:600; }
+</style>
+
+<div class="app-overlay" id="rcptOv">
+  <div class="app-spin"></div>
+  <div class="app-spin-txt" id="rcptOvT">Processingâ€¦</div>
+</div>
+
+<div class="app-header">
+  <div class="app-title"><i class="fas fa-receipt" style="color:var(--accent);margin-right:8px"></i>Receipts &amp; Payments
+  </div>
+  <div class="app-subtitle">Record receipts from customers and payments to suppliers â€” both reduce outstanding balances
+  </div>
+</div>
+
+<div class="app-bar">
+  <!-- Row 1: Action buttons -->
+  <div class="app-bar-left">
+    <button class="btn btn-primary edit-only" onclick="rcptOpenAdd()"><i class="fas fa-plus"></i> New Entry</button>
+    <button class="btn btn-warning edit-only" style="background:#f59e0b;color:#fff;border-color:#f59e0b" onclick="rcptOpenAdjust()"><i class="fas fa-sliders"></i> Adjust Outstanding</button>
+  </div>
+  <!-- Row 2: Search bar -->
+  <div class="app-bar-search">
+    <div class="app-search-wrap">
+      <i class="fas fa-search app-search-icon"></i>
+      <input class="app-search-inp" id="rcptSrchQ" type="text" placeholder="Search receiptsâ€¦"
+        onkeydown="if(event.key==='Enter')rcptSearch()" oninput="rcptToggleClear()" />
+      <button class="app-search-clear" id="rcptClearBtn" onclick="rcptClear()" title="Clear" style="display:none"><i class="fas fa-xmark"></i></button>
+      <button class="app-search-btn" onclick="rcptSearch()" title="Search"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+  <!-- Row 3: Sort & Print -->
+  <div class="app-bar-print">
+    <select class="app-sel" id="rcptSrchCrit">
+      <option value="all">All Fields</option>
+      <option value="0">Receipt ID</option>
+      <option value="3">Party Name</option>
+      <option value="4">Area</option>
+    </select>
+    <button class="btn btn-secondary" onclick="rcptPrint()"><i class="fas fa-print"></i> Print</button>
+  </div>
+  <!-- Row 4: Delete Selected (full width, shown only when rows selected) -->
+  <div class="app-bar-delete" id="rcptDelRow" style="display:none">
+    <button class="btn btn-danger" onclick="rcptDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span id="rcptSelCount">0</span>)</button>
+  </div>
+</div>
+
+
+
+<div class="app-wrap">
+  <div class="app-thead"><span class="app-thead-title"><i class="fas fa-table"
+        style="color:var(--accent);margin-right:6px"></i>Receipt
+      List</span><span class="app-count" id="rcptCnt">Loadingâ€¦</span></div>
+  <div class="app-scroll">
+    <table id="rcptTable" class="app-table">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="rcptSelAll" onchange="rcptToggleAll(this)"
+              title="Select all" /></th>
+          <th>#</th>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Party ID</th>
+          <th>Party Name</th>
+          <th>Area</th>
+          <th>â‚¹ Amount</th>
+          <th>g Amount</th>
+          <th>Outstanding â‚¹</th>
+          <th>Outstanding g</th>
+          <th>Note</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="rcptTbody"></tbody>
+    </table>
+  </div>
+  <div class="app-pag" id="rcptPag"></div>
+</div>
+
+<script>
+  /* â”€â”€ State â”€â”€ */
+  var rcptAll = [], rcptPage = 1, rcptPer = 25, rcptTotal = 0, rcptEditing = null, rcptParties = [], rcptCombo = null, adjCombo = null;
+  var rcptSearchCol = 'all', rcptSearchQ = '';
+  var _rcptOvTimer = null;
+
+  /* â”€â”€ Helpers â”€â”€ */
+  function rcptShowOv(t) {
+    document.getElementById('rcptOvT').textContent = t || 'Processingâ€¦';
+    document.getElementById('rcptOv').classList.add('show');
+    if (_rcptOvTimer) clearTimeout(_rcptOvTimer);
+    _rcptOvTimer = setTimeout(function () { rcptHideOv(); }, 15000);
+  }
+  function rcptHideOv() {
+    if (_rcptOvTimer) { clearTimeout(_rcptOvTimer); _rcptOvTimer = null; }
+    document.getElementById('rcptOv').classList.remove('show');
+  }
+  function rcptOC(v) { var n = Number(v); return n < 0 ? 'rcpt-credit' : n > 0 ? 'rcpt-neg' : 'rcpt-pos'; }
+  function rcptGetCell(row, cls) { var td = row.querySelector('.' + cls); if (!td) return ''; var el = td.querySelector('input') || td.querySelector('select'); return el ? el.value : td.textContent; }
+
+  /* â”€â”€ Load â”€â”€ */
+  function rcptLoad() {
+    rcptPage = 1; rcptSearchCol = 'all'; rcptSearchQ = '';
+    var q = document.getElementById('rcptSrchQ'), c = document.getElementById('rcptSrchCrit');
+    if (q) q.value = ''; if (c) c.value = 'all';
+    rcptLoadPage(1);
+  }
+
+  function rcptLoadPage(page) {
+    rcptPage = page;
+    document.getElementById('rcptCnt').textContent = 'Loadingâ€¦';
+    if (typeof API === 'undefined') { rcptAll = []; rcptTotal = 0; rcptRender(); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        if (r && r.success) { rcptAll = r.data || []; rcptTotal = r.total || 0; rcptPer = r.pageSize || rcptPer; rcptPage = r.page || rcptPage; rcptRender(); }
+        else { rcptAll = []; rcptTotal = 0; rcptRender(); showToast((r && r.message) || 'Load failed', 'error'); }
+      })
+      .withFailureHandler(function (e) { rcptAll = []; rcptTotal = 0; rcptRender(); showToast((e && e.message) || 'Load error', 'error'); })
+      .rcptGetPage({ page: rcptPage, pageSize: rcptPer, searchCol: rcptSearchCol, searchQ: rcptSearchQ });
+  }
+
+  function rcptLoadParties(cb) {
+    if (rcptParties.length) { cb && cb(); return; }
+    try {
+      API.run
+        .withSuccessHandler(function (r) { if (r && r.success) rcptParties = r.data || []; cb && cb(); })
+        .withFailureHandler(function () { cb && cb(); })
+        .rcptGetPartiesForDropdown();
+    } catch (ex) { cb && cb(); }
+  }
+
+  /* â”€â”€ Render â”€â”€ */
+  function rcptRender() {
+    var tb = document.getElementById('rcptTbody'), tot = rcptTotal;
+    document.getElementById('rcptCnt').textContent = tot + ' record' + (tot !== 1 ? 's' : '');
+    if (!rcptAll.length) { tb.innerHTML = '<tr><td colspan="14" class="app-no-data"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db"></i>No records found</td></tr>'; rcptRenderPagination(0); return; }
+    var s = (rcptPage - 1) * rcptPer, rows = '';
+    for (var i = 0; i < rcptAll.length; i++) {
+      var d = rcptAll[i];
+      var isPayment = (d.entryType === 'Payment');
+      var isAdj = (d.entryType === 'Adjustment');
+      var typeBadge = isAdj ? '<span class="rcpt-badge-a"><i class="fas fa-sliders" style="font-size:9px;margin-right:3px"></i>Adjustment</span>'
+        : isPayment ? '<span class="rcpt-badge-p"><i class="fas fa-arrow-up" style="font-size:9px;margin-right:3px"></i>Payment</span>'
+          : '<span class="rcpt-badge-r"><i class="fas fa-arrow-down" style="font-size:9px;margin-right:3px"></i>Receipt</span>';
+      rows += '<tr id="rcpt-row-' + _htmlEsc(d.receiptId) + '">'
+        + '<td><input type="checkbox" class="rcpt-chk" value="' + _htmlEsc(d.receiptId) + '" onchange="rcptChkChange()"/></td>'
+        + '<td>' + (s + i + 1) + '</td>'
+        + '<td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">' + _htmlEsc(d.receiptId) + '</code></td>'
+        + '<td>' + typeBadge + '</td>'
+        + '<td class="rc-cd">' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyId) + '</td>'
+        + '<td class="rc-cpn">' + _htmlEsc(d.partyName) + '</td>'
+        + '<td class="rc-ca">' + _htmlEsc(d.area) + '</td>'
+        + '<td class="rc-crr">' + _htmlEsc(d.rupeesReceived) + '</td>'
+        + '<td class="rc-cgr">' + _htmlEsc(d.gramsReceived) + '</td>'
+        + '<td><span class="' + rcptOC(d.outstandingRupees) + '">' + _htmlEsc(d.outstandingRupees) + '</span></td>'
+        + '<td><span class="' + rcptOC(d.outstandingGrams) + '">' + _htmlEsc(d.outstandingGrams) + '</span></td>'
+        + '<td class="rc-cn">' + _htmlEsc(d.note) + '</td>'
+        + '<td style="min-width:160px">'
+        + '<div id="rcpt-v-' + _htmlEsc(d.receiptId) + '" style="display:flex;gap:5px">'
+        + '<button class="app-ab app-edit edit-only" onclick="rcptStartEdit(\'' + _htmlEsc(d.receiptId) + '\')"><i class="fas fa-pen"></i> Edit</button>'
+        + '<button class="app-ab app-del edit-only" onclick="rcptConfirmDel(\'' + _htmlEsc(d.receiptId) + '\')"><i class="fas fa-trash"></i> Delete</button>'
+        + '</div>'
+        + '<div id="rcpt-ea-' + _htmlEsc(d.receiptId) + '" style="display:none;gap:5px">'
+        + '<button class="app-ab app-upd" onclick="rcptDoUpdate(\'' + _htmlEsc(d.receiptId) + '\')"><i class="fas fa-check"></i> Update</button>'
+        + '<button class="app-ab app-can" onclick="rcptCancelEdit(\'' + _htmlEsc(d.receiptId) + '\')"><i class="fas fa-xmark"></i> Cancel</button>'
+        + '</div>'
+        + '</td></tr>';
+    }
+    tb.innerHTML = rows; rcptRenderPagination(rcptTotal);
+  }
+
+  /* â”€â”€ Pagination â”€â”€ */
+  function rcptRenderPagination(tot) {
+    if (typeof UI !== 'undefined') UI.renderPagination(tot, rcptPage, rcptPer, 'rcptPag', 'rcptGoPage');
+    else document.getElementById('rcptPag').innerHTML = '';
+  }
+  function rcptGoPage(p) { var pages = Math.ceil(rcptTotal / rcptPer) || 1; p = Math.max(1, Math.min(p, pages)); if (p === rcptPage) return; rcptLoadPage(p); }
+
+  /* â”€â”€ Search â”€â”€ */
+  function rcptSearch() {
+    rcptSearchQ = document.getElementById('rcptSrchQ').value.trim().toLowerCase();
+    rcptSearchCol = document.getElementById('rcptSrchCrit').value;
+    rcptLoadPage(1);
+  }
+  function rcptClear() {
+    document.getElementById('rcptSrchQ').value = '';
+    document.getElementById('rcptSrchCrit').value = 'all';
+    var cb = document.getElementById('rcptClearBtn'); if (cb) cb.style.display = 'none';
+    rcptSearchQ = ''; rcptSearchCol = 'all';
+    rcptLoadPage(1);
+  }
+  function rcptToggleClear() {
+    var v = document.getElementById('rcptSrchQ').value;
+    var cb = document.getElementById('rcptClearBtn');
+    if (cb) cb.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  /* â”€â”€ Add Entry Modal â”€â”€ */
+  var rcptCurrentType = 'Receipt';
+
+  function rcptOpenAdd() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    rcptCurrentType = 'Receipt';
+    rcptLoadParties(function () {
+      var b = ''
+        + '<div class="app-fg"><label class="app-label">Entry Type *</label>'
+        + '<div class="rcpt-type-row">'
+        + '<button type="button" class="rcpt-type-btn active" id="rfTypeRcpt" onclick="rcptSetType(\'Receipt\')"><i class="fas fa-arrow-down"></i> Receipt (from Customer)</button>'
+        + '<button type="button" class="rcpt-type-btn" id="rfTypePay" onclick="rcptSetType(\'Payment\')"><i class="fas fa-arrow-up"></i> Payment (to Supplier)</button>'
+        + '</div></div>'
+        + '<div class="app-fg"><label class="app-label" id="rfIdLabel">Receipt ID</label><div class="app-id-row"><input class="app-field" id="rfId" readonly placeholder="Click Generate"/><button class="btn btn-secondary btn-sm" onclick="rcptGenId()"><i class="fas fa-rotate-right"></i> Generate</button></div></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Date *</label><input class="app-field" id="rfDate" type="date"/></div>'
+        + '<div class="app-fg"><label class="app-label">Party Name *</label><div id="rfPNWrap"></div></div></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Party ID</label><input class="app-field" id="rfPID" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="rfArea" readonly/></div></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label" id="rfRRLabel">Rupees Received â‚¹</label><input class="app-field" id="rfRR" type="number" step="0.01" placeholder="0.00"/></div>'
+        + '<div class="app-fg"><label class="app-label" id="rfGRLabel">Grams Received (g)</label><input class="app-field" id="rfGR" type="number" step="0.001" placeholder="0.000"/></div></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Outstanding â‚¹ After (Auto)</label><input class="app-field" id="rfOutR" readonly placeholder="Select party first"/></div>'
+        + '<div class="app-fg"><label class="app-label">Outstanding g After (Auto)</label><input class="app-field" id="rfOutG" readonly placeholder="Select party first"/></div></div>'
+        + '<div class="app-fg"><label class="app-label">Note</label><input class="app-field" id="rfNote" type="text" placeholder="Optional"/></div>';
+      openModal('Add New Entry', b, '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button><button class="btn btn-primary" onclick="rcptSaveNew()"><i class="fas fa-save"></i> Save</button>');
+      var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+      document.getElementById('rfDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+      /* build searchable party combobox */
+      var wrap = document.getElementById('rfPNWrap');
+      if (wrap) {
+        rcptCombo = makePartyCombo({
+          wrap: wrap,
+          inputId: 'rfPN',
+          parties: rcptParties,
+          placeholder: 'Type to search partyâ€¦',
+          filter: function(p) {
+            if (rcptCurrentType === 'Receipt') return p.partyType === 'Customer' || p.partyType === 'Both';
+            return p.partyType === 'Supplier' || p.partyType === 'Both';
+          },
+          onSelect: function(p) {
+            document.getElementById('rfPID').value = p ? p.partyId : '';
+            document.getElementById('rfArea').value = p ? p.area : '';
+            if (p) {
+              var rfRR = document.getElementById('rfRR'), rfGR = document.getElementById('rfGR');
+              if (rfRR && !rfRR._liveAttached) { rfRR.addEventListener('input', rcptLiveCalc); rfRR._liveAttached = true; }
+              if (rfGR && !rfGR._liveAttached) { rfGR.addEventListener('input', rcptLiveCalc); rfGR._liveAttached = true; }
+              /* store outstanding on combo for live calc */
+              rcptCombo._curOutR = parseFloat(p.outstandingRupees || 0);
+              rcptCombo._curOutG = parseFloat(p.outstandingGrams || 0);
+              rcptLiveCalc();
+            } else {
+              var outREl = document.getElementById('rfOutR'), outGEl = document.getElementById('rfOutG');
+              if (outREl) outREl.value = ''; if (outGEl) outGEl.value = '';
+            }
+          }
+        });
+      }
+      rcptGenId();
+    });
+  }
+
+  function rcptSetType(type) {
+    rcptCurrentType = type;
+    var isR = (type === 'Receipt');
+    document.getElementById('rfTypeRcpt').classList.toggle('active', isR);
+    document.getElementById('rfTypePay').classList.toggle('active', !isR);
+    if (document.getElementById('rfIdLabel')) document.getElementById('rfIdLabel').textContent = isR ? 'Receipt ID' : 'Payment ID';
+    if (document.getElementById('rfRRLabel')) document.getElementById('rfRRLabel').textContent = isR ? 'Rupees Received â‚¹' : 'Rupees Paid â‚¹';
+    if (document.getElementById('rfGRLabel')) document.getElementById('rfGRLabel').textContent = isR ? 'Grams Received (g)' : 'Grams Paid (g)';
+    /* update combobox filter for party type */
+    if (rcptCombo) {
+      rcptCombo.clearValue();
+      rcptCombo.setFilter(function(p) {
+        if (type === 'Receipt') return p.partyType === 'Customer' || p.partyType === 'Both';
+        return p.partyType === 'Supplier' || p.partyType === 'Both';
+      });
+    }
+    document.getElementById('rfPID').value = '';
+    document.getElementById('rfArea').value = '';
+    rcptGenId();
+  }
+
+  function rcptRebuildPartyDropdown() { /* filter now handled live by combobox setFilter */ }
+
+  function rcptFetchParty() { /* now handled by combobox onSelect */ }
+
+  function rcptLiveCalc() {
+    var outREl = document.getElementById('rfOutR'), outGEl = document.getElementById('rfOutG');
+    if (!rcptCombo || !rcptCombo.getSelected()) { if (outREl) outREl.value = ''; if (outGEl) outGEl.value = ''; return; }
+    var curR = rcptCombo._curOutR || 0;
+    var curG = rcptCombo._curOutG || 0;
+    var entR = parseFloat((document.getElementById('rfRR') || {}).value) || 0;
+    var entG = parseFloat((document.getElementById('rfGR') || {}).value) || 0;
+    var remR = Math.round((curR - entR) * 100) / 100;
+    var remG = Math.round((curG - entG) * 1000) / 1000;
+    if (outREl) outREl.value = remR.toFixed(2);
+    if (outGEl) outGEl.value = remG.toFixed(3);
+  }
+
+  function rcptGenId() {
+    var prefix = (rcptCurrentType === 'Payment') ? 'PY' : 'RC';
+    document.getElementById('rfId').value = prefix + Math.floor(10000 + Math.random() * 90000);
+  }
+
+  function rcptSaveNew() {
+    var id = document.getElementById('rfId').value.trim();
+    var dt = document.getElementById('rfDate').value;
+    var pn = rcptCombo ? rcptCombo.getValue() : '';
+    var rr = document.getElementById('rfRR').value;
+    var gr = document.getElementById('rfGR').value;
+    if (!id) { showToast('ID is required', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party is required', 'warning'); return; }
+    if (!rcptCombo || !rcptCombo.getSelected()) { showToast('Please select a party from the dropdown list', 'warning'); return; }
+    if (!rr && !gr) { showToast('Enter Rupees or Grams amount', 'warning'); return; }
+    closeModal(); rcptShowOv('Savingâ€¦');
+    API.run
+      .withSuccessHandler(function (res) { rcptHideOv(); if (res && res.success) { showToast(rcptCurrentType + ' Added', 'success'); rcptLoad(); } else showToast((res && res.message) || 'Save failed', 'error'); })
+      .withFailureHandler(function (e) { rcptHideOv(); showToast(e.message, 'error'); })
+      .rcptAddReceipt({
+        receiptId: id, date: dt,
+        partyId: document.getElementById('rfPID').value,
+        partyName: pn, area: document.getElementById('rfArea').value,
+        rupeesReceived: rr || 0, gramsReceived: gr || 0,
+        note: document.getElementById('rfNote').value.trim(),
+        entryType: rcptCurrentType
+      });
+  }
+
+  /* â”€â”€ Inline Edit â”€â”€ */
+  function rcptStartEdit(id) {
+    if (rcptEditing && rcptEditing !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; }
+    rcptEditing = id;
+    var d = rcptAll.find(function (x) { return x.receiptId === id; }); if (!d) return;
+    rcptLoadParties(function () {
+      rcptShowOv('Loadingâ€¦');
+      setTimeout(function () {
+        var row = document.getElementById('rcpt-row-' + id); if (!row) { rcptHideOv(); return; }
+        row.classList.add('app-editing');
+        var tdD = row.querySelector('.rc-cd'); tdD.setAttribute('data-orig', tdD.innerHTML); tdD.innerHTML = '<input class="app-edit-inp" type="date" value="' + _htmlEsc(d.dateRaw) + '"/>';
+        var opts = rcptParties.map(function (p) { return '<option value="' + _htmlEsc(p.partyName) + '" data-id="' + _htmlEsc(p.partyId) + '" data-area="' + _htmlEsc(p.area) + '"' + (p.partyName === d.partyName ? ' selected' : '') + '>' + _htmlEsc(p.partyName) + '</option>'; }).join('');
+        var tdP = row.querySelector('.rc-cpn'); tdP.setAttribute('data-orig', tdP.innerHTML); tdP.innerHTML = '<select class="app-edit-inp" onchange="rcptEditPC(\'' + id + '\',this)"><option value="">Selectâ€¦</option>' + opts + '</select>';
+        var tdA = row.querySelector('.rc-ca'); tdA.setAttribute('data-orig', tdA.innerHTML);
+        [['rc-crr', d.rupeesReceived, 'number'], ['rc-cgr', d.gramsReceived, 'number'], ['rc-cn', d.note, 'text']].forEach(function (x) {
+          var td = row.querySelector('.' + x[0]); td.setAttribute('data-orig', td.innerHTML); td.innerHTML = '<input class="app-edit-inp" type="' + x[2] + '" value="' + _htmlEsc(String(x[1] || '')) + '"/>';
+        });
+        document.getElementById('rcpt-v-' + id).style.display = 'none';
+        document.getElementById('rcpt-ea-' + id).style.display = 'flex';
+        rcptHideOv();
+      }, 150);
+    });
+  }
+
+  function rcptEditPC(rowId, sel) {
+    var opt = sel.options[sel.selectedIndex];
+    var row = document.getElementById('rcpt-row-' + rowId);
+    if (row) { var td = row.querySelector('.rc-ca'); td.textContent = opt ? opt.getAttribute('data-area') : ''; }
+  }
+
+  function rcptCancelEdit(id) {
+    var row = document.getElementById('rcpt-row-' + id); if (!row) return;
+    row.classList.remove('app-editing');
+    ['rc-cd', 'rc-cpn', 'rc-ca', 'rc-crr', 'rc-cgr', 'rc-cn'].forEach(function (c) {
+      var td = row.querySelector('.' + c); if (td && td.getAttribute('data-orig') !== null) td.innerHTML = td.getAttribute('data-orig');
+    });
+    document.getElementById('rcpt-v-' + id).style.display = 'flex';
+    document.getElementById('rcpt-ea-' + id).style.display = 'none';
+    rcptEditing = null;
+  }
+
+  function rcptDoUpdate(id) {
+    var row = document.getElementById('rcpt-row-' + id); if (!row) return;
+    var dt = rcptGetCell(row, 'rc-cd'), pn = rcptGetCell(row, 'rc-cpn'), rr = rcptGetCell(row, 'rc-crr'), gr = rcptGetCell(row, 'rc-cgr');
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!rr && !gr) { showToast('Enter Rupees or Grams received', 'warning'); return; }
+    var party = rcptParties.find(function (p) { return p.partyName === pn; }) || {};
+    rcptShowOv('Updatingâ€¦');
+    API.run
+      .withSuccessHandler(function (res) { rcptHideOv(); if (res && res.success) { showToast('Receipt Updated', 'success'); rcptEditing = null; rcptLoadPage(rcptPage); } else showToast((res && res.message) || 'Update failed', 'error'); })
+      .withFailureHandler(function (e) { rcptHideOv(); showToast(e.message, 'error'); })
+      .rcptUpdateReceipt({
+        receiptId: id, date: dt,
+        partyId: party.partyId || '', partyName: pn,
+        area: party.area || rcptGetCell(row, 'rc-ca'),
+        rupeesReceived: rr || 0, gramsReceived: gr || 0,
+        note: rcptGetCell(row, 'rc-cn')
+      });
+  }
+
+  function rcptConfirmDel(id) {
+    var d = rcptAll.find(function (x) { return x.receiptId === id; });
+    confirmDialog('Delete receipt <strong>' + _htmlEsc(id) + '</strong>' + (d ? ' (' + _htmlEsc(d.partyName) + ')?' : '?'), function () {
+      rcptShowOv('Deletingâ€¦');
+      API.run
+        .withSuccessHandler(function (res) { rcptHideOv(); if (res && res.success) { showToast('Receipt Deleted', 'success'); rcptLoad(); } else showToast((res && res.message) || 'Delete failed', 'error'); })
+        .withFailureHandler(function (e) { rcptHideOv(); showToast(e.message, 'error'); })
+        .rcptDeleteReceipt(id);
+    });
+  }
+
+  APP.reload = rcptLoad;
+  APP.openAdd = { payment: rcptOpenAdd };
+
+  /* â”€â”€ Checkbox â”€â”€ */
+  function rcptToggleAll(cb) {
+    document.querySelectorAll('.rcpt-chk').forEach(function (c) { c.checked = cb.checked; });
+    rcptChkChange();
+  }
+  function rcptChkChange() {
+    var sel = document.querySelectorAll('.rcpt-chk:checked').length;
+    var row = document.getElementById('rcptDelRow');
+    var sc = document.getElementById('rcptSelCount');
+    if (row) row.style.display = sel > 0 ? 'flex' : 'none';
+    if (sc) sc.textContent = sel;
+  }
+  function rcptDeleteSelected() {
+    var ids = [];
+    document.querySelectorAll('.rcpt-chk:checked').forEach(function (c) { ids.push(c.value); });
+    if (!ids.length) { showToast('No entries selected', 'warning'); return; }
+    confirmDialog('Delete <strong>' + ids.length + '</strong> selected entry(ies)? Outstanding balances will be restored.', function () {
+      rcptShowOv('Deleting ' + ids.length + ' entry(ies)â€¦');
+      API.run
+        .withSuccessHandler(function (res) { rcptHideOv(); showToast(res.message || 'Done', 'success'); rcptLoad(); })
+        .withFailureHandler(function (e) { rcptHideOv(); showToast(e.message, 'error'); })
+        .rcptBulkDelete(ids);
+    });
+  }
+
+  /* â”€â”€ Print â”€â”€ */
+  function rcptPrint() {
+    if (!rcptAll || !rcptAll.length) { showToast('No data to print', 'warning'); return; }
+    var totalAmt = 0, totalG = 0;
+    var rows = rcptAll.map(function (d, i) {
+      totalAmt += parseFloat(d.rupeesReceived) || 0;
+      totalG += parseFloat(d.gramsReceived) || 0;
+      var typeLabel = d.entryType === 'Receipt' ? '<span class="gk-badge badge-rcpt">Receipt</span>'
+        : d.entryType === 'Payment' ? '<span class="gk-badge badge-pay">Payment</span>'
+          : '<span class="gk-badge badge-adj">Adjustment</span>';
+      return '<tr><td>' + (i + 1) + '</td>'
+        + '<td><code>' + _htmlEsc(d.receiptId || '') + '</code></td>'
+        + '<td>' + typeLabel + '</td>'
+        + '<td>' + _htmlEsc(d.date) + '</td>'
+        + '<td>' + _htmlEsc(d.partyName) + '</td>'
+        + '<td>' + _htmlEsc(d.area) + '</td>'
+        + '<td class="num">&#8377; ' + (parseFloat(d.rupeesReceived) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>'
+        + '<td class="num">' + (parseFloat(d.gramsReceived) || 0).toFixed(3) + ' g</td>'
+        + '<td>' + _htmlEsc(d.note || '') + '</td></tr>';
+    }).join('');
+    var foot = '<tr><td colspan="6"><strong>Totals (' + rcptAll.length + ' records)</strong></td>'
+      + '<td class="num"><strong>&#8377; ' + totalAmt.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td>'
+      + '<td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td>'
+      + '<td></td></tr>';
+    var meta = (rcptSearchQ ? 'Filter: \u201c' + _htmlEsc(rcptSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + rcptPage;
+    var tbl = '<table><thead><tr><th>#</th><th>ID</th><th>Type</th><th>Date</th><th>Party</th><th>Area</th>'
+      + '<th class="num">Amount \u20b9</th><th class="num">Amount g</th><th>Note</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
+    mobileSafePrint(_gkPrintWrap('Receipts & Payments Register', meta, tbl), 'Receipts & Payments \u2014 GajKesari Ornaments');
+  }
+
+  rcptLoad();
+
+  /* â”€â”€ Adjust Outstanding Modal â”€â”€ */
+  function rcptOpenAdjust() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
+    rcptLoadParties(function () {
+      var b = ''
+        + '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#92400e">'
+        + '<i class="fas fa-circle-info" style="margin-right:6px"></i>'
+        + 'Select a party and enter their <strong>new outstanding</strong> values. The system will record this adjustment automatically.'
+        + '</div>'
+        + '<div class="app-fg"><label class="app-label">Party Name *</label><div id="adjPNWrap"></div></div>'
+        + '<div id="adjOutCard" style="display:none"></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">New Outstanding â‚¹</label><input class="app-field" id="adjNewR" type="number" step="0.01" placeholder="e.g. 30000" oninput="rcptAdjPreview()"/></div>'
+        + '<div class="app-fg"><label class="app-label">New Outstanding g</label><input class="app-field" id="adjNewG" type="number" step="0.001" placeholder="e.g. 20.000" oninput="rcptAdjPreview()"/></div></div>'
+        + '<div id="adjPreview" style="display:none"></div>'
+        + '<div class="app-fg" style="margin-top:8px"><label class="app-label">Note (optional)</label><input class="app-field" id="adjNote" type="text" placeholder="Reason for adjustment"/></div>'
+        + '<div class="app-fg"><label class="app-label">Date *</label><input class="app-field" id="adjDate" type="date"/></div>';
+      openModal('Adjust Outstanding Balance', b, '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button><button class="btn btn-primary" onclick="rcptSaveAdjust()" style="background:#f59e0b;border-color:#f59e0b"><i class="fas fa-check"></i> Save Adjustment</button>');
+      var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+      document.getElementById('adjDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+      /* build searchable combobox for adjust modal */
+      var wrap = document.getElementById('adjPNWrap');
+      if (wrap) {
+        adjCombo = makePartyCombo({
+          wrap: wrap,
+          inputId: 'adjPN',
+          parties: rcptParties,
+          placeholder: 'Type to search partyâ€¦',
+          onSelect: function(p) {
+            if (!p) { document.getElementById('adjOutCard').style.display = 'none'; return; }
+            var curR = parseFloat(p.outstandingRupees || 0);
+            var curG = parseFloat(p.outstandingGrams || 0);
+            var isCredit = (curR < 0 || curG < 0);
+            var card = document.getElementById('adjOutCard');
+            card.style.display = 'block';
+            card.innerHTML = '<div class="rcpt-out-card' + (isCredit ? ' credit' : '') + '">'
+              + '<div><div class="rcpt-out-card-lbl">Current Outstanding â‚¹</div><div class="rcpt-out-card-val' + (curR < 0 ? ' credit' : '') + '">â‚¹' + curR.toFixed(2) + (curR < 0 ? ' <span style="font-size:11px">(Credit)</span>' : '') + '</div></div>'
+              + '<div class="rcpt-out-sep"></div>'
+              + '<div><div class="rcpt-out-card-lbl">Current Outstanding g</div><div class="rcpt-out-card-val' + (curG < 0 ? ' credit' : '') + '">' + curG.toFixed(3) + 'g' + (curG < 0 ? ' <span style="font-size:11px">(Credit)</span>' : '') + '</div></div>'
+              + '</div>';
+            var rEl = document.getElementById('adjNewR'), gEl = document.getElementById('adjNewG');
+            if (rEl && !rEl.value) rEl.value = curR.toFixed(2);
+            if (gEl && !gEl.value) gEl.value = curG.toFixed(3);
+            rcptAdjPreview();
+          }
+        });
+      }
+    });
+  }
+
+  function rcptLoadAdjustParty() { /* now handled by adjCombo onSelect */ }
+
+  function rcptAdjPreview() {
+    var selParty = adjCombo ? adjCombo.getSelected() : null;
+    var prev = document.getElementById('adjPreview');
+    if (!prev || !selParty) { if (prev) prev.style.display = 'none'; return; }
+    var curR = parseFloat(selParty.outstandingRupees || 0);
+    var curG = parseFloat(selParty.outstandingGrams || 0);
+    var newREl = document.getElementById('adjNewR'), newGEl = document.getElementById('adjNewG');
+    if (!newREl || !newGEl) { prev.style.display = 'none'; return; }
+    var newR = newREl.value !== '' ? parseFloat(newREl.value) : curR;
+    var newG = newGEl.value !== '' ? parseFloat(newGEl.value) : curG;
+    var deltaR = Math.round((curR - newR) * 100) / 100;
+    var deltaG = Math.round((curG - newG) * 1000) / 1000;
+    var rCol = newR < 0 ? '#7c3aed' : newR === 0 ? '#059669' : '#dc2626';
+    var gCol = newG < 0 ? '#7c3aed' : newG === 0 ? '#059669' : '#dc2626';
+    var rLbl = newR < 0 ? 'Credit' : newR === 0 ? 'Cleared' : 'Still Owed';
+    var gLbl = newG < 0 ? 'Credit' : newG === 0 ? 'Cleared' : 'Still Owed';
+    prev.style.display = 'block';
+    prev.innerHTML = '<div class="rcpt-preview-card">'
+      + '<div><div class="rcpt-preview-lbl">New â‚¹ Outstanding</div><div class="rcpt-preview-val" style="color:' + rCol + '">â‚¹' + newR.toFixed(2) + ' <span style="font-size:11px;font-weight:400">(' + rLbl + ')</span></div></div>'
+      + '<div><div class="rcpt-preview-lbl">New g Outstanding</div><div class="rcpt-preview-val" style="color:' + gCol + '">' + newG.toFixed(3) + 'g <span style="font-size:11px;font-weight:400">(' + gLbl + ')</span></div></div>'
+      + '<div><div class="rcpt-preview-lbl">â‚¹ Change</div><div class="rcpt-preview-val" style="color:' + (deltaR > 0 ? '#059669' : deltaR < 0 ? '#dc2626' : '#374151') + '">' + (deltaR > 0 ? '-' : deltaR < 0 ? '+' : '') + Math.abs(deltaR).toFixed(2) + '</div></div>'
+      + '<div><div class="rcpt-preview-lbl">g Change</div><div class="rcpt-preview-val" style="color:' + (deltaG > 0 ? '#059669' : deltaG < 0 ? '#dc2626' : '#374151') + '">' + (deltaG > 0 ? '-' : deltaG < 0 ? '+' : '') + Math.abs(deltaG).toFixed(3) + 'g</div></div>'
+      + '</div>';
+  }
+
+  function rcptSaveAdjust() {
+    var pn = adjCombo ? adjCombo.getValue() : '';
+    var dt = document.getElementById('adjDate').value;
+    var newREl = document.getElementById('adjNewR'), newGEl = document.getElementById('adjNewG');
+    if (!pn) { showToast('Party is required', 'warning'); return; }
+    if (!adjCombo || !adjCombo.getSelected()) { showToast('Please select a party from the dropdown list', 'warning'); return; }
+    if (!dt) { showToast('Date is required', 'warning'); return; }
+    if ((!newREl || newREl.value === '') && (!newGEl || newGEl.value === '')) {
+      showToast('Enter at least one new outstanding value', 'warning'); return;
+    }
+    closeModal(); rcptShowOv('Saving adjustmentâ€¦');
+    API.run
+      .withSuccessHandler(function (res) {
+        rcptHideOv();
+        if (res && res.success) { showToast(res.message || 'Adjustment saved', 'success'); rcptParties = []; rcptLoad(); }
+        else showToast((res && res.message) || 'Save failed', 'error');
+      })
+      .withFailureHandler(function (e) { rcptHideOv(); showToast(e.message, 'error'); })
+      .rcptAdjustOutstanding({
+        partyName: pn,
+        date: dt,
+        newRupees: newREl && newREl.value !== '' ? newREl.value : null,
+        newGrams: newGEl && newGEl.value !== '' ? newGEl.value : null,
+        note: (document.getElementById('adjNote') || {}).value || 'Outstanding Adjustment'
+      });
+  }
+</script>

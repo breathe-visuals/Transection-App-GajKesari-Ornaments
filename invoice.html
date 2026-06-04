@@ -1,0 +1,1513 @@
+<style>
+  /* â”€â”€ Invoice / Estimates page styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .inv-tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .inv-tab-btn {
+    padding: 8px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .inv-tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
+  }
+
+  .inv-tab-btn:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .inv-list-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .inv-list-w {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .inv-list-wh {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .il-ab {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--transition);
+    font-family: var(--font-main);
+  }
+
+  .il-open {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+
+  .il-open:hover {
+    background: #bae6fd;
+  }
+
+  .il-print {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .il-print:hover {
+    background: #bbf7d0;
+  }
+
+  .il-del {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .il-del:hover {
+    background: #fecaca;
+  }
+
+  .inv-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 16px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .inv-back-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  #invFormView .app-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0;
+    align-items: start;
+  }
+
+  .inv-panel {
+    border-right: 1px solid var(--border);
+    min-width: 0;
+  }
+
+  .inv-preview {
+    background: var(--bg);
+    min-width: 0;
+  }
+
+  .inv-ph {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .inv-ph i {
+    color: var(--accent);
+  }
+
+  .inv-body {
+    padding: 18px;
+  }
+
+  .inv-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .inv-logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--accent), #0891b2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .inv-biz-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .inv-biz-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .inv-items-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+  }
+
+  .inv-items-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .inv-items-tbl th {
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 600;
+    padding: 8px 7px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .inv-items-tbl td {
+    padding: 5px 5px;
+    border-bottom: 1px solid var(--bg);
+    vertical-align: middle;
+  }
+
+  .inv-items-tbl input {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: var(--font-main);
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .inv-items-tbl input:focus {
+    border-color: var(--accent);
+  }
+
+  .inv-total {
+    text-align: right;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    padding: 5px 8px;
+  }
+
+  .inv-tbl-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .inv-add-btn {
+    padding: 6px 13px;
+    background: var(--accent-glow);
+    border: 1.5px dashed var(--accent);
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-family: var(--font-main);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all var(--transition);
+  }
+
+  .inv-add-btn:hover {
+    background: rgba(13, 148, 136, .28);
+  }
+
+  .inv-item-del {
+    background: var(--danger);
+    border: none;
+    border-radius: 5px;
+    color: var(--white);
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all var(--transition);
+  }
+
+  .inv-item-del:hover {
+    background: #dc2626;
+  }
+
+  .inv-summary {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  .inv-sum-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid var(--bg);
+  }
+
+  .inv-sum-row:last-child {
+    border-bottom: none;
+  }
+
+  .inv-total-row {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    border-top: 2px solid var(--border);
+    padding-top: 8px;
+    margin-top: 4px;
+    border-bottom: none;
+  }
+
+  .inv-gst-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--bg);
+  }
+
+  .inv-toggle {
+    width: 34px;
+    height: 18px;
+    border-radius: 9px;
+    background: #d1d5db;
+    border: none;
+    position: relative;
+    cursor: pointer;
+    transition: background var(--transition);
+    flex-shrink: 0;
+  }
+
+  .inv-toggle::after {
+    content: '';
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--white);
+    top: 2.5px;
+    left: 2.5px;
+    transition: left var(--transition);
+  }
+
+  .inv-toggle.on {
+    background: var(--accent);
+  }
+
+  .inv-toggle.on::after {
+    left: 18.5px;
+  }
+
+  .inv-act-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .inv-preview-inner {
+    padding: 18px;
+  }
+
+  .inv-prev-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .inv-prev-biz-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .inv-prev-biz-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .inv-prev-badge {
+    text-align: right;
+  }
+
+  .inv-prev-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .inv-prev-num,
+  .inv-prev-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .inv-prev-cust {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .inv-prev-cust-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ca3af;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+  }
+
+  .inv-prev-cust-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 3px;
+  }
+
+  .inv-prev-cust-addr {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .inv-prev-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    margin-bottom: 12px;
+  }
+
+  .inv-prev-tbl th {
+    background: var(--accent);
+    color: var(--white);
+    padding: 7px 8px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .inv-prev-tbl td {
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .inv-pr {
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .inv-prev-sum {
+    min-width: 230px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    background: var(--white);
+  }
+
+  .inv-ps-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    color: var(--text);
+    gap: 12px;
+    border-bottom: 1px solid var(--bg);
+  }
+
+  .inv-ps-row:last-child {
+    border-bottom: none;
+  }
+
+  .inv-ps-total {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    border-top: 2px solid var(--accent);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-bottom: none;
+  }
+
+  .inv-prev-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 10px;
+    color: #9ca3af;
+  }
+
+  @media (max-width: 1000px) {
+    #invFormView .app-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .inv-panel {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Enhance structure for tablet/mobile forms */
+    .inv-body {
+      padding: 24px 16px;
+    }
+
+    .app-fg {
+      margin-bottom: 16px;
+    }
+
+    .inv-summary {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 2px dashed var(--border);
+    }
+
+    .inv-logo-wrap {
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .inv-preview {
+      margin-top: 24px;
+      border-top: 2px dashed var(--border);
+      padding-top: 10px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .inv-tab-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .inv-tab-btn {
+      min-height: 40px;
+      padding: 8px 4px;
+      font-size: 11.5px;
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .inv-act-btns {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .inv-act-btns .btn {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+      margin: 0;
+      font-size: 12px;
+      padding: 8px 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .inv-list-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* Touch-friendly table inputs on mobile */
+    .inv-items-tbl input {
+      min-height: 44px;
+      font-size: 15px;
+      padding: 8px 10px;
+    }
+
+    .inv-tbl-foot {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .inv-add-btn {
+      min-height: 44px;
+      padding: 8px 20px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 0;
+    }
+
+    .inv-item-del {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .inv-items-tbl th {
+      padding: 12px 10px;
+      font-size: 12px;
+    }
+
+    .inv-items-tbl td {
+      padding: 8px 6px;
+    }
+  }
+</style>
+
+
+<!-- LIST VIEW -->
+<div id="invListView">
+
+  <!-- Tab Bar (inside list view only) -->
+  <div class="inv-tab-bar">
+    <button class="inv-tab-btn active" id="tabList" onclick="invShowList()"><i class="fas fa-list"></i> Saved
+      Estimates</button>
+    <button class="inv-tab-btn" id="tabForm" onclick="invShowForm(null)"><i class="fas fa-plus"></i> New
+      Estimate</button>
+  </div>
+
+  <div class="app-header">
+    <div class="app-title"><i class="fas fa-file-invoice" style="color:var(--accent);margin-right:8px"></i>Saved
+      Estimates</div>
+    <div class="app-subtitle">View, edit and print all saved estimates</div>
+  </div>
+
+  <div class="app-bar">
+    <!-- Search bar -->
+    <div class="app-bar-search">
+      <div class="app-search-wrap">
+        <i class="fas fa-search app-search-icon"></i>
+        <input class="app-search-inp" id="invSrchQ" type="text" placeholder="Search by ID, party or dateâ€¦"
+          onkeydown="if(event.key==='Enter')invSearchList()" oninput="invToggleClear()" />
+        <button class="app-search-clear" id="invSrchClearBtn" onclick="invClearSearch()" title="Clear"
+          style="display:none"><i class="fas fa-xmark"></i></button>
+        <button class="app-search-btn" onclick="invSearchList()" title="Search"><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+    <div class="app-bar-delete" id="invDelRow" style="display:none">
+      <button class="btn btn-danger" onclick="invDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span
+          id="invSelCount">0</span>)</button>
+    </div>
+  </div>
+  <div class="inv-list-w">
+    <div class="inv-list-wh">
+      <span style="font-size:14px;font-weight:600;color:#1a1d23"><i class="fas fa-table"
+          style="color:var(--accent);margin-right:6px"></i>Estimate List</span>
+      <span style="font-size:12px;color:#6b7280" id="invListCnt">Loadingâ€¦</span>
+    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table id="invListTbl" class="app-table">
+        <thead>
+          <tr>
+            <th style="width:36px"><input type="checkbox" id="invSelAll" onchange="invToggleAll(this)"
+                title="Select all" /></th>
+            <th>#</th>
+            <th>Estimate ID</th>
+            <th>Date</th>
+            <th>Party</th>
+            <th>Grand Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="invListBody"></tbody>
+      </table>
+    </div>
+    <div class="app-pag" id="invPag"></div>
+  </div>
+</div>
+
+<!-- FORM VIEW -->
+<div id="invFormView" style="display:none">
+  <button class="inv-back-btn" onclick="invShowList()"><i class="fas fa-arrow-left"></i> Back to Saved
+    Estimates</button>
+  <div style="margin-bottom:20px">
+    <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:#1a1d23"><i
+        class="fas fa-file-invoice" style="color:var(--accent);margin-right:8px"></i><span id="invFormTitle">New
+        Estimate</span></div>
+    <div style="font-size:13px;color:#6b7280;margin-top:3px">Create and print customer estimates</div>
+  </div>
+
+  <div class="app-wrap">
+
+    <!-- LEFT: FORM PANEL -->
+    <div class="inv-panel">
+      <div class="inv-ph"><i class="fas fa-pen-to-square"></i> Estimate Details</div>
+      <div class="inv-body">
+
+        <!-- Business Info -->
+        <div class="inv-logo-wrap">
+          <div class="inv-logo-icon"><i class="fas fa-gem"></i></div>
+          <div>
+            <div class="inv-biz-name">GajKesari Ornaments</div>
+            <div class="inv-biz-sub">Jewellery Business</div>
+          </div>
+        </div>
+
+        <!-- Estimate Number & Date -->
+        <div class="app-form-grid">
+          <div class="app-fg">
+            <label class="app-label">Estimate Number</label>
+            <input class="app-field" id="invNumber" type="text" placeholder="Auto-generated" readonly />
+          </div>
+          <div class="app-fg">
+            <label class="app-label">Estimate Date</label>
+            <input class="app-field" id="invDate" type="date" />
+          </div>
+        </div>
+
+        <!-- Customer -->
+        <div class="app-fg">
+          <label class="app-label">Customer (Party)</label>
+          <select class="app-field" id="invCustomer" onchange="invFetchCustomer()">
+            <option value="">Select customerâ€¦</option>
+          </select>
+        </div>
+        <div class="app-fg">
+          <label class="app-label">Customer Address / Area</label>
+          <input class="app-field" id="invAddress" type="text" readonly placeholder="Auto-filled from Parties" />
+        </div>
+
+        <!-- Items Table -->
+        <div style="margin-top:4px">
+          <div
+            style="font-size:11.5px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">
+            Estimate Items</div>
+          <div class="inv-items-wrap">
+            <table class="inv-items-tbl">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item Name</th>
+                  <th>Qty</th>
+                  <th>Barcode</th>
+                  <th>Purity</th>
+                  <th>Weight (g)</th>
+                  <th>Rate/10g</th>
+                  <th>Labour</th>
+                  <th>Metal â‚¹</th>
+                  <th>Labour â‚¹</th>
+                  <th>Total â‚¹</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="invItemsBody"></tbody>
+            </table>
+          </div>
+          <div class="inv-tbl-foot">
+            <button class="inv-add-btn" onclick="invAddRow()"><i class="fas fa-plus"></i> Add Item</button>
+            <span style="font-size:12px;color:#9ca3af" id="invRowCount">0 item(s)</span>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="inv-summary">
+          <div class="inv-sum-row"><span>Subtotal</span><span id="invSubtotal">â‚¹ 0.00</span></div>
+          <div class="inv-gst-row">
+            <button class="inv-toggle" id="invGstToggle" onclick="invToggleGst()" title="Toggle GST"></button>
+            <span style="font-size:13px;color:#374151">GST</span>
+            <input id="invGstPct" type="number" min="0" max="100" value="3"
+              style="width:60px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;outline:none"
+              oninput="invCalcTotals()" />
+            <span style="font-size:13px;color:#6b7280">%</span>
+            <span style="margin-left:auto;font-size:13px;font-weight:500;color:#374151" id="invGstAmt">â‚¹ 0.00</span>
+          </div>
+          <div class="inv-sum-row inv-total-row"><span>Grand Total (This Estimate)</span><span id="invGrandTotal">â‚¹
+              0.00</span></div>
+          <div class="inv-sum-row" id="invOutRRow" style="display:none;color:#dc2626">
+            <span>Previous Outstanding â‚¹</span><span id="invOutRDisp">â‚¹ 0.00</span>
+          </div>
+          <div class="inv-sum-row" id="invOutGRow" style="display:none;color:#dc2626">
+            <span>Previous Outstanding (g)</span><span id="invOutGDisp">0.000 g</span>
+          </div>
+          <div class="inv-sum-row" id="invTotalDueRow"
+            style="font-size:15px;font-weight:700;color:var(--accent);border-top:2px solid var(--border);padding-top:10px;margin-top:6px;display:none">
+            <span>ðŸ’° Total Amount Due</span><span id="invTotalDue">â‚¹ 0.00</span>
+          </div>
+          <div class="inv-sum-row" id="invWtDueRow" style="font-weight:700;color:var(--accent);display:none">
+            <span>âš–ï¸ Total Weight Due</span><span id="invWtDue">0.000 g</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="inv-act-btns">
+          <button class="btn btn-primary" onclick="invSave()"><i class="fas fa-save"></i> <span id="invSaveBtnLbl">Save
+              Estimate</span></button>
+          <button class="btn btn-secondary" onclick="invPrint()"><i class="fas fa-print"></i> Print / PDF</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: LIVE PREVIEW -->
+    <div class="inv-preview" id="invPreview">
+      <div class="inv-ph"><i class="fas fa-eye"></i> Live Preview</div>
+      <div class="inv-preview-inner" id="invPreviewInner">
+
+        <div class="inv-prev-hdr">
+          <div class="inv-prev-biz">
+            <div class="inv-prev-biz-name">GajKesari Ornaments</div>
+            <div class="inv-prev-biz-sub">Fine Jewellery &amp; Ornaments</div>
+          </div>
+          <div class="inv-prev-badge">
+            <div class="inv-prev-title">ESTIMATE</div>
+            <div class="inv-prev-num" id="invPrevNum"># â€”</div>
+            <div class="inv-prev-date" id="invPrevDate">Date: â€”</div>
+          </div>
+        </div>
+
+        <div class="inv-prev-cust">
+          <div class="inv-prev-cust-label">Bill To</div>
+          <div class="inv-prev-cust-name" id="invPrevCust">â€”</div>
+          <div class="inv-prev-cust-addr" id="invPrevAddr">â€”</div>
+        </div>
+
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">
+          <table class="inv-prev-tbl" style="margin-bottom:0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Barcode</th>
+                <th>Purity</th>
+                <th>Wt(g)</th>
+                <th>Rate</th>
+                <th>Labour</th>
+                <th class="inv-pr">Total â‚¹</th>
+              </tr>
+            </thead>
+            <tbody id="invPrevItems">
+              <tr>
+                <td colspan="9" style="text-align:center;padding:20px;color:#9ca3af">No items added</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end">
+          <div class="inv-prev-sum">
+            <div class="inv-ps-row"><span>Subtotal</span><span id="invPrevSub">â‚¹ 0.00</span></div>
+            <div class="inv-ps-row" id="invPrevGstRow" style="display:none"><span id="invPrevGstLbl">GST
+                (3%)</span><span id="invPrevGstAmt">â‚¹ 0.00</span></div>
+            <div class="inv-ps-row inv-ps-total"><span>Grand Total (This Estimate)</span><span id="invPrevTotal">â‚¹
+                0.00</span></div>
+            <div class="inv-ps-row" id="invPrevOutRRow" style="display:none;color:#dc2626">
+              <span>Previous Outstanding â‚¹</span><span id="invPrevOutR">â‚¹ 0.00</span>
+            </div>
+            <div class="inv-ps-row" id="invPrevOutGRow" style="display:none;color:#dc2626">
+              <span>Previous Outstanding (g)</span><span id="invPrevOutG">0.000 g</span>
+            </div>
+            <div class="inv-ps-row" id="invPrevTotalDueRow"
+              style="display:none;font-size:14px;font-weight:800;color:#dc2626;border-top:2px solid #dc2626;margin-top:8px;padding-top:8px">
+              <span>TOTAL AMOUNT DUE</span><span id="invPrevTotalDue">â‚¹ 0.00</span>
+            </div>
+            <div class="inv-ps-row" id="invPrevWtDueRow" style="display:none;font-weight:700;color:#dc2626">
+              <span>TOTAL WEIGHT DUE</span><span id="invPrevWtDue">0.000 g</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-prev-footer">
+          <div>Thank you for your business!</div>
+          <div style="margin-top:4px">GajKesari Ornaments &nbsp;|&nbsp; Authorised Signature: ________________</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /app-wrap -->
+</div><!-- /invFormView -->
+
+<script>
+  /* â”€â”€ State â”€â”€ */
+  var invParties = [], invGstOn = false, invRowIdx = 0, invOutR = 0, invOutG = 0;
+  var invEditingId = null, invFormReady = false;
+  var invAllList = [], invFilteredList = [];
+  var invPage = 1, invPageSize = 25, invTotal = 0, invSearchQ = '';
+
+  /* â”€â”€ Init (called lazily when form is first shown) â”€â”€ */
+  function invInit() {
+    if (invFormReady) return;
+    invFormReady = true;
+    var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+    document.getElementById('invDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+    invGenNumber(); invAddRow(); invLoadParties(); invBindDateChange();
+  }
+
+  function invGenNumber() {
+    var n = 'EST-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('invNumber').value = n; invUpdatePreview();
+  }
+
+  function invBindDateChange() {
+    document.getElementById('invDate').addEventListener('change', invUpdatePreview);
+    document.getElementById('invNumber').addEventListener('change', invUpdatePreview);
+  }
+
+  function invLoadParties() {
+    if (invParties.length) return;
+    if (typeof API === 'undefined') return;
+    API.run
+      .withSuccessHandler(function (r) {
+        if (r && r.success) {
+          invParties = r.data || []; var sel = document.getElementById('invCustomer');
+          sel.innerHTML = '<option value="">Select customerâ€¦</option>';
+          invParties.forEach(function (p) {
+            var o = document.createElement('option');
+            o.value = p.partyName;
+            o.setAttribute('data-id', p.partyId);
+            o.setAttribute('data-area', p.area);
+            o.setAttribute('data-out-r', p.outstandingRupees || 0);
+            o.setAttribute('data-out-g', p.outstandingGrams || 0);
+            o.textContent = p.partyName;
+            sel.appendChild(o);
+          });
+        }
+      })
+      .withFailureHandler(function(e) {
+        showToast((e && e.message) || 'Could not load customers', 'warning');
+      })
+      .rcptGetPartiesForDropdown();
+  }
+
+  function invFetchCustomer() {
+    var sel = document.getElementById('invCustomer'), opt = sel.options[sel.selectedIndex];
+    document.getElementById('invAddress').value = opt ? opt.getAttribute('data-area') : '';
+    invOutR = opt ? (parseFloat(opt.getAttribute('data-out-r')) || 0) : 0;
+    invOutG = opt ? (parseFloat(opt.getAttribute('data-out-g')) || 0) : 0;
+    invCalcTotals();
+  }
+
+  /* â”€â”€ Item Rows â”€â”€ */
+  function invAddRow() {
+    invRowIdx++;
+    var idx = invRowIdx;
+    var tr = document.createElement('tr');
+    tr.id = 'inv-item-' + idx; tr.setAttribute('data-idx', idx);
+    tr.innerHTML = '<td style="color:#9ca3af;font-size:11px;text-align:center">' + idx + '</td>'
+      + '<td><input type="text" placeholder="Item name" oninput="invCalcRow(' + idx + ')" id="inv-name-' + idx + '"/></td>'
+      + '<td><input type="number" placeholder="1" min="0" step="1" value="1" oninput="invCalcRow(' + idx + ')" id="inv-qty-' + idx + '" style="width:50px"/></td>'
+      + '<td><input type="text" placeholder="Barcode" id="inv-barcode-' + idx + '" style="width:80px"/></td>'
+      + '<td><input type="text" placeholder="999/925" id="inv-purity-' + idx + '" style="width:60px"/></td>'
+      + '<td><input type="number" placeholder="0.000" min="0" step="0.001" oninput="invCalcRow(' + idx + ')" id="inv-wt-' + idx + '" style="width:70px"/></td>'
+      + '<td><input type="number" placeholder="0" min="0" step="0.01" oninput="invCalcRow(' + idx + ')" id="inv-rate-' + idx + '" style="width:70px"/></td>'
+      + '<td><input type="number" placeholder="0" min="0" step="0.01" oninput="invCalcRow(' + idx + ')" id="inv-lab-' + idx + '" style="width:60px"/></td>'
+      + '<td class="inv-total" id="inv-metal-' + idx + '">0.00</td>'
+      + '<td class="inv-total" id="inv-labamt-' + idx + '">0.00</td>'
+      + '<td class="inv-total" id="inv-tot-' + idx + '">0.00</td>'
+      + '<td><button class="inv-item-del" onclick="invRemoveRow(' + idx + ')" title="Remove"><i class="fas fa-xmark"></i></button></td>';
+    document.getElementById('invItemsBody').appendChild(tr);
+    invUpdateRowCount(); invCalcTotals();
+  }
+
+  function invRemoveRow(idx) {
+    var rows = document.getElementById('invItemsBody').querySelectorAll('tr');
+    if (rows.length <= 1) { showToast('At least one item row required', 'warning'); return; }
+    var tr = document.getElementById('inv-item-' + idx); if (tr) tr.remove();
+    invUpdateRowCount(); invCalcTotals();
+  }
+
+  function invUpdateRowCount() {
+    var c = document.getElementById('invItemsBody').querySelectorAll('tr').length;
+    document.getElementById('invRowCount').textContent = c + ' item' + (c !== 1 ? 's' : '');
+  }
+
+  function invN(v) { var n = parseFloat(v); return isNaN(n) || !isFinite(n) ? 0 : n; }
+  function invFmt(v) { return 'â‚¹ ' + invN(v).toFixed(2); }
+
+  function invCalcRow(idx) {
+    var wt = invN(document.getElementById('inv-wt-' + idx).value);
+    var rate = invN(document.getElementById('inv-rate-' + idx).value);
+    var lab = invN(document.getElementById('inv-lab-' + idx).value);
+    /* Metal Amount = Weight Ã— Rate (rate is already final) */
+    var metalAmt = Math.round(wt * rate * 100) / 100;
+    /* Labour Amount = Weight Ã— Labour */
+    var labAmt = Math.round(wt * lab * 100) / 100;
+    var total = Math.round((metalAmt + labAmt) * 100) / 100;
+    document.getElementById('inv-metal-' + idx).textContent = metalAmt.toFixed(2);
+    document.getElementById('inv-labamt-' + idx).textContent = labAmt.toFixed(2);
+    document.getElementById('inv-tot-' + idx).textContent = total.toFixed(2);
+    invCalcTotals();
+  }
+
+  function invCalcTotals() {
+    /* Safe subtotal: sum each row's tot cell */
+    var rows = document.getElementById('invItemsBody').querySelectorAll('tr');
+    var sub = 0, totalWt = 0;
+    rows.forEach(function (r) {
+      var idx = r.getAttribute('data-idx');
+      if (!idx) return;
+      var totEl = document.getElementById('inv-tot-' + idx);
+      var wtEl = document.getElementById('inv-wt-' + idx);
+      sub += invN(totEl ? totEl.textContent : 0);
+      totalWt += invN(wtEl ? wtEl.value : 0);
+    });
+    sub = Math.round(sub * 100) / 100;
+    totalWt = Math.round(totalWt * 1000) / 1000;
+
+    var gstPct = invN(document.getElementById('invGstPct').value);
+    var gstAmt = invGstOn ? Math.round(sub * gstPct / 100 * 100) / 100 : 0;
+    var grand = Math.round((sub + gstAmt) * 100) / 100;
+
+    document.getElementById('invSubtotal').textContent = invFmt(sub);
+    document.getElementById('invGstAmt').textContent = invFmt(gstAmt);
+    document.getElementById('invGrandTotal').textContent = invFmt(grand);
+
+    /* â”€â”€ Outstanding + Total Due â”€â”€ */
+    var hasOut = invOutR !== 0 || invOutG !== 0;
+    var totalDue = Math.round((grand + invOutR) * 100) / 100;
+    var totalWtDue = Math.round((totalWt + invOutG) * 1000) / 1000;
+
+    // Form panel
+    var rRow = document.getElementById('invOutRRow'), gRow = document.getElementById('invOutGRow');
+    var tdRow = document.getElementById('invTotalDueRow'), wdRow = document.getElementById('invWtDueRow');
+    if (rRow) rRow.style.display = hasOut ? '' : 'none';
+    if (gRow) gRow.style.display = hasOut ? '' : 'none';
+    if (tdRow) tdRow.style.display = hasOut ? '' : 'none';
+    if (wdRow) wdRow.style.display = hasOut ? '' : 'none';
+    var rD = document.getElementById('invOutRDisp'), gD = document.getElementById('invOutGDisp');
+    var tD = document.getElementById('invTotalDue'), wD = document.getElementById('invWtDue');
+    if (rD) rD.textContent = invFmt(invOutR);
+    if (gD) gD.textContent = invOutG.toFixed(3) + ' g';
+    if (tD) tD.textContent = invFmt(totalDue);
+    if (wD) wD.textContent = totalWtDue.toFixed(3) + ' g';
+
+    invUpdatePreview();
+  }
+
+  /* â”€â”€ GST Toggle â”€â”€ */
+  function invToggleGst() {
+    invGstOn = !invGstOn;
+    document.getElementById('invGstToggle').classList.toggle('on', invGstOn);
+    document.getElementById('invPrevGstRow').style.display = invGstOn ? 'flex' : 'none';
+    invCalcTotals();
+  }
+
+  /* â”€â”€ Live Preview â”€â”€ */
+  function invUpdatePreview() {
+    /* Header meta */
+    var num = document.getElementById('invNumber').value || 'â€”';
+    var dt = document.getElementById('invDate').value;
+    var dtFmt = dt ? new Date(dt + 'T00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'â€”';
+    var cust = document.getElementById('invCustomer').value || 'â€”';
+    var addr = document.getElementById('invAddress').value || 'â€”';
+    document.getElementById('invPrevNum').textContent = '# ' + num;
+    document.getElementById('invPrevDate').textContent = 'Date: ' + dtFmt;
+    document.getElementById('invPrevCust').textContent = cust;
+    document.getElementById('invPrevAddr').textContent = addr;
+
+    /* Items rows */
+    var rows = document.getElementById('invItemsBody').querySelectorAll('tr');
+    var prevRows = '', sn = 0;
+    rows.forEach(function (r) {
+      var idx = r.getAttribute('data-idx'); if (!idx) return;
+      var name = invG(idx, 'inv-name-') || 'â€”';
+      var qty = invG(idx, 'inv-qty-') || '1';
+      var wt = invG(idx, 'inv-wt-') || '0';
+      var rate = invG(idx, 'inv-rate-') || '0';
+      var lab = invG(idx, 'inv-lab-') || '0';
+      var metal = invGT(idx, 'inv-metal-');
+      var labAmt = invGT(idx, 'inv-labamt-');
+      var tot = invGT(idx, 'inv-tot-');
+      var barcode = invG(idx, 'inv-barcode-') || '';
+      var purity = invG(idx, 'inv-purity-') || '';
+      sn++;
+      prevRows += '<tr>'
+        + '<td>' + sn + '</td>'
+        + '<td>' + _htmlEsc(name) + '</td>'
+        + '<td>' + _htmlEsc(qty) + '</td>'
+        + '<td>' + _htmlEsc(barcode) + '</td>'
+        + '<td>' + _htmlEsc(purity) + '</td>'
+        + '<td>' + invN(wt).toFixed(3) + ' g</td>'
+        + '<td>' + invN(rate).toFixed(2) + '</td>'
+        + '<td>' + invN(lab).toFixed(2) + '</td>'
+        + '<td class="inv-pr">â‚¹ ' + _htmlEsc(tot) + '</td>'
+        + '</tr>';
+    });
+    document.getElementById('invPrevItems').innerHTML = prevRows ||
+      '<tr><td colspan="9" style="text-align:center;padding:16px;color:#9ca3af">No items added</td></tr>';
+
+    /* Totals */
+    var gstPct = document.getElementById('invGstPct').value || '0';
+    document.getElementById('invPrevSub').textContent = document.getElementById('invSubtotal').textContent;
+    document.getElementById('invPrevGstLbl').textContent = 'GST (' + gstPct + '%)';
+    document.getElementById('invPrevGstAmt').textContent = document.getElementById('invGstAmt').textContent;
+    document.getElementById('invPrevTotal').textContent = document.getElementById('invGrandTotal').textContent;
+    document.getElementById('invPrevGstRow').style.display = invGstOn ? 'flex' : 'none';
+
+    /* â”€â”€ Outstanding rows in preview â”€â”€ */
+    var hasOut = invOutR !== 0 || invOutG !== 0;
+    var grand = invN(document.getElementById('invGrandTotal').textContent.replace(/[^\d.-]/g, ''));
+    var totalWt = 0;
+    document.getElementById('invItemsBody').querySelectorAll('tr').forEach(function (r) {
+      var idx = r.getAttribute('data-idx'); if (!idx) return;
+      var el = document.getElementById('inv-wt-' + idx); totalWt += invN(el ? el.value : 0);
+    });
+    var totalDue = Math.round((grand + invOutR) * 100) / 100;
+    var totalWtDue = Math.round((totalWt + invOutG) * 1000) / 1000;
+
+    function setPR(id, show) { var el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; }
+    setPR('invPrevOutRRow', hasOut);
+    setPR('invPrevOutGRow', hasOut);
+    setPR('invPrevTotalDueRow', hasOut);
+    setPR('invPrevWtDueRow', hasOut);
+    var prR = document.getElementById('invPrevOutR'), prG = document.getElementById('invPrevOutG');
+    var prTD = document.getElementById('invPrevTotalDue'), prWD = document.getElementById('invPrevWtDue');
+    if (prR) prR.textContent = invFmt(invOutR);
+    if (prG) prG.textContent = invOutG.toFixed(3) + ' g';
+    if (prTD) prTD.textContent = invFmt(totalDue);
+    if (prWD) prWD.textContent = totalWtDue.toFixed(3) + ' g';
+  }
+
+  /* Value getters */
+  function invG(idx, prefix) {
+    var el = document.getElementById(prefix + idx);
+    return el ? el.value : '';
+  }
+  function invGT(idx, prefix) {
+    var el = document.getElementById(prefix + idx);
+    return el ? el.textContent : '0.00';
+  }
+
+  /* â”€â”€ Actions â”€â”€ */
+
+  function invBuildPayload() {
+    var invId = document.getElementById('invNumber').value.trim();
+    var date = document.getElementById('invDate').value;
+    var custEl = document.getElementById('invCustomer');
+    var pName = custEl.value;
+    var pId = custEl.options[custEl.selectedIndex] ? custEl.options[custEl.selectedIndex].getAttribute('data-id') : '';
+    var addr = document.getElementById('invAddress').value;
+    var note = document.getElementById('invNote') ? document.getElementById('invNote').value : '';
+    var gstOn = invGstOn;
+    var gstPct = invN(document.getElementById('invGstPct').value);
+    var sub = invN(document.getElementById('invSubtotal').textContent.replace(/[^\.\d-]/g, ''));
+    var gstAmt = invN(document.getElementById('invGstAmt').textContent.replace(/[^\.\d-]/g, ''));
+    var grand = invN(document.getElementById('invGrandTotal').textContent.replace(/[^\.\d-]/g, ''));
+
+    if (!invId) { showToast('Generate an Estimate Number', 'warning'); return null; }
+    if (!date) { showToast('Select invoice date', 'warning'); return null; }
+    if (!pName) { showToast('Select a customer', 'warning'); return null; }
+
+    var rows = document.getElementById('invItemsBody').querySelectorAll('tr');
+    var items = [];
+    rows.forEach(function (r) {
+      var idx = r.getAttribute('data-idx'); if (!idx) return;
+      var nm = invG(idx, 'inv-name-').trim(); if (!nm) return;
+      items.push({
+        itemName: nm,
+        qty: invN(invG(idx, 'inv-qty-')),
+        weight: invN(invG(idx, 'inv-wt-')),
+        rate: invN(invG(idx, 'inv-rate-')),
+        labour: invN(invG(idx, 'inv-lab-')),
+        barcode: invG(idx, 'inv-barcode-'),
+        purity: invG(idx, 'inv-purity-'),
+        metalAmt: invN(invGT(idx, 'inv-metal-')),
+        labourAmt: invN(invGT(idx, 'inv-labamt-')),
+        itemTotal: invN(invGT(idx, 'inv-tot-'))
+      });
+    });
+    if (!items.length) { showToast('Add at least one item with a name', 'warning'); return null; }
+
+    return {
+      master: {
+        invoiceId: invId, date: date, partyId: pId || '', partyName: pName,
+        address: addr, subtotal: sub, gstEnabled: gstOn,
+        gstPct: gstPct, gstAmount: gstAmt, grandTotal: grand, note: note
+      },
+      items: items
+    };
+  }
+
+  function invSave() {
+    var payload = invBuildPayload();
+    if (!payload) return;
+    showLoader();
+    var isEdit = !!invEditingId;
+    var fn = isEdit ? 'invUpdateInvoice' : 'invSaveInvoice';
+    API.run
+      .withSuccessHandler(function (r) {
+        hideLoader();
+        if (r && r.success) {
+          showToast(r.message || (isEdit ? 'Estimate Updated' : 'Estimate Saved'), 'success');
+          invEditingId = null;
+          invShowList();
+        } else showToast((r && r.message) || 'Save failed', 'error');
+      })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+    [fn](payload);
+  }
+
+  /* â”€â”€ Print / PDF: open standalone popup to bypass GAS iframe restriction â”€â”€ */
+  function invGetPrintCSS() {
+    return [
+      'body{font-family:Poppins,sans-serif;margin:0;padding:18mm 20mm;color:#1a1d23;font-size:11pt;}',
+      '.inv-prev-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:14px;border-bottom:3px solid #0d9488;}',
+      '.inv-prev-biz{font-family:Montserrat,sans-serif;}',
+      '\.inv-prev-biz-name{font-size:20px;font-weight:800;color:#0d9488;letter-spacing:\.5px;}',
+      '.inv-prev-biz-sub{font-size:11px;color:#6b7280;margin-top:3px;}',
+      '.inv-prev-badge{text-align:right;}',
+      '.inv-prev-title{font-family:Montserrat,sans-serif;font-size:22px;font-weight:700;color:#0d9488;letter-spacing:1px;}',
+      '.inv-prev-num{font-size:12px;color:#6b7280;margin-top:3px;}',
+      '.inv-prev-date{font-size:12px;color:#6b7280;}',
+      '.inv-prev-cust{background:#f8fafb;border-radius:8px;padding:12px 16px;margin-bottom:20px;}',
+      '.inv-prev-cust-label{font-size:10px;font-weight:600;color:#9ca3af;letter-spacing:.6px;text-transform:uppercase;}',
+      '.inv-prev-cust-name{font-size:14px;font-weight:600;color:#1a1d23;margin-top:3px;}',
+      '.inv-prev-cust-addr{font-size:12px;color:#6b7280;margin-top:2px;}',
+      '.inv-prev-tbl{width:100%;border-collapse:collapse;font-size:11pt;margin-bottom:16px;}',
+      '.inv-prev-tbl th{background:#0d9488 !important;color:#fff !important;padding:8px 10px;text-align:left;font-weight:600;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.inv-prev-tbl td{padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#374151;}',
+      '.inv-prev-tbl tr:nth-child(even) td{background:#f9fafb !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.inv-pr{text-align:right;font-weight:500;}',
+      'div[style*="justify-content:flex-end"]{display:flex;justify-content:flex-end;}',
+      '.inv-prev-sum{margin-left:auto;width:280px;}',
+      '.inv-ps-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:#374151;gap:12px;}',
+      '.inv-ps-total{font-size:14px;font-weight:700;color:#0d9488;border-top:2px solid #0d9488;margin-top:8px;padding-top:8px;}',
+      '.inv-ps-row[style*="#dc2626"]{color:#dc2626 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+      '.inv-prev-footer{margin-top:24px;padding-top:14px;border-top:1px solid #e5e7eb;text-align:center;font-size:10px;color:#9ca3af;}',
+      '@page{size:A4 portrait;margin:0;}'
+    ].join('\n');
+  }
+
+  /* â”€â”€ Print: use mobileSafePrint for mobile compatibility â”€â”€ */
+  function invOpenPrintWindow(htmlContent) {
+    var screenHide = '@media screen{body{visibility:hidden!important;background:#fff!important}}';
+    var fullHtml = '<!DOCTYPE html><html><head>'
+      + '<meta charset="UTF-8">'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1.0">'
+      + '<title>Estimate - GajKesari Ornaments</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">'
+      + '<style>' + invGetPrintCSS() + '</style>'
+      + '</head><body>' + htmlContent
+      + '</body></html>';
+    mobileSafePrint(fullHtml, 'Estimate - GajKesari Ornaments');
+  }
+
+  function invPrint() {
+    invUpdatePreview();
+    var content = document.getElementById('invPreviewInner');
+    if (!content) { showToast('Preview not ready', 'warning'); return; }
+    invOpenPrintWindow(content.innerHTML);
+  }
+
+  /* Keyboard shortcut: Ctrl+P triggers invPrint */
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); invPrint(); }
+  });
+
+  /* VIEW SWITCHING */
+  function invShowList() {
+    document.getElementById('invListView').style.display = '';
+    document.getElementById('invFormView').style.display = 'none';
+    /* Tab buttons are inside invListView, so they'll be visible â€” reset to "Saved" active */
+    var tl = document.getElementById('tabList');
+    var tf = document.getElementById('tabForm');
+    if (tl) tl.classList.add('active');
+    if (tf) tf.classList.remove('active');
+    invLoadList();
+  }
+  function invShowForm(id) {
+    document.getElementById('invListView').style.display = 'none';
+    document.getElementById('invFormView').style.display = '';
+    invInit();
+    invEditingId = id || null;
+    if (id) {
+      document.getElementById('invFormTitle').textContent = 'Edit Estimate';
+      document.getElementById('invSaveBtnLbl').textContent = 'Update Estimate';
+      invLoadSaved(id);
+    } else {
+      document.getElementById('invFormTitle').textContent = 'New Estimate';
+      document.getElementById('invSaveBtnLbl').textContent = 'Save Estimate';
+      invResetForm();
+    }
+  }
+  function invResetForm() {
+    document.getElementById('invItemsBody').innerHTML = '';
+    invRowIdx = 0; invGstOn = false; invOutR = 0; invOutG = 0;
+    document.getElementById('invGstToggle').classList.remove('on');
+    document.getElementById('invPrevGstRow').style.display = 'none';
+    var sel = document.getElementById('invCustomer'); if (sel) sel.value = '';
+    var addr = document.getElementById('invAddress'); if (addr) addr.value = '';
+    var td = new Date(), mm = String(td.getMonth() + 1).padStart(2, '0'), dd = String(td.getDate()).padStart(2, '0');
+    document.getElementById('invDate').value = td.getFullYear() + '-' + mm + '-' + dd;
+    invGenNumber(); invAddRow(); invCalcTotals();
+  }
+
+  /* LIST */
+  function invLoadList() {
+    invPage = 1;
+    invSearchQ = (document.getElementById('invSrchQ').value || '').trim().toLowerCase();
+    invLoadPage(1);
+  }
+  function invLoadPage(page) {
+    invPage = Math.max(1, page || 1);
+    document.getElementById('invListCnt').textContent = 'Loading...';
+    if (typeof API === 'undefined') { invRenderList([]); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        invAllList = (r && r.success) ? (r.data || []) : [];
+        invFilteredList = invAllList.slice();
+        invTotal = (r && r.success) ? (r.total || 0) : 0;
+        invPage = (r && r.page) || invPage;
+        invPageSize = (r && r.pageSize) || invPageSize;
+        invRenderList(invFilteredList);
+      })
+      .withFailureHandler(function () { invRenderList([]); })
+      .invGetPage({ page: invPage, pageSize: invPageSize, searchQ: invSearchQ });
+  }
+  function invRenderList(data) {
+    var tb = document.getElementById('invListBody');
+    document.getElementById('invListCnt').textContent = invTotal + ' estimate' + (invTotal !== 1 ? 's' : '');
+    if (!data.length) {
+      tb.innerHTML = '<tr><td colspan="7" class="app-no-data"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db"></i>No saved estimates. Click New Estimate to create one.</td></tr>';
+      invRenderPagination(0);
+      return;
+    }
+    var rows = '';
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var sn = (invPage - 1) * invPageSize + i + 1;
+      var rawId = d.invoiceId || '';
+      var paramId = _htmlEsc(rawId.replace(/'/g, "\\'"));
+      rows += '<tr>'
+        + '<td><input type="checkbox" class="inv-chk" value="' + paramId + '" onchange="invChkChange()"/></td>'
+        + '<td>' + sn + '</td>'
+        + '<td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">' + _htmlEsc(rawId) + '</code></td>'
+        + '<td>' + _htmlEsc(d.date || '') + '</td>'
+        + '<td style="font-weight:500">' + _htmlEsc(d.partyName || '-') + '</td>'
+        + '<td style="font-weight:600;color:var(--accent)">Rs. ' + parseFloat(d.grandTotal || 0).toFixed(2) + '</td>'
+        + '<td><div style="display:flex;gap:5px">'
+        + '<button class="il-ab il-open" onclick="invShowForm(\'' + paramId + '\')"><i class="fas fa-pen"></i> Open</button>'
+        + '<button class="il-ab il-print" onclick="invPrintSaved(\'' + paramId + '\')"><i class="fas fa-print"></i> Print</button>'
+        + '<button class="il-ab il-del" onclick="invDeleteFromList(\'' + paramId + '\')"><i class="fas fa-trash"></i></button>'
+        + '</div></td></tr>';
+    }
+    tb.innerHTML = rows;
+    invRenderPagination(invTotal);
+  }
+  function invRenderPagination(total) {
+    if (typeof UI !== 'undefined') UI.renderPagination(total, invPage, invPageSize, 'invPag', 'invGoPage');
+    else document.getElementById('invPag').innerHTML = '';
+  }
+  function invGoPage(page) {
+    var pages = Math.ceil(invTotal / invPageSize) || 1;
+    page = Math.max(1, Math.min(page, pages));
+    if (page === invPage) return;
+    invLoadPage(page);
+  }
+  function invSearchList() {
+    invSearchQ = (document.getElementById('invSrchQ').value || '').trim().toLowerCase();
+    invLoadPage(1);
+  }
+  function invClearSearch() {
+    document.getElementById('invSrchQ').value = '';
+    var cb = document.getElementById('invSrchClearBtn'); if (cb) cb.style.display = 'none';
+    invSearchQ = '';
+    invLoadPage(1);
+  }
+  function invToggleClear() {
+    var v = document.getElementById('invSrchQ').value;
+    var cb = document.getElementById('invSrchClearBtn');
+    if (cb) cb.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  /* CHECKBOX SELECTION */
+  function invToggleAll(cb) {
+    document.querySelectorAll('.inv-chk').forEach(function (c) { c.checked = cb.checked; });
+    invChkChange();
+  }
+  function invChkChange() {
+    var sel = document.querySelectorAll('.inv-chk:checked').length;
+    var row = document.getElementById('invDelRow');
+    var sc = document.getElementById('invSelCount');
+    if (row) row.style.display = sel > 0 ? 'flex' : 'none';
+    if (sc) sc.textContent = sel;
+  }
+  function invDeleteSelected() {
+    var ids = [];
+    document.querySelectorAll('.inv-chk:checked').forEach(function (c) { ids.push(c.value); });
+    if (!ids.length) { showToast('No entries selected', 'warning'); return; }
+    confirmDialog('Delete <strong>' + ids.length + '</strong> selected estimate(s)?', function () {
+      if (typeof invShowOv === 'function') invShowOv('Deleting ' + ids.length + ' estimate(s)â€¦');
+      API.run
+        .withSuccessHandler(function (res) { if (typeof invHideOv === 'function') invHideOv(); showToast(res.message || 'Done', 'success'); invLoadList(); document.getElementById('invSelAll').checked = false; invChkChange(); })
+        .withFailureHandler(function (e) { if (typeof invHideOv === 'function') invHideOv(); showToast(e.message, 'error'); })
+        .invBulkDelete(ids);
+    });
+  }
+
+  /* LOAD SAVED INTO FORM */
+  function invLoadSaved(id) {
+    showLoader();
+    API.run
+      .withSuccessHandler(function (r) {
+        hideLoader();
+        if (!r || !r.success) { showToast((r && r.message) || 'Load failed', 'error'); return; }
+        var m = r.master;
+        document.getElementById('invNumber').value = m.invoiceId || '';
+        document.getElementById('invDate').value = m.dateRaw || '';
+        var sel = document.getElementById('invCustomer');
+        for (var i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === m.partyName) { sel.selectedIndex = i; break; }
+        }
+        var addr = document.getElementById('invAddress'); if (addr) addr.value = m.address || '';
+        invOutR = 0; invOutG = 0;
+        invGstOn = (m.gstEnabled === 'YES' || m.gstEnabled === true);
+        document.getElementById('invGstToggle').classList.toggle('on', invGstOn);
+        document.getElementById('invPrevGstRow').style.display = invGstOn ? 'flex' : 'none';
+        document.getElementById('invGstPct').value = m.gstPct || 3;
+        document.getElementById('invItemsBody').innerHTML = ''; invRowIdx = 0;
+        var items = r.items || [];
+        for (var j = 0; j < items.length; j++) {
+          var it = items[j];
+          invAddRow(); var idx = invRowIdx;
+          var s = function (sfx, v) { var el = document.getElementById('inv-' + sfx + '-' + idx); if (el) el.value = v || ''; };
+          s('name', it.itemName); s('qty', it.qty || 1); s('barcode', it.barcode);
+          s('purity', it.purity); s('wt', it.weight); s('rate', it.rate); s('lab', it.labour);
+          invCalcRow(idx);
+        }
+        invCalcTotals(); invUpdatePreview();
+      })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .invGetInvoice(id);
+  }
+
+  /* PRINT FROM LIST */
+  function invPrintSaved(id) {
+    showLoader();
+    API.run
+      .withSuccessHandler(function (r) {
+        hideLoader();
+        if (!r || !r.success) { showToast((r && r.message) || 'Load failed', 'error'); return; }
+        var m = r.master;
+        var items = r.items || [];
+        var itemRows = '';
+        for (var i = 0; i < items.length; i++) {
+          var it = items[i];
+          itemRows += '<tr><td>' + (i + 1) + '</td><td>' + _htmlEsc(it.itemName || '') + '</td><td>' + _htmlEsc(it.qty || 1) + '</td>'
+            + '<td>' + _htmlEsc(it.barcode || '') + '</td><td>' + _htmlEsc(it.purity || '') + '</td>'
+            + '<td>' + parseFloat(it.weight || 0).toFixed(3) + ' g</td>'
+            + '<td>' + parseFloat(it.rate || 0).toFixed(2) + '</td>'
+            + '<td>' + parseFloat(it.labour || 0).toFixed(2) + '</td>'
+            + '<td class="inv-pr">Rs. ' + parseFloat(it.itemTotal || 0).toFixed(2) + '</td></tr>';
+        }
+        var gstRow = (m.gstEnabled === 'YES') ? '<div class="inv-ps-row"><span>GST (' + _htmlEsc(m.gstPct) + '%)</span><span>Rs. ' + parseFloat(m.gstAmount || 0).toFixed(2) + '</span></div>' : '';
+        var html = '<div class="inv-prev-hdr">'
+          + '<div class="inv-prev-biz"><div class="inv-prev-biz-name">GajKesari Ornaments</div><div class="inv-prev-biz-sub">Fine Jewellery and Ornaments</div></div>'
+          + '<div class="inv-prev-badge"><div class="inv-prev-title">ESTIMATE</div><div class="inv-prev-num"># ' + _htmlEsc(m.invoiceId || '') + '</div><div class="inv-prev-date">Date: ' + _htmlEsc(m.date || '') + '</div></div>'
+          + '</div>'
+          + '<div class="inv-prev-cust"><div class="inv-prev-cust-label">Bill To</div><div class="inv-prev-cust-name">' + _htmlEsc(m.partyName || '-') + '</div><div class="inv-prev-cust-addr">' + _htmlEsc(m.address || '') + '</div></div>'
+          + '<table class="inv-prev-tbl"><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Barcode</th><th>Purity</th><th>Wt(g)</th><th>Rate</th><th>Labour</th><th class="inv-pr">Total</th></tr></thead><tbody>' + itemRows + '</tbody></table>'
+          + '<div style="display:flex;justify-content:flex-end"><div class="inv-prev-sum">'
+          + '<div class="inv-ps-row"><span>Subtotal</span><span>Rs. ' + parseFloat(m.subtotal || 0).toFixed(2) + '</span></div>'
+          + gstRow
+          + '<div class="inv-ps-row inv-ps-total"><span>Grand Total</span><span>Rs. ' + parseFloat(m.grandTotal || 0).toFixed(2) + '</span></div>'
+          + '</div></div>'
+          + '<div class="inv-prev-footer"><div>Thank you for your business!</div><div style="margin-top:4px">GajKesari Ornaments | Authorised Signature: ________________</div></div>';
+        invOpenPrintWindow(html);
+      })
+      .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+      .invGetInvoice(id);
+  }
+
+  /* DELETE FROM LIST */
+  function invDeleteFromList(id) {
+    confirmDialog(
+      'Delete estimate <strong>' + _htmlEsc(id) + '</strong>?<br><small style="color:#6b7280">This will reverse the party outstanding balance.</small>',
+      function () {
+        showLoader();
+        API.run
+          .withSuccessHandler(function (r) {
+            hideLoader();
+            if (r && r.success) { showToast(r.message || 'Deleted', 'success'); invLoadList(); }
+            else showToast((r && r.message) || 'Delete failed', 'error');
+          })
+          .withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); })
+          .invDeleteInvoice(id);
+      }
+    );
+  }
+
+  /* Register reload hook */
+  APP.reload = invShowList;
+  APP.openAdd = APP.openAdd || {};
+  APP.openAdd.invoice = function () {
+    invShowForm(null);
+  };
+
+  /* Startup */
+  invShowList();
+</script>

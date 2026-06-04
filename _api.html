@@ -1,0 +1,118 @@
+<script>
+(function () {
+  'use strict';
+
+  var DEFAULT_TIMEOUT_MS = 30000;
+
+  function apiBaseUrl() {
+    if (window.__API_BASE_URL__) return window.__API_BASE_URL__;
+    if (window.APP && APP.apiBaseUrl) return APP.apiBaseUrl;
+    try {
+      var stored = window.localStorage && localStorage.getItem('GKO_API_BASE_URL');
+      if (stored) return stored;
+    } catch (e) {}
+    return '/api/gas';
+  }
+
+  function normalizeError(err) {
+    if (!err) return new Error('Request failed');
+    if (err.name === 'AbortError') return new Error('Request timed out');
+    if (err instanceof Error) return err;
+    return new Error(String(err));
+  }
+
+  function parseJson(text) {
+    if (!text) return null;
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      throw new Error('Backend returned invalid JSON');
+    }
+  }
+
+  function call(functionName, args, options) {
+    if (!functionName || typeof functionName !== 'string') {
+      return Promise.reject(new Error('Missing API function name'));
+    }
+
+    var timeout = (options && options.timeoutMs) || DEFAULT_TIMEOUT_MS;
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeout);
+
+    return fetch(apiBaseUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      signal: controller.signal,
+      body: JSON.stringify({ functionName: functionName, args: Array.isArray(args) ? args : [] })
+    })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          var body = parseJson(text);
+          if (!res.ok) {
+            var message = (body && (body.message || body.error)) || ('HTTP ' + res.status);
+            throw new Error(message);
+          }
+          if (!body || typeof body !== 'object' || !Object.prototype.hasOwnProperty.call(body, 'result')) {
+            throw new Error('Backend response is missing result');
+          }
+          return body.result;
+        });
+      })
+      .catch(function (err) {
+        throw normalizeError(err);
+      })
+      .finally(function () {
+        clearTimeout(timer);
+      });
+  }
+
+  function createRunner() {
+    var successHandler = null;
+    var failureHandler = null;
+
+    var runner = {
+      withSuccessHandler: function (fn) {
+        successHandler = typeof fn === 'function' ? fn : null;
+        return proxy;
+      },
+      withFailureHandler: function (fn) {
+        failureHandler = typeof fn === 'function' ? fn : null;
+        return proxy;
+      }
+    };
+
+    var proxy = new Proxy(runner, {
+      get: function (target, prop) {
+        if (prop in target) return target[prop];
+        if (typeof prop !== 'string') return undefined;
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          call(prop, args)
+            .then(function (result) {
+              if (successHandler) successHandler(result);
+            })
+            .catch(function (err) {
+              if (failureHandler) {
+                failureHandler(err);
+              } else if (window.showToast) {
+                showToast(err.message || 'Request failed', 'error');
+              } else {
+                console.error(err);
+              }
+            });
+          return proxy;
+        };
+      }
+    });
+
+    return proxy;
+  }
+
+  window.API = {
+    call: call,
+    get baseUrl() { return apiBaseUrl(); },
+    get run() { return createRunner(); }
+  };
+})();
+</script>
