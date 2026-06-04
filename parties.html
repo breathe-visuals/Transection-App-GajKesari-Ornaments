@@ -18,7 +18,7 @@
 <!-- Processing Overlay -->
 <div class="app-overlay" id="partOverlay">
   <div class="app-spin"></div>
-  <div class="app-spin-txt" id="partOverlayTxt">Processingâ€¦</div>
+  <div class="app-spin-txt" id="partOverlayTxt">Processing...</div>
 </div>
 
 <!-- Page Header -->
@@ -32,15 +32,17 @@
   <!-- Row 1: Action buttons -->
   <div class="app-bar-left">
     <button class="btn btn-primary edit-only" onclick="partOpenAdd()"><i class="fas fa-plus"></i> New Party</button>
-    <button class="btn btn-danger" id="partDelRow" style="display:none" onclick="partDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span id="partSelCount">0</span>)</button>
+    <button class="btn btn-danger" id="partDelRow" style="display:none" onclick="partDeleteSelected()"><i
+        class="fas fa-trash"></i> Delete Selected (<span id="partSelCount">0</span>)</button>
   </div>
   <!-- Row 2: Search bar -->
   <div class="app-bar-search">
     <div class="app-search-wrap">
       <i class="fas fa-search app-search-icon"></i>
-      <input class="app-search-inp" id="partSrchQ" type="text" placeholder="Search partiesâ€¦"
+      <input class="app-search-inp" id="partSrchQ" type="text" placeholder="Search parties..."
         onkeydown="if(event.key==='Enter')partSearch()" oninput="partToggleClear()" />
-      <button class="app-search-clear" id="partClearBtn" onclick="partClear()" title="Clear" style="display:none"><i class="fas fa-xmark"></i></button>
+      <button class="app-search-clear" id="partClearBtn" onclick="partClear()" title="Clear" style="display:none"><i
+          class="fas fa-xmark"></i></button>
       <button class="app-search-btn" onclick="partSearch()" title="Search"><i class="fas fa-search"></i></button>
     </div>
   </div>
@@ -62,8 +64,9 @@
 <!-- Table -->
 <div class="app-wrap">
   <div class="app-thead">
-    <span class="app-thead-title"><i class="fas fa-table" style="color:var(--accent);margin-right:6px"></i>Party List</span>
-    <span class="app-count" id="partCount">Loadingâ€¦</span>
+    <span class="app-thead-title"><i class="fas fa-table" style="color:var(--accent);margin-right:6px"></i>Party
+      List</span>
+    <span class="app-count" id="partCount">Loading...</span>
   </div>
   <div class="app-scroll">
     <table id="partTable" class="app-table">
@@ -81,7 +84,7 @@
           <th>L-999</th>
           <th>L-925</th>
           <th>L-Other</th>
-          <th>Outstanding â‚¹</th>
+          <th>Outstanding ₹</th>
           <th>Outstanding (g)</th>
           <th>Note</th>
           <th>Actions</th>
@@ -99,7 +102,7 @@
   var _partOvTimer = null;
 
   function partShowOv(txt) {
-    document.getElementById('partOverlayTxt').textContent = txt || 'Processingâ€¦';
+    document.getElementById('partOverlayTxt').textContent = txt || 'Processing...';
     document.getElementById('partOverlay').classList.add('show');
     if (_partOvTimer) clearTimeout(_partOvTimer);
     _partOvTimer = setTimeout(function () { partHideOv(); }, 15000);
@@ -118,7 +121,7 @@
 
   function partLoadPage(page) {
     partPage = page;
-    document.getElementById('partCount').textContent = 'Loadingâ€¦';
+    document.getElementById('partCount').textContent = 'Loading...';
     if (typeof API === 'undefined') { partAllData = []; partTotal = 0; partRender(); return; }
     try {
       console.log('Fetching page:', page);
@@ -178,7 +181,7 @@
   }
 
   function partNum(v) { return (v === '' || v === null || v === undefined) ? '' : v; }
-  function partFmt(v) { var n = parseFloat(v) || 0; return n === 0 ? '0.00' : 'â‚¹ ' + n.toFixed(2); }
+  function partFmt(v) { var n = parseFloat(v) || 0; return n === 0 ? '0.00' : '₹ ' + n.toFixed(2); }
   function partFmtG(v) { var n = parseFloat(v) || 0; return n === 0 ? '0.000' : n.toFixed(3) + ' g'; }
 
   function partRenderPagination(total) {
@@ -213,20 +216,20 @@
     if (cb) cb.style.display = v ? 'inline-flex' : 'none';
   }
 
-  /* â”€â”€ Add Party Modal â”€â”€ */
+  /* empty”€empty”€ Add Party Modal empty”€empty”€ */
   function partOpenAdd() {
     if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var body = '<div class="app-form-grid">'
       + '<div class="app-fg full"><label class="app-label"><i class="fas fa-hashtag"></i> Party ID</label><div class="app-id-row"><input class="app-field" id="pfPartyId" readonly placeholder="Click Generate"/><button class="btn btn-secondary btn-sm" onclick="partGenId()"><i class="fas fa-rotate-right"></i> Generate</button></div></div>'
       + '<div class="app-fg"><label class="app-label">Party Name *</label><input class="app-field" id="pfName" type="text" placeholder="Enter party name"/></div>'
-      + '<div class="app-fg"><label class="app-label">Party Type *</label><select class="app-field" id="pfType"><option value="">Selectâ€¦</option><option>Supplier</option><option>Customer</option><option>Both</option></select></div>'
+      + '<div class="app-fg"><label class="app-label">Party Type *</label><select class="app-field" id="pfType"><option value="">Select...</option><option>Supplier</option><option>Customer</option><option>Both</option></select></div>'
       + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="pfArea" type="text" placeholder="Area"/></div>'
       + '<div class="app-fg"><label class="app-label">Owner Name</label><input class="app-field" id="pfOwner" type="text" placeholder="Owner name"/></div>'
       + '<div class="app-fg"><label class="app-label">Mobile Number</label><input class="app-field" id="pfMobile" type="text" placeholder="Mobile"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour 999</label><input class="app-field" id="pfL999" type="number" placeholder="0"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour 925</label><input class="app-field" id="pfL925" type="number" placeholder="0"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour Other</label><input class="app-field" id="pfLOth" type="number" placeholder="0"/></div>'
-      + '<div class="app-fg"><label class="app-label">Outstanding â‚¹ <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalR" type="number" placeholder="0" title="Set initial outstanding. After this, it updates automatically via Sales and Payments."/></div>'
+      + '<div class="app-fg"><label class="app-label">Outstanding ₹ <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalR" type="number" placeholder="0" title="Set initial outstanding. After this, it updates automatically via Sales and Payments."/></div>'
       + '<div class="app-fg"><label class="app-label">Outstanding (g) <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalG" type="number" placeholder="0" title="Set initial outstanding grams."/></div>'
       + '<div class="app-fg full"><label class="app-label">Note</label><input class="app-field" id="pfNote" type="text" placeholder="Note"/></div>'
       + '</div>';
@@ -249,7 +252,7 @@
     if (!nm) { showToast('Party Name is required', 'warning'); return; }
     if (!tp) { showToast('Party Type is required', 'warning'); return; }
     closeModal();
-    partShowOv('Savingâ€¦');
+    partShowOv('Saving...');
     var d = {
       partyId: id, partyName: nm, partyType: tp,
       area: document.getElementById('pfArea').value.trim(),
@@ -272,13 +275,13 @@
       .partAddParty(d);
   }
 
-  /* â”€â”€ Inline Edit â”€â”€ */
+  /* empty”€empty”€ Inline Edit empty”€empty”€ */
   function partStartEdit(id) {
     if (partEditingId && partEditingId !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; }
     partEditingId = id;
     var d = partAllData.find(function (x) { return x.partyId === id; });
     if (!d) return;
-    partShowOv('Loadingâ€¦');
+    partShowOv('Loading...');
     setTimeout(function () {
       var row = document.getElementById('pt-row-' + id);
       if (!row) { partHideOv(); return; }
@@ -291,7 +294,7 @@
       partSetCell(row, 'pt-c-labour999', 'input', 'number', d.labour999);
       partSetCell(row, 'pt-c-labour925', 'input', 'number', d.labour925);
       partSetCell(row, 'pt-c-labourOther', 'input', 'number', d.labourOther);
-      /* Outstanding columns are READ-ONLY â€” managed by Sales & Payments automatically */
+      /* Outstanding columns are READ-ONLY - managed by Sales & Payments automatically */
       var outRTd = row.querySelector('.pt-c-outstandingRupees');
       var outGTd = row.querySelector('.pt-c-outstandingGrams');
       /* Keep them as display text, do not make them editable */
@@ -343,7 +346,7 @@
     var tp = partGetCell(row, 'pt-c-partyType');
     if (!nm) { showToast('Party Name is required', 'warning'); return; }
     if (!tp) { showToast('Party Type is required', 'warning'); return; }
-    partShowOv('Updatingâ€¦');
+    partShowOv('Updating...');
     var d = {
       partyId: id,
       partyName: nm,
@@ -367,12 +370,12 @@
       .partUpdateParty(d);
   }
 
-  /* â”€â”€ Delete â”€â”€ */
+  /* empty”€empty”€ Delete empty”€empty”€ */
   function partConfirmDel(id) {
     var d = partAllData.find(function (x) { return x.partyId === id; });
     var nm = d ? d.partyName : id;
     confirmDialog('Delete party <strong>' + _htmlEsc(nm) + '</strong>? This action cannot be undone.', function () {
-      partShowOv('Deletingâ€¦');
+      partShowOv('Deleting...');
       API.run
         .withSuccessHandler(function (r) {
           partHideOv();
@@ -384,24 +387,24 @@
     });
   }
 
-  /* â”€â”€ Init â”€â”€ */
+  /* empty”€empty”€ Init empty”€empty”€ */
   APP.reload = partLoad;
   APP.openAdd = { party: partOpenAdd };
 
-  /* â”€â”€ Print â”€â”€ */
+  /* empty”€empty”€ Print empty”€empty”€ */
   function partPrint() {
     if (!partAllData || !partAllData.length) { showToast('No data to print', 'warning'); return; }
-    var rows = partAllData.map(function(d, i) {
+    var rows = partAllData.map(function (d, i) {
       var typeClass = d.partyType === 'Supplier' ? 'badge-buy' : d.partyType === 'Customer' ? 'badge-sell' : 'badge-adj';
-      return '<tr><td>' + (i+1) + '</td>'
+      return '<tr><td>' + (i + 1) + '</td>'
         + '<td><code>' + _htmlEsc(d.partyId) + '</code></td>'
         + '<td><strong>' + _htmlEsc(d.partyName) + '</strong></td>'
         + '<td><span class="gk-badge ' + typeClass + '">' + _htmlEsc(d.partyType) + '</span></td>'
         + '<td>' + _htmlEsc(d.area) + '</td>'
         + '<td>' + _htmlEsc(d.ownerName) + '</td>'
         + '<td>' + _htmlEsc(d.mobileNumber) + '</td>'
-        + '<td class="num">' + (parseFloat(d.outstandingRupees)||0).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td>'
-        + '<td class="num">' + (parseFloat(d.outstandingGrams)||0).toFixed(3) + ' g</td>'
+        + '<td class="num">' + (parseFloat(d.outstandingRupees) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>'
+        + '<td class="num">' + (parseFloat(d.outstandingGrams) || 0).toFixed(3) + ' g</td>'
         + '</tr>';
     }).join('');
     var meta = (partSearchQ ? 'Filter: \u201c' + _htmlEsc(partSearchQ) + '\u201d' : 'All parties') + '  \u00b7  ' + partAllData.length + ' records';
@@ -429,7 +432,7 @@
     document.querySelectorAll('.part-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No parties selected', 'warning'); return; }
     confirmDialog('Delete <strong>' + ids.length + '</strong> selected party(ies)? Parties with outstanding balance will be skipped.', function () {
-      partShowOv('Deletingâ€¦');
+      partShowOv('Deleting...');
       API.run
         .withSuccessHandler(function (res) { partHideOv(); showToast(res.message || 'Done', 'success'); partLoad(); })
         .withFailureHandler(function (e) { partHideOv(); showToast(e.message, 'error'); })

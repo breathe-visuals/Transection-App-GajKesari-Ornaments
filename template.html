@@ -1,189 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>GajKesari Ornaments â€” Business App</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&family=Montserrat:wght@400;500;600;700&display=swap"
-rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-<!-- CSS_INCLUDE -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>GajKesari Ornaments - Business App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- CSS_INCLUDE -->
 </head>
+
 <body class="view-only">
-<div id="global-loader" class="hidden">
-<div style="text-align:center">
-<div class="loader-ring"></div>
-<div style="color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;letter-spacing:.5px;">Loadingâ€¦</div>
-</div>
-</div>
-<div id="sidebar-overlay" onclick="closeSidebar()"></div>
-<div id="app-shell">
-<nav id="sidebar">
-<div id="sidebar-brand">
-<div class="brand-icon" id="sidebar-brand-icon"><i class="fas fa-gem"></i></div>
-<img id="sidebar-brand-logo" src="" alt="logo"
-style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;display:none;"
-onerror="this.style.display='none';document.getElementById('sidebar-brand-icon').style.display='flex'" />
-<div class="brand-text">
-<span id="sidebar-brand-name">GajKesari Ornaments</span>
-<span id="sidebar-brand-sub">Jewellery Business App</span>
-</div>
-</div>
-<div id="sidebar-nav">
-<div class="nav-section-label">Main Menu</div>
-<a href="javascript:void(0)" onclick="navTo('dashboard')" class="nav-item" data-page="dashboard">
-<i class="fas fa-chart-pie"></i> Dashboard
-</a>
-<a href="javascript:void(0)" onclick="navTo('parties')" class="nav-item" data-page="parties">
-<i class="fas fa-users"></i> Parties
-</a>
-<a href="javascript:void(0)" onclick="navTo('purchase')" class="nav-item" data-page="purchase">
-<i class="fas fa-cart-arrow-down"></i> Purchase
-</a>
-<a href="javascript:void(0)" onclick="navTo('sales')" class="nav-item" data-page="sales">
-<i class="fas fa-hand-holding-usd"></i> Sales
-</a>
-<a href="javascript:void(0)" onclick="navTo('payments')" class="nav-item" data-page="payments">
-<i class="fas fa-receipt"></i> Receipts & Payments
-</a>
-<div class="nav-section-label">Estimates &amp; Reports</div>
-<a href="javascript:void(0)" onclick="navTo('invoice')" class="nav-item" data-page="invoice">
-<i class="fas fa-file-invoice"></i> Estimates
-</a>
-<a href="javascript:void(0)" onclick="navTo('reports')" class="nav-item" data-page="reports">
-<i class="fas fa-chart-bar"></i> Reports
-</a>
-</div>
-<div id="sidebar-footer">
-<i class="fas fa-shield-alt" style="margin-right:5px;"></i>
-v1.0.0 &nbsp;Â·&nbsp; GajKesari
-</div>
-</nav>
-<div id="main-area">
-<header id="topbar">
-<div id="topbar-left">
-<button id="menu-toggle" onclick="toggleSidebar()" title="Toggle Menu">
-<i class="fas fa-bars"></i>
-</button>
-<div>
-<div id="page-title">Dashboard</div>
-<div id="page-breadcrumb">Home &rsaquo; Dashboard</div>
-</div>
-</div>
-<div id="gs-wrap">
-<i class="fas fa-search" id="gs-icon"></i>
-<input id="gs-input" type="text" placeholder="Search parties, purchases, salesâ€¦" autocomplete="off" />
-<div id="gs-spinner"></div>
-<div id="gs-dropdown"></div>
-</div>
-<div id="topbar-right">
-<button class="topbar-btn" id="gs-mobile-btn" title="Search" onclick="toggleMobileSearch()">
-<i class="fas fa-search"></i>
-</button>
-<button class="topbar-btn" id="app-reload-btn" title="Refresh Current Page" onclick="appReload()">
-<i class="fas fa-rotate-right"></i>
-</button>
-<button id="edit-mode-btn" onclick="handleEditModeToggle()" title="Toggle Edit Mode">
-<i class="fas fa-pen-to-square"></i>
-<span id="edit-mode-label">View Only</span>
-<div class="toggle-dot"></div>
-</button>
-</div>
-</header>
-<div id="edit-mode-banner">
-<i class="fas fa-circle-dot"></i>
-<strong>Edit Mode Active</strong> â€” You can add, edit, and delete records.
-</div>
-<script>
-const APP = __APP_JSON__;
-const SCRIPT_URL = APP.scriptUrl || '';
-(function applyConfigTheme() {
-document.body.className = APP.editMode ? 'edit-mode-active' : 'view-only';
-var r = document.documentElement;
-if (APP.primaryColor) { r.style.setProperty('--accent', APP.primaryColor); r.style.setProperty('--sidebar-active', APP.primaryColor + '38'); }
-if (APP.sidebarColor) { r.style.setProperty('--sidebar-bg', APP.sidebarColor); }
-if (APP.fontFamily) { r.style.setProperty('--font-main', APP.fontFamily); }
-if (APP.borderRadius) { r.style.setProperty('--radius', APP.borderRadius); }
-var nameEl = document.getElementById('sidebar-brand-name');
-var subEl = document.getElementById('sidebar-brand-sub');
-if (nameEl && APP.businessName) nameEl.textContent = APP.businessName;
-if (subEl && APP.businessSub) subEl.textContent = APP.businessSub;
-if (APP.logoUrl) {
-var limg = document.getElementById('sidebar-brand-logo');
-var licon = document.getElementById('sidebar-brand-icon');
-if (limg) { limg.src = APP.logoUrl; limg.style.display = ''; }
-if (licon) licon.style.display = 'none';
-}
-})();
-</script>
-<!-- API_INCLUDE -->
-<main id="page-content">
-<!-- CONTENT_INCLUDE -->
-</main>
-</div><!-- /main-area -->
-</div><!-- /app-shell -->
-<div id="qa-fab-backdrop" onclick="closeQaFab()"></div>
-<div id="qa-fab-wrap">
-<button id="qa-fab-btn" onclick="toggleQaFab()" title="Quick Actions" aria-label="Quick Actions">
-<i class="fas fa-plus" id="qa-fab-icon"></i>
-</button>
-<div id="qa-fab-menu" role="menu">
-<button class="qa-fab-item edit-only" onclick="qaFabAction('party')" title="Parties">
-<span class="qa-fab-icon ic-party"><i class="fas fa-users"></i></span>
-<span class="qa-fab-label">Parties</span>
-</button>
-<button class="qa-fab-item edit-only" onclick="qaFabAction('purchase')" title="Purchase">
-<span class="qa-fab-icon ic-pur"><i class="fas fa-cart-arrow-down"></i></span>
-<span class="qa-fab-label">Purchase</span>
-</button>
-<button class="qa-fab-item edit-only" onclick="qaFabAction('sale')" title="Sales">
-<span class="qa-fab-icon ic-sale"><i class="fas fa-hand-holding-usd"></i></span>
-<span class="qa-fab-label">Sales</span>
-</button>
-<button class="qa-fab-item edit-only" onclick="qaFabAction('payment')" title="Receipts &amp; Payments">
-<span class="qa-fab-icon ic-rcpt"><i class="fas fa-receipt"></i></span>
-<span class="qa-fab-label">Receipts &amp; Payments</span>
-</button>
-<button class="qa-fab-item" onclick="qaFabAction('invoice')" title="Invoice / Estimate">
-<span class="qa-fab-icon ic-est"><i class="fas fa-file-invoice"></i></span>
-<span class="qa-fab-label">Invoice / Estimate</span>
-</button>
-</div>
-</div>
-<div id="modal-overlay" onclick="handleModalOverlayClick(event)">
-<div class="modal-box" id="modal-box">
-<div class="modal-header">
-<span class="modal-title" id="modal-title">Modal</span>
-<button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
-</div>
-<div class="modal-body" id="modal-body"></div>
-<div class="modal-footer" id="modal-footer"></div>
-</div>
-</div>
-<div id="toast-container"></div>
-<div id="pw-modal-overlay">
-<div id="pw-modal-box">
-<div class="pw-lock-icon"><i class="fas fa-lock"></i></div>
-<div class="pw-title">Admin Verification</div>
-<div class="pw-sub">Enter the Admin Password to<br>enable Edit Mode.</div>
-<div class="pw-inp-wrap">
-<input id="pw-input" type="password" placeholder="Enter passwordâ€¦" autocomplete="off" />
-<button class="pw-eye" type="button" onclick="pwToggleEye()" tabindex="-1">
-<i class="fas fa-eye" id="pw-eye-icon"></i>
-</button>
-</div>
-<div class="pw-errmsg" id="pw-errmsg"></div>
-<div class="pw-actions">
-<button id="pw-cancel-btn" onclick="closePwModal()"><i class="fas fa-xmark"
-style="margin-right:5px"></i>Cancel</button>
-<button id="pw-submit-btn" onclick="submitEditPassword()"><i class="fas fa-unlock"
-style="margin-right:5px"></i>Unlock</button>
-</div>
-</div>
-</div>
-<!-- JS_INCLUDE -->
+    <div id="global-loader" class="hidden">
+        <div style="text-align:center">
+            <div class="loader-ring"></div>
+            <div style="color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;letter-spacing:.5px;">Loading...</div>
+        </div>
+    </div>
+    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div id="app-shell">
+        <nav id="sidebar">
+            <div id="sidebar-brand">
+                <div class="brand-icon" id="sidebar-brand-icon"><i class="fas fa-gem"></i></div>
+                <img id="sidebar-brand-logo" src="" alt="logo"
+                    style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;display:none;"
+                    onerror="this.style.display='none';document.getElementById('sidebar-brand-icon').style.display='flex'" />
+                <div class="brand-text">
+                    <span id="sidebar-brand-name">GajKesari Ornaments</span>
+                    <span id="sidebar-brand-sub">Jewellery Business App</span>
+                </div>
+            </div>
+            <div id="sidebar-nav">
+                <div class="nav-section-label">Main Menu</div>
+                <a href="javascript:void(0)" onclick="navTo('dashboard')" class="nav-item" data-page="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="javascript:void(0)" onclick="navTo('parties')" class="nav-item" data-page="parties">
+                    <i class="fas fa-users"></i> Parties
+                </a>
+                <a href="javascript:void(0)" onclick="navTo('purchase')" class="nav-item" data-page="purchase">
+                    <i class="fas fa-cart-arrow-down"></i> Purchase
+                </a>
+                <a href="javascript:void(0)" onclick="navTo('sales')" class="nav-item" data-page="sales">
+                    <i class="fas fa-hand-holding-usd"></i> Sales
+                </a>
+                <a href="javascript:void(0)" onclick="navTo('payments')" class="nav-item" data-page="payments">
+                    <i class="fas fa-receipt"></i> Receipts & Payments
+                </a>
+                <div class="nav-section-label">Estimates &amp; Reports</div>
+                <a href="javascript:void(0)" onclick="navTo('invoice')" class="nav-item" data-page="invoice">
+                    <i class="fas fa-file-invoice"></i> Estimates
+                </a>
+                <a href="javascript:void(0)" onclick="navTo('reports')" class="nav-item" data-page="reports">
+                    <i class="fas fa-chart-bar"></i> Reports
+                </a>
+            </div>
+            <div id="sidebar-footer">
+                <i class="fas fa-shield-alt" style="margin-right:5px;"></i>
+                v1.0.0 &nbsp;empty·&nbsp; GajKesari
+            </div>
+        </nav>
+        <div id="main-area">
+            <header id="topbar">
+                <div id="topbar-left">
+                    <button id="menu-toggle" onclick="toggleSidebar()" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <div id="page-title">Dashboard</div>
+                        <div id="page-breadcrumb">Home &rsaquo; Dashboard</div>
+                    </div>
+                </div>
+                <div id="gs-wrap">
+                    <i class="fas fa-search" id="gs-icon"></i>
+                    <input id="gs-input" type="text" placeholder="Search parties, purchases, sales..."
+                        autocomplete="off" />
+                    <div id="gs-spinner"></div>
+                    <div id="gs-dropdown"></div>
+                </div>
+                <div id="topbar-right">
+                    <button class="topbar-btn" id="gs-mobile-btn" title="Search" onclick="toggleMobileSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="topbar-btn" id="app-reload-btn" title="Refresh Current Page" onclick="appReload()">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                    <button id="edit-mode-btn" onclick="handleEditModeToggle()" title="Toggle Edit Mode">
+                        <i class="fas fa-pen-to-square"></i>
+                        <span id="edit-mode-label">View Only</span>
+                        <div class="toggle-dot"></div>
+                    </button>
+                </div>
+            </header>
+            <div id="edit-mode-banner">
+                <i class="fas fa-circle-dot"></i>
+                <strong>Edit Mode Active</strong> - You can add, edit, and delete records.
+            </div>
+            <script>
+                const APP = __APP_JSON__;
+                const SCRIPT_URL = APP.scriptUrl || '';
+                (function applyConfigTheme() {
+                    document.body.className = APP.editMode ? 'edit-mode-active' : 'view-only';
+                    var r = document.documentElement;
+                    if (APP.primaryColor) { r.style.setProperty('--accent', APP.primaryColor); r.style.setProperty('--sidebar-active', APP.primaryColor + '38'); }
+                    if (APP.sidebarColor) { r.style.setProperty('--sidebar-bg', APP.sidebarColor); }
+                    if (APP.fontFamily) { r.style.setProperty('--font-main', APP.fontFamily); }
+                    if (APP.borderRadius) { r.style.setProperty('--radius', APP.borderRadius); }
+                    var nameEl = document.getElementById('sidebar-brand-name');
+                    var subEl = document.getElementById('sidebar-brand-sub');
+                    if (nameEl && APP.businessName) nameEl.textContent = APP.businessName;
+                    if (subEl && APP.businessSub) subEl.textContent = APP.businessSub;
+                    if (APP.logoUrl) {
+                        var limg = document.getElementById('sidebar-brand-logo');
+                        var licon = document.getElementById('sidebar-brand-icon');
+                        if (limg) { limg.src = APP.logoUrl; limg.style.display = ''; }
+                        if (licon) licon.style.display = 'none';
+                    }
+                })();
+            </script>
+            <!-- API_INCLUDE -->
+            <main id="page-content">
+                <!-- CONTENT_INCLUDE -->
+            </main>
+        </div><!-- /main-area -->
+    </div><!-- /app-shell -->
+    <div id="qa-fab-backdrop" onclick="closeQaFab()"></div>
+    <div id="qa-fab-wrap">
+        <button id="qa-fab-btn" onclick="toggleQaFab()" title="Quick Actions" aria-label="Quick Actions">
+            <i class="fas fa-plus" id="qa-fab-icon"></i>
+        </button>
+        <div id="qa-fab-menu" role="menu">
+            <button class="qa-fab-item edit-only" onclick="qaFabAction('party')" title="Parties">
+                <span class="qa-fab-icon ic-party"><i class="fas fa-users"></i></span>
+                <span class="qa-fab-label">Parties</span>
+            </button>
+            <button class="qa-fab-item edit-only" onclick="qaFabAction('purchase')" title="Purchase">
+                <span class="qa-fab-icon ic-pur"><i class="fas fa-cart-arrow-down"></i></span>
+                <span class="qa-fab-label">Purchase</span>
+            </button>
+            <button class="qa-fab-item edit-only" onclick="qaFabAction('sale')" title="Sales">
+                <span class="qa-fab-icon ic-sale"><i class="fas fa-hand-holding-usd"></i></span>
+                <span class="qa-fab-label">Sales</span>
+            </button>
+            <button class="qa-fab-item edit-only" onclick="qaFabAction('payment')" title="Receipts &amp; Payments">
+                <span class="qa-fab-icon ic-rcpt"><i class="fas fa-receipt"></i></span>
+                <span class="qa-fab-label">Receipts &amp; Payments</span>
+            </button>
+            <button class="qa-fab-item" onclick="qaFabAction('invoice')" title="Invoice / Estimate">
+                <span class="qa-fab-icon ic-est"><i class="fas fa-file-invoice"></i></span>
+                <span class="qa-fab-label">Invoice / Estimate</span>
+            </button>
+        </div>
+    </div>
+    <div id="modal-overlay" onclick="handleModalOverlayClick(event)">
+        <div class="modal-box" id="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="modal-title">Modal</span>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+    <div id="pw-modal-overlay">
+        <div id="pw-modal-box">
+            <div class="pw-lock-icon"><i class="fas fa-lock"></i></div>
+            <div class="pw-title">Admin Verification</div>
+            <div class="pw-sub">Enter the Admin Password to<br>enable Edit Mode.</div>
+            <div class="pw-inp-wrap">
+                <input id="pw-input" type="password" placeholder="Enter password..." autocomplete="off" />
+                <button class="pw-eye" type="button" onclick="pwToggleEye()" tabindex="-1">
+                    <i class="fas fa-eye" id="pw-eye-icon"></i>
+                </button>
+            </div>
+            <div class="pw-errmsg" id="pw-errmsg"></div>
+            <div class="pw-actions">
+                <button id="pw-cancel-btn" onclick="closePwModal()"><i class="fas fa-xmark"
+                        style="margin-right:5px"></i>Cancel</button>
+                <button id="pw-submit-btn" onclick="submitEditPassword()"><i class="fas fa-unlock"
+                        style="margin-right:5px"></i>Unlock</button>
+            </div>
+        </div>
+    </div>
+    <!-- JS_INCLUDE -->
 </body>
+
 </html>

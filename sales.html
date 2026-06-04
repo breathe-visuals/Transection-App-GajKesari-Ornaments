@@ -1,6 +1,6 @@
 <div class="app-overlay" id="saleOv">
   <div class="app-spin"></div>
-  <div class="app-spin-txt" id="saleOvT">Processingâ€¦</div>
+  <div class="app-spin-txt" id="saleOvT">Processing...</div>
 </div>
 <div class="app-header">
   <div class="app-title"><i class="fas fa-hand-holding-usd" style="color:var(--accent);margin-right:8px"></i>Sales</div>
@@ -17,7 +17,7 @@
   <div class="app-bar-search">
     <div class="app-search-wrap">
       <i class="fas fa-search app-search-icon"></i>
-      <input class="app-search-inp" id="saleSrchQ" type="text" placeholder="Search salesâ€¦"
+      <input class="app-search-inp" id="saleSrchQ" type="text" placeholder="Search sales..."
         onkeydown="if(event.key==='Enter')saleSearch()" oninput="saleToggleClear()" />
       <button class="app-search-clear" id="saleClearBtn" onclick="saleClear()" title="Clear" style="display:none"><i
           class="fas fa-xmark"></i></button>
@@ -39,7 +39,7 @@
 <div class="app-wrap">
   <div class="app-thead"><span class="app-thead-title"><i class="fas fa-table"
         style="color:var(--accent);margin-right:6px"></i>Sales
-      List</span><span class="app-count" id="saleCnt">Loadingâ€¦</span></div>
+      List</span><span class="app-count" id="saleCnt">Loading...</span></div>
   <div class="app-scroll">
     <table id="saleTable" class="app-table">
       <thead>
@@ -56,7 +56,7 @@
           <th>Rupees</th>
           <th>Rate/10g</th>
           <th>Avg Rate</th>
-          <th>Profit â‚¹</th>
+          <th>Profit ₹</th>
           <th>Profit %</th>
           <th>Stock (g)</th>
           <th>Note</th>
@@ -69,17 +69,17 @@
   <div class="app-pag" id="salePag"></div>
 </div>
 <script>
-  /* â”€â”€ State â”€â”€ */
+  /* empty”€empty”€ State empty”€empty”€ */
   var salePageData = [], saleTotalRecords = 0, salePage = 1, salePageSize = 25, saleEditing = null, saleParties = [], saleCombo = null;
   var saleSearchCol = 'all', saleSearchQ = '';
   var _saleOvTimer = null;
 
-  function saleShowOv(t) { document.getElementById('saleOvT').textContent = t || 'Processingâ€¦'; document.getElementById('saleOv').classList.add('show'); if (_saleOvTimer) clearTimeout(_saleOvTimer); _saleOvTimer = setTimeout(function () { saleHideOv(); }, 15000); }
+  function saleShowOv(t) { document.getElementById('saleOvT').textContent = t || 'Processing...'; document.getElementById('saleOv').classList.add('show'); if (_saleOvTimer) clearTimeout(_saleOvTimer); _saleOvTimer = setTimeout(function () { saleHideOv(); }, 15000); }
   function saleHideOv() { if (_saleOvTimer) { clearTimeout(_saleOvTimer); _saleOvTimer = null; } document.getElementById('saleOv').classList.remove('show'); }
 
   function saleLoad() { salePage = 1; saleSearchCol = 'all'; saleSearchQ = ''; var q = document.getElementById('saleSrchQ'), c = document.getElementById('saleSrchCrit'); if (q) q.value = ''; if (c) c.value = 'all'; saleLoadPage(1); }
   function saleLoadPage(page) {
-    salePage = page; document.getElementById('saleCnt').textContent = 'Loadingâ€¦';
+    salePage = page; document.getElementById('saleCnt').textContent = 'Loading...';
     if (typeof API === 'undefined') { salePageData = []; saleTotalRecords = 0; saleRender(); return; }
     API.run.withSuccessHandler(function (r) { if (r && r.success) { salePageData = r.data || []; saleTotalRecords = r.total || 0; salePageSize = r.pageSize || salePageSize; saleRender(); } else { salePageData = []; saleTotalRecords = 0; saleRender(); showToast((r && r.message) || 'Load failed', 'error'); } })
       .withFailureHandler(function (e) { salePageData = []; saleTotalRecords = 0; saleRender(); showToast((e && e.message) || 'Load error', 'error'); })
@@ -153,8 +153,8 @@
         + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Grams *</label><input class="app-field" id="sfG" type="number" step="0.001" oninput="saleCalc()"/></div>'
         + '<div class="app-fg"><label class="app-label">Rupees *</label><input class="app-field" id="sfR" type="number" step="0.01" oninput="saleCalc()"/></div></div>'
         + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Sale Rate/10g (Auto)</label><input class="app-field" id="sfRate" readonly/></div>'
-        + '<div class="app-fg"><label class="app-label">Avg Purchase Rate <small style="color:#0d9488;font-weight:500">(Auto / Override)</small></label><input class="app-field" id="sfAvg" type="number" step="0.01" oninput="saleCalc()" placeholder="Auto from purchases â€” edit to override"/></div></div>'
-        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Profit â‚¹ (Auto)</label><input class="app-field" id="sfProR" readonly/></div>'
+        + '<div class="app-fg"><label class="app-label">Avg Purchase Rate <small style="color:#0d9488;font-weight:500">(Auto / Override)</small></label><input class="app-field" id="sfAvg" type="number" step="0.01" oninput="saleCalc()" placeholder="Auto from purchases - edit to override"/></div></div>'
+        + '<div class="app-form-grid"><div class="app-fg"><label class="app-label">Profit ₹ (Auto)</label><input class="app-field" id="sfProR" readonly/></div>'
         + '<div class="app-fg"><label class="app-label">Profit % (Auto)</label><input class="app-field" id="sfProP" readonly/></div></div>'
         + '<div class="app-fg"><label class="app-label">Stock Balance g (Auto)</label><input class="app-field" id="sfStock" readonly placeholder="Calculated on save"/></div>'
         + '<div class="app-fg"><label class="app-label">Note</label><input class="app-field" id="sfNote" type="text" placeholder="Optional"/></div>'
@@ -169,7 +169,7 @@
           wrap: wrap,
           inputId: 'sfPN',
           parties: saleParties,
-          placeholder: 'Type to search partyâ€¦',
+          placeholder: 'Type to search party...',
           onSelect: function (p) {
             document.getElementById('sfPID').value = p ? p.partyId : '';
             document.getElementById('sfArea').value = p ? p.area : '';
@@ -219,24 +219,24 @@
     if (!saleCombo || !saleCombo.getSelected()) { showToast('Please select a party from the dropdown list', 'warning'); return; }
     if (!g || parseFloat(g) <= 0) { showToast('Grams must be > 0', 'warning'); return; }
     if (!r || parseFloat(r) <= 0) { showToast('Rupees must be > 0', 'warning'); return; }
-    closeModal(); saleShowOv('Savingâ€¦');
+    closeModal(); saleShowOv('Saving...');
     API.run.withSuccessHandler(function (res) { saleHideOv(); if (res && res.success) { showToast('New Sale Added', 'success'); saleLoad(); } else showToast((res && res.message) || 'Save failed', 'error'); })
       .withFailureHandler(function (e) { saleHideOv(); showToast(e.message, 'error'); })
       .saleAddSale({ saleId: id, date: dt, partyId: document.getElementById('sfPID').value, partyName: pn, area: document.getElementById('sfArea').value, grams: g, rupees: r, avgPurRate: parseFloat(document.getElementById('sfAvg').value) || 0, note: document.getElementById('sfNote').value.trim(), isPaid: document.getElementById('sfIsPaid') ? document.getElementById('sfIsPaid').checked : false });
   }
 
-  /* â”€â”€ Inline Edit â”€â”€ */
+  /* empty”€empty”€ Inline Edit empty”€empty”€ */
   function saleStartEdit(id) {
     if (saleEditing && saleEditing !== id) { showToast('Please save or cancel the current edit first.', 'warning'); return; } saleEditing = id;
     var d = salePageData.find(function (x) { return x.saleId === id; }); if (!d) return;
     saleLoadParties(function () {
-      saleShowOv('Loadingâ€¦');
+      saleShowOv('Loading...');
       setTimeout(function () {
         var row = document.getElementById('app-form-grid-' + id); if (!row) { saleHideOv(); return; }
         row.classList.add('app-editing');
         var tdD = row.querySelector('.sl-cd'); tdD.setAttribute('data-orig', tdD.innerHTML); tdD.innerHTML = '<input class="app-edit-inp" type="date" value="' + _htmlEsc(d.dateRaw) + '"/>';
         var opts = saleParties.map(function (p) { return '<option value="' + _htmlEsc(p.partyName) + '" data-id="' + _htmlEsc(p.partyId) + '" data-area="' + _htmlEsc(p.area) + '"' + (p.partyName === d.partyName ? ' selected' : '') + '>' + _htmlEsc(p.partyName) + '</option>'; }).join('');
-        var tdP = row.querySelector('.sl-cpn'); tdP.setAttribute('data-orig', tdP.innerHTML); tdP.innerHTML = '<select class="app-edit-inp" onchange="saleEditPC(\'' + id + '\',this)"><option value="">Selectâ€¦</option>' + opts + '</select>';
+        var tdP = row.querySelector('.sl-cpn'); tdP.setAttribute('data-orig', tdP.innerHTML); tdP.innerHTML = '<select class="app-edit-inp" onchange="saleEditPC(\'' + id + '\',this)"><option value="">Select...</option>' + opts + '</select>';
         var tdA = row.querySelector('.sl-ca'); tdA.setAttribute('data-orig', tdA.innerHTML);
         [['sl-cg', d.grams, 'number'], ['sl-cr', d.rupees, 'number'], ['sl-cn', d.note, 'text']].forEach(function (x) {
           var td = row.querySelector('.' + x[0]); td.setAttribute('data-orig', td.innerHTML); td.innerHTML = '<input class="app-edit-inp" type="' + x[2] + '" value="' + _htmlEsc(String(x[1] || '')) + '"/>';
@@ -261,7 +261,7 @@
     if (!g || parseFloat(g) <= 0) { showToast('Grams required', 'warning'); return; }
     if (!r || parseFloat(r) <= 0) { showToast('Rupees required', 'warning'); return; }
     var party = saleParties.find(function (p) { return p.partyName === pn; }) || {};
-    saleShowOv('Updatingâ€¦');
+    saleShowOv('Updating...');
     var origData = salePageData.find(function (x) { return x.saleId === id; }) || {};
     API.run.withSuccessHandler(function (res) { saleHideOv(); if (res && res.success) { showToast('Sale Updated', 'success'); saleEditing = null; saleLoadPage(salePage); } else showToast((res && res.message) || 'Update failed', 'error'); })
       .withFailureHandler(function (e) { saleHideOv(); showToast(e.message, 'error'); })
@@ -270,7 +270,7 @@
   function saleConfirmDel(id) {
     var d = salePageData.find(function (x) { return x.saleId === id; });
     confirmDialog('Delete sale <strong>' + _htmlEsc(id) + '</strong>' + (d ? ' (' + _htmlEsc(d.partyName) + ')?' : '?'), function () {
-      saleShowOv('Deletingâ€¦');
+      saleShowOv('Deleting...');
       API.run.withSuccessHandler(function (res) { saleHideOv(); if (res && res.success) { showToast('Sale Deleted', 'success'); saleLoadPage(salePage); } else showToast((res && res.message) || 'Delete failed', 'error'); })
         .withFailureHandler(function (e) { saleHideOv(); showToast(e.message, 'error'); }).saleDeleteSale(id);
     });
@@ -290,13 +290,13 @@
     var ids = []; document.querySelectorAll('.sale-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No sales selected', 'warning'); return; }
     confirmDialog('Delete <strong>' + ids.length + '</strong> selected sale(s)? Outstanding balances will be reversed.', function () {
-      saleShowOv('Deleting ' + ids.length + ' sale(s)â€¦');
+      saleShowOv('Deleting ' + ids.length + ' sale(s)...');
       API.run.withSuccessHandler(function (res) { saleHideOv(); showToast(res.message || 'Done', 'success'); saleLoadPage(salePage); })
         .withFailureHandler(function (e) { saleHideOv(); showToast(e.message, 'error'); }).saleBulkDelete(ids);
     });
   }
 
-  /* â”€â”€ Print â”€â”€ */
+  /* empty”€empty”€ Print empty”€empty”€ */
   function salePrint() {
     if (!salePageData || !salePageData.length) { showToast('No data to print', 'warning'); return; }
     var totalG = 0, totalR = 0, totalPL = 0;

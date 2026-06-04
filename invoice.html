@@ -1,5 +1,5 @@
 <style>
-  /* â”€â”€ Invoice / Estimates page styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Invoice / Estimates page styles empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   .inv-tab-bar {
     display: flex;
     gap: 8px;
@@ -650,7 +650,7 @@
     <div class="app-bar-search">
       <div class="app-search-wrap">
         <i class="fas fa-search app-search-icon"></i>
-        <input class="app-search-inp" id="invSrchQ" type="text" placeholder="Search by ID, party or dateâ€¦"
+        <input class="app-search-inp" id="invSrchQ" type="text" placeholder="Search by ID, party or date..."
           onkeydown="if(event.key==='Enter')invSearchList()" oninput="invToggleClear()" />
         <button class="app-search-clear" id="invSrchClearBtn" onclick="invClearSearch()" title="Clear"
           style="display:none"><i class="fas fa-xmark"></i></button>
@@ -666,7 +666,7 @@
     <div class="inv-list-wh">
       <span style="font-size:14px;font-weight:600;color:#1a1d23"><i class="fas fa-table"
           style="color:var(--accent);margin-right:6px"></i>Estimate List</span>
-      <span style="font-size:12px;color:#6b7280" id="invListCnt">Loadingâ€¦</span>
+      <span style="font-size:12px;color:#6b7280" id="invListCnt">Loading...</span>
     </div>
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
       <table id="invListTbl" class="app-table">
@@ -732,7 +732,7 @@
         <div class="app-fg">
           <label class="app-label">Customer (Party)</label>
           <select class="app-field" id="invCustomer" onchange="invFetchCustomer()">
-            <option value="">Select customerâ€¦</option>
+            <option value="">Select customer...</option>
           </select>
         </div>
         <div class="app-fg">
@@ -757,9 +757,9 @@
                   <th>Weight (g)</th>
                   <th>Rate/10g</th>
                   <th>Labour</th>
-                  <th>Metal â‚¹</th>
-                  <th>Labour â‚¹</th>
-                  <th>Total â‚¹</th>
+                  <th>Metal ₹</th>
+                  <th>Labour ₹</th>
+                  <th>Total ₹</th>
                   <th></th>
                 </tr>
               </thead>
@@ -774,7 +774,7 @@
 
         <!-- Summary -->
         <div class="inv-summary">
-          <div class="inv-sum-row"><span>Subtotal</span><span id="invSubtotal">â‚¹ 0.00</span></div>
+          <div class="inv-sum-row"><span>Subtotal</span><span id="invSubtotal">₹ 0.00</span></div>
           <div class="inv-gst-row">
             <button class="inv-toggle" id="invGstToggle" onclick="invToggleGst()" title="Toggle GST"></button>
             <span style="font-size:13px;color:#374151">GST</span>
@@ -782,22 +782,22 @@
               style="width:60px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;outline:none"
               oninput="invCalcTotals()" />
             <span style="font-size:13px;color:#6b7280">%</span>
-            <span style="margin-left:auto;font-size:13px;font-weight:500;color:#374151" id="invGstAmt">â‚¹ 0.00</span>
+            <span style="margin-left:auto;font-size:13px;font-weight:500;color:#374151" id="invGstAmt">₹ 0.00</span>
           </div>
-          <div class="inv-sum-row inv-total-row"><span>Grand Total (This Estimate)</span><span id="invGrandTotal">â‚¹
+          <div class="inv-sum-row inv-total-row"><span>Grand Total (This Estimate)</span><span id="invGrandTotal">₹
               0.00</span></div>
           <div class="inv-sum-row" id="invOutRRow" style="display:none;color:#dc2626">
-            <span>Previous Outstanding â‚¹</span><span id="invOutRDisp">â‚¹ 0.00</span>
+            <span>Previous Outstanding ₹</span><span id="invOutRDisp">₹ 0.00</span>
           </div>
           <div class="inv-sum-row" id="invOutGRow" style="display:none;color:#dc2626">
             <span>Previous Outstanding (g)</span><span id="invOutGDisp">0.000 g</span>
           </div>
           <div class="inv-sum-row" id="invTotalDueRow"
             style="font-size:15px;font-weight:700;color:var(--accent);border-top:2px solid var(--border);padding-top:10px;margin-top:6px;display:none">
-            <span>ðŸ’° Total Amount Due</span><span id="invTotalDue">â‚¹ 0.00</span>
+            <span>ðŸ’° Total Amount Due</span><span id="invTotalDue">₹ 0.00</span>
           </div>
           <div class="inv-sum-row" id="invWtDueRow" style="font-weight:700;color:var(--accent);display:none">
-            <span>âš–ï¸ Total Weight Due</span><span id="invWtDue">0.000 g</span>
+            <span>emptyš–ï¸ Total Weight Due</span><span id="invWtDue">0.000 g</span>
           </div>
         </div>
 
@@ -823,15 +823,15 @@
           </div>
           <div class="inv-prev-badge">
             <div class="inv-prev-title">ESTIMATE</div>
-            <div class="inv-prev-num" id="invPrevNum"># â€”</div>
-            <div class="inv-prev-date" id="invPrevDate">Date: â€”</div>
+            <div class="inv-prev-num" id="invPrevNum"># -</div>
+            <div class="inv-prev-date" id="invPrevDate">Date: -</div>
           </div>
         </div>
 
         <div class="inv-prev-cust">
           <div class="inv-prev-cust-label">Bill To</div>
-          <div class="inv-prev-cust-name" id="invPrevCust">â€”</div>
-          <div class="inv-prev-cust-addr" id="invPrevAddr">â€”</div>
+          <div class="inv-prev-cust-name" id="invPrevCust">-</div>
+          <div class="inv-prev-cust-addr" id="invPrevAddr">-</div>
         </div>
 
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">
@@ -846,7 +846,7 @@
                 <th>Wt(g)</th>
                 <th>Rate</th>
                 <th>Labour</th>
-                <th class="inv-pr">Total â‚¹</th>
+                <th class="inv-pr">Total ₹</th>
               </tr>
             </thead>
             <tbody id="invPrevItems">
@@ -859,20 +859,20 @@
 
         <div style="display:flex;justify-content:flex-end">
           <div class="inv-prev-sum">
-            <div class="inv-ps-row"><span>Subtotal</span><span id="invPrevSub">â‚¹ 0.00</span></div>
+            <div class="inv-ps-row"><span>Subtotal</span><span id="invPrevSub">₹ 0.00</span></div>
             <div class="inv-ps-row" id="invPrevGstRow" style="display:none"><span id="invPrevGstLbl">GST
-                (3%)</span><span id="invPrevGstAmt">â‚¹ 0.00</span></div>
-            <div class="inv-ps-row inv-ps-total"><span>Grand Total (This Estimate)</span><span id="invPrevTotal">â‚¹
+                (3%)</span><span id="invPrevGstAmt">₹ 0.00</span></div>
+            <div class="inv-ps-row inv-ps-total"><span>Grand Total (This Estimate)</span><span id="invPrevTotal">₹
                 0.00</span></div>
             <div class="inv-ps-row" id="invPrevOutRRow" style="display:none;color:#dc2626">
-              <span>Previous Outstanding â‚¹</span><span id="invPrevOutR">â‚¹ 0.00</span>
+              <span>Previous Outstanding ₹</span><span id="invPrevOutR">₹ 0.00</span>
             </div>
             <div class="inv-ps-row" id="invPrevOutGRow" style="display:none;color:#dc2626">
               <span>Previous Outstanding (g)</span><span id="invPrevOutG">0.000 g</span>
             </div>
             <div class="inv-ps-row" id="invPrevTotalDueRow"
               style="display:none;font-size:14px;font-weight:800;color:#dc2626;border-top:2px solid #dc2626;margin-top:8px;padding-top:8px">
-              <span>TOTAL AMOUNT DUE</span><span id="invPrevTotalDue">â‚¹ 0.00</span>
+              <span>TOTAL AMOUNT DUE</span><span id="invPrevTotalDue">₹ 0.00</span>
             </div>
             <div class="inv-ps-row" id="invPrevWtDueRow" style="display:none;font-weight:700;color:#dc2626">
               <span>TOTAL WEIGHT DUE</span><span id="invPrevWtDue">0.000 g</span>
@@ -892,13 +892,13 @@
 </div><!-- /invFormView -->
 
 <script>
-  /* â”€â”€ State â”€â”€ */
+  /* empty”€empty”€ State empty”€empty”€ */
   var invParties = [], invGstOn = false, invRowIdx = 0, invOutR = 0, invOutG = 0;
   var invEditingId = null, invFormReady = false;
   var invAllList = [], invFilteredList = [];
   var invPage = 1, invPageSize = 25, invTotal = 0, invSearchQ = '';
 
-  /* â”€â”€ Init (called lazily when form is first shown) â”€â”€ */
+  /* empty”€empty”€ Init (called lazily when form is first shown) empty”€empty”€ */
   function invInit() {
     if (invFormReady) return;
     invFormReady = true;
@@ -924,7 +924,7 @@
       .withSuccessHandler(function (r) {
         if (r && r.success) {
           invParties = r.data || []; var sel = document.getElementById('invCustomer');
-          sel.innerHTML = '<option value="">Select customerâ€¦</option>';
+          sel.innerHTML = '<option value="">Select customer...</option>';
           invParties.forEach(function (p) {
             var o = document.createElement('option');
             o.value = p.partyName;
@@ -937,7 +937,7 @@
           });
         }
       })
-      .withFailureHandler(function(e) {
+      .withFailureHandler(function (e) {
         showToast((e && e.message) || 'Could not load customers', 'warning');
       })
       .rcptGetPartiesForDropdown();
@@ -951,7 +951,7 @@
     invCalcTotals();
   }
 
-  /* â”€â”€ Item Rows â”€â”€ */
+  /* empty”€empty”€ Item Rows empty”€empty”€ */
   function invAddRow() {
     invRowIdx++;
     var idx = invRowIdx;
@@ -986,7 +986,7 @@
   }
 
   function invN(v) { var n = parseFloat(v); return isNaN(n) || !isFinite(n) ? 0 : n; }
-  function invFmt(v) { return 'â‚¹ ' + invN(v).toFixed(2); }
+  function invFmt(v) { return '₹ ' + invN(v).toFixed(2); }
 
   function invCalcRow(idx) {
     var wt = invN(document.getElementById('inv-wt-' + idx).value);
@@ -1026,7 +1026,7 @@
     document.getElementById('invGstAmt').textContent = invFmt(gstAmt);
     document.getElementById('invGrandTotal').textContent = invFmt(grand);
 
-    /* â”€â”€ Outstanding + Total Due â”€â”€ */
+    /* empty”€empty”€ Outstanding + Total Due empty”€empty”€ */
     var hasOut = invOutR !== 0 || invOutG !== 0;
     var totalDue = Math.round((grand + invOutR) * 100) / 100;
     var totalWtDue = Math.round((totalWt + invOutG) * 1000) / 1000;
@@ -1048,7 +1048,7 @@
     invUpdatePreview();
   }
 
-  /* â”€â”€ GST Toggle â”€â”€ */
+  /* empty”€empty”€ GST Toggle empty”€empty”€ */
   function invToggleGst() {
     invGstOn = !invGstOn;
     document.getElementById('invGstToggle').classList.toggle('on', invGstOn);
@@ -1056,14 +1056,14 @@
     invCalcTotals();
   }
 
-  /* â”€â”€ Live Preview â”€â”€ */
+  /* empty”€empty”€ Live Preview empty”€empty”€ */
   function invUpdatePreview() {
     /* Header meta */
-    var num = document.getElementById('invNumber').value || 'â€”';
+    var num = document.getElementById('invNumber').value || '-';
     var dt = document.getElementById('invDate').value;
-    var dtFmt = dt ? new Date(dt + 'T00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'â€”';
-    var cust = document.getElementById('invCustomer').value || 'â€”';
-    var addr = document.getElementById('invAddress').value || 'â€”';
+    var dtFmt = dt ? new Date(dt + 'T00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+    var cust = document.getElementById('invCustomer').value || '-';
+    var addr = document.getElementById('invAddress').value || '-';
     document.getElementById('invPrevNum').textContent = '# ' + num;
     document.getElementById('invPrevDate').textContent = 'Date: ' + dtFmt;
     document.getElementById('invPrevCust').textContent = cust;
@@ -1074,7 +1074,7 @@
     var prevRows = '', sn = 0;
     rows.forEach(function (r) {
       var idx = r.getAttribute('data-idx'); if (!idx) return;
-      var name = invG(idx, 'inv-name-') || 'â€”';
+      var name = invG(idx, 'inv-name-') || '-';
       var qty = invG(idx, 'inv-qty-') || '1';
       var wt = invG(idx, 'inv-wt-') || '0';
       var rate = invG(idx, 'inv-rate-') || '0';
@@ -1094,7 +1094,7 @@
         + '<td>' + invN(wt).toFixed(3) + ' g</td>'
         + '<td>' + invN(rate).toFixed(2) + '</td>'
         + '<td>' + invN(lab).toFixed(2) + '</td>'
-        + '<td class="inv-pr">â‚¹ ' + _htmlEsc(tot) + '</td>'
+        + '<td class="inv-pr">₹ ' + _htmlEsc(tot) + '</td>'
         + '</tr>';
     });
     document.getElementById('invPrevItems').innerHTML = prevRows ||
@@ -1108,7 +1108,7 @@
     document.getElementById('invPrevTotal').textContent = document.getElementById('invGrandTotal').textContent;
     document.getElementById('invPrevGstRow').style.display = invGstOn ? 'flex' : 'none';
 
-    /* â”€â”€ Outstanding rows in preview â”€â”€ */
+    /* empty”€empty”€ Outstanding rows in preview empty”€empty”€ */
     var hasOut = invOutR !== 0 || invOutG !== 0;
     var grand = invN(document.getElementById('invGrandTotal').textContent.replace(/[^\d.-]/g, ''));
     var totalWt = 0;
@@ -1142,7 +1142,7 @@
     return el ? el.textContent : '0.00';
   }
 
-  /* â”€â”€ Actions â”€â”€ */
+  /* empty”€empty”€ Actions empty”€empty”€ */
 
   function invBuildPayload() {
     var invId = document.getElementById('invNumber').value.trim();
@@ -1211,7 +1211,7 @@
     [fn](payload);
   }
 
-  /* â”€â”€ Print / PDF: open standalone popup to bypass GAS iframe restriction â”€â”€ */
+  /* empty”€empty”€ Print / PDF: open standalone popup to bypass GAS iframe restriction empty”€empty”€ */
   function invGetPrintCSS() {
     return [
       'body{font-family:Poppins,sans-serif;margin:0;padding:18mm 20mm;color:#1a1d23;font-size:11pt;}',
@@ -1242,7 +1242,7 @@
     ].join('\n');
   }
 
-  /* â”€â”€ Print: use mobileSafePrint for mobile compatibility â”€â”€ */
+  /* empty”€empty”€ Print: use mobileSafePrint for mobile compatibility empty”€empty”€ */
   function invOpenPrintWindow(htmlContent) {
     var screenHide = '@media screen{body{visibility:hidden!important;background:#fff!important}}';
     var fullHtml = '<!DOCTYPE html><html><head>'
@@ -1272,7 +1272,7 @@
   function invShowList() {
     document.getElementById('invListView').style.display = '';
     document.getElementById('invFormView').style.display = 'none';
-    /* Tab buttons are inside invListView, so they'll be visible â€” reset to "Saved" active */
+    /* Tab buttons are inside invListView, so they'll be visible - reset to "Saved" active */
     var tl = document.getElementById('tabList');
     var tf = document.getElementById('tabForm');
     if (tl) tl.classList.add('active');
@@ -1401,7 +1401,7 @@
     document.querySelectorAll('.inv-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No entries selected', 'warning'); return; }
     confirmDialog('Delete <strong>' + ids.length + '</strong> selected estimate(s)?', function () {
-      if (typeof invShowOv === 'function') invShowOv('Deleting ' + ids.length + ' estimate(s)â€¦');
+      if (typeof invShowOv === 'function') invShowOv('Deleting ' + ids.length + ' estimate(s)...');
       API.run
         .withSuccessHandler(function (res) { if (typeof invHideOv === 'function') invHideOv(); showToast(res.message || 'Done', 'success'); invLoadList(); document.getElementById('invSelAll').checked = false; invChkChange(); })
         .withFailureHandler(function (e) { if (typeof invHideOv === 'function') invHideOv(); showToast(e.message, 'error'); })

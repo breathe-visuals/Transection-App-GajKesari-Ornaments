@@ -376,24 +376,24 @@
 <!-- Outstanding Cards -->
 <div class="dash-out-grid">
   <div class="dash-out-card dash-out-pos" id="dashOutSupRCard">
-    <div class="dash-out-title"><i class="fas fa-truck" style="margin-right:5px"></i>Supplier Outstanding â‚¹</div>
-    <div class="dash-out-val" id="dashOutSupR">â€”</div>
+    <div class="dash-out-title"><i class="fas fa-truck" style="margin-right:5px"></i>Supplier Outstanding ₹</div>
+    <div class="dash-out-val" id="dashOutSupR">-</div>
     <div class="dash-out-sub">Amount owed to suppliers</div>
   </div>
   <div class="dash-out-card dash-out-pos" id="dashOutSupGCard">
     <div class="dash-out-title"><i class="fas fa-weight-hanging" style="margin-right:5px"></i>Supplier Outstanding g
     </div>
-    <div class="dash-out-val" id="dashOutSupG">â€”</div>
+    <div class="dash-out-val" id="dashOutSupG">-</div>
     <div class="dash-out-sub">Grams owed to suppliers</div>
   </div>
   <div class="dash-out-card dash-out-pos" id="dashOutCustRCard">
-    <div class="dash-out-title"><i class="fas fa-user" style="margin-right:5px"></i>Customer Outstanding â‚¹</div>
-    <div class="dash-out-val" id="dashOutCustR">â€”</div>
+    <div class="dash-out-title"><i class="fas fa-user" style="margin-right:5px"></i>Customer Outstanding ₹</div>
+    <div class="dash-out-val" id="dashOutCustR">-</div>
     <div class="dash-out-sub">Amount receivable from customers</div>
   </div>
   <div class="dash-out-card dash-out-pos" id="dashOutCustGCard">
     <div class="dash-out-title"><i class="fas fa-gem" style="margin-right:5px"></i>Customer Outstanding g</div>
-    <div class="dash-out-val" id="dashOutCustG">â€”</div>
+    <div class="dash-out-val" id="dashOutCustG">-</div>
     <div class="dash-out-sub">Grams receivable from customers</div>
   </div>
 </div>
@@ -405,32 +405,32 @@
     <div class="dash-ph"><i class="fas fa-chart-line"></i> Business Overview</div>
     <div class="dash-pb">
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-down"
-            style="color:var(--accent);margin-right:5px"></i>Total Purchase (â‚¹)</span><span class="dash-stat-val"
-          id="dashPurR">â€”</span></div>
+            style="color:var(--accent);margin-right:5px"></i>Total Purchase (₹)</span><span class="dash-stat-val"
+          id="dashPurR">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-down"
             style="color:var(--accent);margin-right:5px"></i>Total Purchase (g)</span><span class="dash-stat-val"
-          id="dashPurG">â€”</span></div>
+          id="dashPurG">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-up"
-            style="color:#2563eb;margin-right:5px"></i>Total Sales (â‚¹)</span><span class="dash-stat-val"
-          id="dashSaleR">â€”</span></div>
+            style="color:#2563eb;margin-right:5px"></i>Total Sales (₹)</span><span class="dash-stat-val"
+          id="dashSaleR">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-arrow-up"
             style="color:#2563eb;margin-right:5px"></i>Total Sales (g)</span><span class="dash-stat-val"
-          id="dashSaleG">â€”</span></div>
+          id="dashSaleG">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-receipt"
-            style="color:#d97706;margin-right:5px"></i>Total Receipts (â‚¹)</span><span class="dash-stat-val"
-          id="dashPayR">â€”</span></div>
+            style="color:#d97706;margin-right:5px"></i>Total Receipts (₹)</span><span class="dash-stat-val"
+          id="dashPayR">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-cubes"
             style="color:#7c3aed;margin-right:5px"></i>Stock Balance (g)</span><span class="dash-stat-val"
-          id="dashStock">â€”</span></div>
+          id="dashStock">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-percent"
             style="color:var(--accent);margin-right:5px"></i>Avg Purchase Rate/10g</span><span class="dash-stat-val"
-          id="dashAvgRate">â€”</span></div>
+          id="dashAvgRate">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-sack-dollar"
-            style="color:#059669;margin-right:5px"></i>Total Profit (â‚¹)</span><span class="dash-stat-val dash-stat-pos"
-          id="dashProfit">â€”</span></div>
+            style="color:#059669;margin-right:5px"></i>Total Profit (₹)</span><span class="dash-stat-val dash-stat-pos"
+          id="dashProfit">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-percent"
             style="color:#059669;margin-right:5px"></i>Profit %</span><span class="dash-stat-val dash-stat-pos"
-          id="dashProfitPct">â€”</span></div>
+          id="dashProfitPct">-</span></div>
     </div>
   </div>
 
@@ -440,9 +440,12 @@
     <div class="dash-pb">
       <div class="dash-qa-grid">
         <button class="dash-qa-btn edit-only" onclick="dashQA('party')"><i class="fas fa-users"></i> Parties</button>
-        <button class="dash-qa-btn edit-only" onclick="dashQA('purchase')"><i class="fas fa-cart-arrow-down"></i> Purchase</button>
-        <button class="dash-qa-btn edit-only" onclick="dashQA('sale')"><i class="fas fa-hand-holding-usd"></i> Sales</button>
-        <button class="dash-qa-btn edit-only" onclick="dashQA('payment')"><i class="fas fa-receipt"></i> Receipts &amp; Payments</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('purchase')"><i class="fas fa-cart-arrow-down"></i>
+          Purchase</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('sale')"><i class="fas fa-hand-holding-usd"></i>
+          Sales</button>
+        <button class="dash-qa-btn edit-only" onclick="dashQA('payment')"><i class="fas fa-receipt"></i> Receipts &amp;
+          Payments</button>
         <button class="dash-qa-btn" onclick="dashQA('invoice')" style="grid-column:1/-1"><i
             class="fas fa-file-invoice"></i> Invoice / Estimate</button>
       </div>
@@ -455,7 +458,7 @@
 </div>
 
 <script>
-  /* â”€â”€ Shared helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Shared helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   var dashData = null, dashParties = [];
   var dqFS = 'margin-top:4px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);width:100%;font-family:var(--font-main);font-size:13px;outline:none;box-sizing:border-box';
   var dqLB = 'display:block;font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px';
@@ -463,10 +466,10 @@
   function dqFG(label, html) { return '<div style="display:flex;flex-direction:column;margin-bottom:12px"><label style="' + dqLB + '">' + label + '</label>' + html + '</div>'; }
   function dqIN(id, type, ph, extra) { return '<input id="' + id + '" type="' + (type || 'text') + '" placeholder="' + (ph || '') + '" style="' + dqFS + '" ' + (extra ? extra + ' ' : '') + '/>'; }
 
-  function dqSEL(id, opts, extra) { return '<select id="' + id + '" style="' + dqFS + '" ' + (extra || '>') + '<option value="">Selectâ€¦</option>' + opts + '</select>'; }
+  function dqSEL(id, opts, extra) { return '<select id="' + id + '" style="' + dqFS + '" ' + (extra || '>') + '<option value="">Select...</option>' + opts + '</select>'; }
   function dqRow2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
   function dashGenId_(p) { return p + Math.floor(10000 + Math.random() * 90000); }
-  function dashFmt(v, dp) { return 'â‚¹ ' + (parseFloat(v) || 0).toLocaleString('en-IN', { minimumFractionDigits: dp || 2, maximumFractionDigits: dp || 2 }); }
+  function dashFmt(v, dp) { return '₹ ' + (parseFloat(v) || 0).toLocaleString('en-IN', { minimumFractionDigits: dp || 2, maximumFractionDigits: dp || 2 }); }
   function dashFmtG(v) { return ((parseFloat(v) || 0).toFixed(3)) + ' g'; }
 
   /* Override modal width for full forms */
@@ -479,7 +482,7 @@
     openModal(title, bodyHtml, footerHtml);
   }
 
-  /* â”€â”€ Dashboard summary load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Dashboard summary load empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashLoad() {
     try {
       console.log('dashLoad: Fetching dashboard summary...');
@@ -520,12 +523,12 @@
           document.getElementById('dashOutCustRCard').className = 'dash-out-card ' + (custR >= 0 ? 'dash-out-pos' : 'dash-out-neg');
           document.getElementById('dashOutCustGCard').className = 'dash-out-card ' + (custG >= 0 ? 'dash-out-pos' : 'dash-out-neg');
         })
-        .withFailureHandler(function (e) { 
+        .withFailureHandler(function (e) {
           console.error('dashLoad: Failure handler triggered', e);
-          showToast(e.message, 'error'); 
+          showToast(e.message, 'error');
         })
         .dashGetSummary();
-    } catch(err) {
+    } catch (err) {
       console.error('dashLoad: Synchronous error:', err);
       showToast('Error: ' + err.message, 'error');
     }
@@ -534,7 +537,7 @@
   /* Register reload hook for topbar refresh button */
   APP.reload = dashLoad;
 
-  /* â”€â”€ Party list for dropdowns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Party list for dropdowns empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashLoadParties(cb) {
     if (dashParties.length) { cb && cb(); return; }
     API.run
@@ -543,7 +546,7 @@
       .repGetPartyList();
   }
 
-  /* â”€â”€ Quick Action dispatcher â€” opens modal forms in dashboard â”€â”€ */
+  /* empty”€empty”€ Quick Action dispatcher - opens modal forms in dashboard empty”€empty”€ */
   function dashQA(type) {
     if (type === 'invoice') { navTo('invoice'); return; }
     if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
@@ -568,85 +571,85 @@
       return '<option value="' + n + '" data-id="' + id + '" data-area="' + ar + '">' + n + '</option>';
     }).join('');
     var fs = dqFS;
-    function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp||'text') + '" placeholder="' + (ph||'') + '" style="' + fs + '" ' + (ex||'') + '/>'; }
-    function sel(id, cont, ch) { return '<select id="' + id + '" style="' + fs + '" ' + (ch ? 'onchange="'+ch+'"' : '') + '>' + cont + '</select>'; }
+    function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp || 'text') + '" placeholder="' + (ph || '') + '" style="' + fs + '" ' + (ex || '') + '/>'; }
+    function sel(id, cont, ch) { return '<select id="' + id + '" style="' + fs + '" ' + (ch ? 'onchange="' + ch + '"' : '') + '>' + cont + '</select>'; }
     function fg(lbl, html) { return '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px"><label style="' + dqLB + '">' + lbl + '</label>' + html + '</div>'; }
     function row2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
     function idr(inp, btn) { return '<div style="display:flex;gap:8px;align-items:center">' + inp + btn + '</div>'; }
-    function roFld(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph||'') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
+    function roFld(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph || '') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
 
-    /* â”€â”€ PARTY â”€â”€ */
+    /* empty”€empty”€ PARTY empty”€empty”€ */
     if (type === 'party') {
-      var ptOpts = '<option value="">Selectâ€¦</option><option>Supplier</option><option>Customer</option><option>Both</option>';
+      var ptOpts = '<option value="">Select...</option><option>Supplier</option><option>Customer</option><option>Both</option>';
       dqOpenWide('Add New Party',
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">'
-        + '<div style="grid-column:1/-1">' + fg('Party ID', idr(roFld('dqPartId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPartGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) + '</div>'
-        + fg('Party Name *', fld('dqPartName','text','Enter party name'))
+        + '<div style="grid-column:1/-1">' + fg('Party ID', idr(roFld('dqPartId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPartGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) + '</div>'
+        + fg('Party Name *', fld('dqPartName', 'text', 'Enter party name'))
         + fg('Party Type *', sel('dqPartType', ptOpts))
-        + fg('Area', fld('dqPartArea','text','Area'))
-        + fg('Owner Name', fld('dqPartOwner','text','Owner name'))
-        + fg('Mobile', fld('dqPartMobile','text','Mobile'))
-        + fg('Labour 999', fld('dqPartL999','number','0'))
-        + fg('Labour 925', fld('dqPartL925','number','0'))
-        + fg('Labour Other', fld('dqPartLOth','number','0'))
-        + fg('Outstanding â‚¹', fld('dqPartBalR','number','0'))
-        + fg('Outstanding g', fld('dqPartBalG','number','0'))
-        + '<div style="grid-column:1/-1">' + fg('Note', fld('dqPartNote','text','Optional')) + '</div>'
+        + fg('Area', fld('dqPartArea', 'text', 'Area'))
+        + fg('Owner Name', fld('dqPartOwner', 'text', 'Owner name'))
+        + fg('Mobile', fld('dqPartMobile', 'text', 'Mobile'))
+        + fg('Labour 999', fld('dqPartL999', 'number', '0'))
+        + fg('Labour 925', fld('dqPartL925', 'number', '0'))
+        + fg('Labour Other', fld('dqPartLOth', 'number', '0'))
+        + fg('Outstanding ₹', fld('dqPartBalR', 'number', '0'))
+        + fg('Outstanding g', fld('dqPartBalG', 'number', '0'))
+        + '<div style="grid-column:1/-1">' + fg('Note', fld('dqPartNote', 'text', 'Optional')) + '</div>'
         + '</div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSaveParty()"><i class="fas fa-save"></i> Save Party</button>');
       dqPartGenId(); return;
     }
 
-    /* â”€â”€ PURCHASE â”€â”€ */
+    /* empty”€empty”€ PURCHASE empty”€empty”€ */
     if (type === 'purchase') {
-      var pOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      var pOpts = '<option value="">Select Party...</option>' + opts;
       dqOpenWide('Add New Purchase',
-        fg('Purchase ID', idr(roFld('dqPurId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPurGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqDate','date')), fg('Party Name *', sel('dqPurPN', pOpts, 'dqPurFetchParty()'))) +
+        fg('Purchase ID', idr(roFld('dqPurId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPurGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqDate', 'date')), fg('Party Name *', sel('dqPurPN', pOpts, 'dqPurFetchParty()'))) +
         row2(fg('Party ID', roFld('dqPurPID')), fg('Area', roFld('dqPurArea'))) +
         row2(fg('Grams *', '<input id="dqG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcPurRate()" style="' + fs + '">'),
-             fg('Rupees *', '<input id="dqR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcPurRate()" style="' + fs + '">')) +
-        row2(fg('Rate/10g (Auto)', roFld('dqRate10','Auto')), fg('Avg Rate (Auto)', roFld('dqPurAvg','On save'))) +
-        fg('Note', fld('dqNote','text','Optional note')),
+          fg('Rupees *', '<input id="dqR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcPurRate()" style="' + fs + '">')) +
+        row2(fg('Rate/10g (Auto)', roFld('dqRate10', 'Auto')), fg('Avg Rate (Auto)', roFld('dqPurAvg', 'On save'))) +
+        fg('Note', fld('dqNote', 'text', 'Optional note')),
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSavePurchase()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('dqDate').value = dqToday(); dqPurGenId(); return;
     }
 
-    /* â”€â”€ SALE â”€â”€ */
+    /* empty”€empty”€ SALE empty”€empty”€ */
     if (type === 'sale') {
-      var sOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      var sOpts = '<option value="">Select Party...</option>' + opts;
       dqOpenWide('Add New Sale',
-        fg('Sale ID', idr(roFld('dqSaleId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqSaleGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqSDate','date')), fg('Party Name *', sel('dqSPN', sOpts, 'dqSaleFetchParty()'))) +
+        fg('Sale ID', idr(roFld('dqSaleId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqSaleGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqSDate', 'date')), fg('Party Name *', sel('dqSPN', sOpts, 'dqSaleFetchParty()'))) +
         row2(fg('Party ID', roFld('dqSPID')), fg('Area', roFld('dqSArea'))) +
         row2(fg('Grams *', '<input id="dqSG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcSaleRate()" style="' + fs + '">'),
-             fg('Rupees *', '<input id="dqSR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcSaleRate()" style="' + fs + '">')) +
-        row2(fg('Sale Rate/10g (Auto)', roFld('dqSRate10','Auto')), fg('Avg Purchase Rate', roFld('dqSAvg',''))) +
-        row2(fg('Profit â‚¹ (Auto)', roFld('dqSProR','')), fg('Profit % (Auto)', roFld('dqSProP',''))) +
-        fg('Note', fld('dqSNote','text','Optional note')),
+          fg('Rupees *', '<input id="dqSR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcSaleRate()" style="' + fs + '">')) +
+        row2(fg('Sale Rate/10g (Auto)', roFld('dqSRate10', 'Auto')), fg('Avg Purchase Rate', roFld('dqSAvg', ''))) +
+        row2(fg('Profit ₹ (Auto)', roFld('dqSProR', '')), fg('Profit % (Auto)', roFld('dqSProP', ''))) +
+        fg('Note', fld('dqSNote', 'text', 'Optional note')),
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSaveSale()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('dqSDate').value = dqToday(); dqSaleGenId();
-      API.run.withSuccessHandler(function(r) { if(r&&r.success){ document.getElementById('dqSAvg').value=r.avgRate||0; dqCalcSaleRate(); } }).saleGetCalcData();
+      API.run.withSuccessHandler(function (r) { if (r && r.success) { document.getElementById('dqSAvg').value = r.avgRate || 0; dqCalcSaleRate(); } }).saleGetCalcData();
       return;
     }
 
-    /* â”€â”€ RECEIPT / PAYMENT â”€â”€ */
+    /* empty”€empty”€ RECEIPT / PAYMENT empty”€empty”€ */
     if (type === 'payment') {
-      var rOpts = '<option value="">Select Partyâ€¦</option>' + opts;
+      var rOpts = '<option value="">Select Party...</option>' + opts;
       var typeBtns = '<div style="display:flex;gap:8px;margin-bottom:4px">'
         + '<button type="button" id="dqTypeRcpt" onclick="dqSetType(\'Receipt\')" style="flex:1;padding:10px;border:2px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i class="fas fa-arrow-down"></i> Receipt (from Customer)</button>'
         + '<button type="button" id="dqTypePay" onclick="dqSetType(\'Payment\')" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer"><i class="fas fa-arrow-up"></i> Payment (to Supplier)</button>'
         + '</div>';
       dqOpenWide('New Receipt / Payment',
         fg('Type', typeBtns) +
-        fg('Receipt ID', idr(roFld('dqPayId','Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPayGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqPyDate','date')), fg('Party Name *', sel('dqPyPN', rOpts, 'dqPayFetchParty()'))) +
+        fg('Receipt ID', idr(roFld('dqPayId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPayGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
+        row2(fg('Date *', fld('dqPyDate', 'date')), fg('Party Name *', sel('dqPyPN', rOpts, 'dqPayFetchParty()'))) +
         row2(fg('Party ID', roFld('dqPyPID')), fg('Area', roFld('dqPyArea'))) +
-        row2(fg('Rupees â‚¹', fld('dqPyR','number','0.00')), fg('Grams (g)', fld('dqPyG','number','0.000'))) +
-        fg('Note', fld('dqPyNote','text','Optional note')),
+        row2(fg('Rupees ₹', fld('dqPyR', 'number', '0.00')), fg('Grams (g)', fld('dqPyG', 'number', '0.000'))) +
+        fg('Note', fld('dqPyNote', 'text', 'Optional note')),
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSavePayment()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('dqPyDate').value = dqToday();
@@ -668,7 +671,7 @@
     pBtn.style.cssText = (type === 'Payment' ? activeStyle : inactiveStyle);
   }
 
-  /* â”€â”€ Party auto-fill helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Party auto-fill helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dqPurFetchParty() {
     var sel = document.getElementById('dqPurPN'), opt = sel.options[sel.selectedIndex];
     document.getElementById('dqPurPID').value = opt ? opt.getAttribute('data-id') : '';
@@ -685,7 +688,7 @@
     document.getElementById('dqPyArea').value = opt ? opt.getAttribute('data-area') : '';
   }
 
-  /* â”€â”€ ID generators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ ID generators empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dqPartGenId() {
     document.getElementById('dqPartId').value = 'P' + Math.floor(10000 + Math.random() * 90000);
   }
@@ -699,7 +702,7 @@
     document.getElementById('dqPayId').value = 'RC' + Math.floor(10000 + Math.random() * 90000);
   }
 
-  /* â”€â”€ Live calculation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Live calculation helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dqCalcPurRate() {
     var g = parseFloat(document.getElementById('dqG').value) || 0;
     var r = parseFloat(document.getElementById('dqR').value) || 0;
@@ -720,7 +723,7 @@
     if (pp) pp.value = profP || '';
   }
 
-  /* â”€â”€ Save: Party â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Save: Party empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashSaveParty() {
     var id = (document.getElementById('dqPartId').value || '').trim();
     var nm = (document.getElementById('dqPartName').value || '').trim();
@@ -749,7 +752,7 @@
       .partAddParty(payload);
   }
 
-  /* â”€â”€ Save: Purchase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Save: Purchase empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashSavePurchase() {
     var id = (document.getElementById('dqPurId').value || '').trim();
     var dt = document.getElementById('dqDate').value;
@@ -776,7 +779,7 @@
       .purAddPurchase(payload);
   }
 
-  /* â”€â”€ Save: Sale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Save: Sale empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashSaveSale() {
     var id = (document.getElementById('dqSaleId').value || '').trim();
     var dt = document.getElementById('dqSDate').value;
@@ -803,7 +806,7 @@
       .saleAddSale(payload);
   }
 
-  /* â”€â”€ Save: Receipt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* empty”€empty”€ Save: Receipt empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
   function dashSavePayment() {
     var id = (document.getElementById('dqPayId').value || '').trim();
     var dt = document.getElementById('dqPyDate').value;
