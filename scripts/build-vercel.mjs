@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -68,6 +68,13 @@ async function main() {
 
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
+
+  const staticDir = path.join(root, 'static');
+  try {
+    await cp(staticDir, outDir, { recursive: true });
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
 
   for (const pageDef of pages) {
     const content = await read(pageDef.source);
