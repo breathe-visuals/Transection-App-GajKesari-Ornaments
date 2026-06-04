@@ -205,7 +205,8 @@
         row2(fg('Grams *', '<input id="_fabG" type="number" step="0.001" placeholder="0.000" oninput="_fabCalcPurRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="_fabR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcPurRate()" style="' + fs + '">')) +
         fg('Rate/10g (Auto)', ro('_fabRate10', 'Auto')) +
-        fg('Note', fld('_fabNote', 'text', 'Optional')),
+        fg('Note', fld('_fabNote', 'text', 'Optional')) +
+        '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="_fabPurIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (skip Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="_fabSavePurchase()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('_fabDate').value = today(); _fabPurGenId(); return;
@@ -220,7 +221,8 @@
           fg('Rupees *', '<input id="_fabSR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcSaleRate()" style="' + fs + '">')) +
         row2(fg('Sale Rate/10g (Auto)', ro('_fabSRate10', 'Auto')), fg('Avg Purchase Rate', ro('_fabSAvg', ''))) +
         row2(fg('Profit ? (Auto)', ro('_fabSProR', '')), fg('Profit % (Auto)', ro('_fabSProP', ''))) +
-        fg('Note', fld('_fabSNote', 'text', 'Optional')),
+        fg('Note', fld('_fabSNote', 'text', 'Optional')) +
+        '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="_fabSaleIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (skip Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="_fabSaveSale()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('_fabSDate').value = today(); _fabSaleGenId();
@@ -298,7 +300,7 @@
     if (!dt) { showToast('Date required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
     if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
-    var payload = { purchaseId: id, date: dt, partyId: document.getElementById('_fabPurPID').value, partyName: pn, area: document.getElementById('_fabPurArea').value, grams: g, rupees: r, note: (document.getElementById('_fabNote').value || '').trim() };
+    var payload = { purchaseId: id, date: dt, partyId: document.getElementById('_fabPurPID').value, partyName: pn, area: document.getElementById('_fabPurArea').value, grams: g, rupees: r, note: (document.getElementById('_fabNote').value || '').trim(), isPaid: document.getElementById('_fabPurIsPaid') ? document.getElementById('_fabPurIsPaid').checked : false };
     closeModal(); showLoader();
     API.run.withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Purchase Added', 'success'); } else showToast((res && res.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).purAddPurchase(payload);
   }
@@ -312,7 +314,7 @@
     if (!dt) { showToast('Date required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
     if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
-    var payload = { saleId: id, date: dt, partyId: document.getElementById('_fabSPID').value, partyName: pn, area: document.getElementById('_fabSArea').value, grams: g, rupees: r, note: (document.getElementById('_fabSNote').value || '').trim() };
+    var payload = { saleId: id, date: dt, partyId: document.getElementById('_fabSPID').value, partyName: pn, area: document.getElementById('_fabSArea').value, grams: g, rupees: r, note: (document.getElementById('_fabSNote').value || '').trim(), isPaid: document.getElementById('_fabSaleIsPaid') ? document.getElementById('_fabSaleIsPaid').checked : false };
     closeModal(); showLoader();
     API.run.withSuccessHandler(function (res) { hideLoader(); if (res && res.success) { showToast('Sale Added', 'success'); } else showToast((res && res.message) || 'Error', 'error'); }).withFailureHandler(function (e) { hideLoader(); showToast(e.message, 'error'); }).saleAddSale(payload);
   }

@@ -611,7 +611,8 @@
         row2(fg('Grams *', '<input id="dqG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcPurRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="dqR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcPurRate()" style="' + fs + '">')) +
         row2(fg('Rate/10g (Auto)', roFld('dqRate10', 'Auto')), fg('Avg Rate (Auto)', roFld('dqPurAvg', 'On save'))) +
-        fg('Note', fld('dqNote', 'text', 'Optional note')),
+        fg('Note', fld('dqNote', 'text', 'Optional note')) +
+        '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="dqPurIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (will NOT be added to Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSavePurchase()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('dqDate').value = dqToday(); dqPurGenId(); return;
@@ -628,7 +629,8 @@
           fg('Rupees *', '<input id="dqSR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcSaleRate()" style="' + fs + '">')) +
         row2(fg('Sale Rate/10g (Auto)', roFld('dqSRate10', 'Auto')), fg('Avg Purchase Rate', roFld('dqSAvg', ''))) +
         row2(fg('Profit ₹ (Auto)', roFld('dqSProR', '')), fg('Profit % (Auto)', roFld('dqSProP', ''))) +
-        fg('Note', fld('dqSNote', 'text', 'Optional note')),
+        fg('Note', fld('dqSNote', 'text', 'Optional note')) +
+        '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="dqSaleIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (will NOT be added to Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSaveSale()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('dqSDate').value = dqToday(); dqSaleGenId();
@@ -770,7 +772,8 @@
       partyName: pn,
       area: document.getElementById('dqPurArea').value,
       grams: parseFloat(g), rupees: parseFloat(r),
-      note: (document.getElementById('dqNote').value || '').trim()
+      note: (document.getElementById('dqNote').value || '').trim(),
+      isPaid: document.getElementById('dqPurIsPaid') ? document.getElementById('dqPurIsPaid').checked : false
     };
     closeModal(); showLoader();
     API.run
@@ -797,7 +800,8 @@
       partyName: pn,
       area: document.getElementById('dqSArea').value,
       grams: parseFloat(g), rupees: parseFloat(r),
-      note: (document.getElementById('dqSNote').value || '').trim()
+      note: (document.getElementById('dqSNote').value || '').trim(),
+      isPaid: document.getElementById('dqSaleIsPaid') ? document.getElementById('dqSaleIsPaid').checked : false
     };
     closeModal(); showLoader();
     API.run
