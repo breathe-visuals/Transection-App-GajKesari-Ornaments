@@ -635,7 +635,7 @@
   <div class="inv-tab-bar">
     <button class="inv-tab-btn active" id="tabList" onclick="invShowList()"><i class="fas fa-list"></i> Saved
       Estimates</button>
-    <button class="inv-tab-btn" id="tabForm" onclick="invShowForm(null)"><i class="fas fa-plus"></i> New
+    <button class="inv-tab-btn edit-only" id="tabForm" onclick="invShowForm(null)"><i class="fas fa-plus"></i> New
       Estimate</button>
   </div>
 
@@ -658,7 +658,7 @@
       </div>
     </div>
     <div class="app-bar-delete" id="invDelRow" style="display:none">
-      <button class="btn btn-danger" onclick="invDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span
+      <button class="btn btn-danger edit-only" onclick="invDeleteSelected()"><i class="fas fa-trash"></i> Delete Selected (<span
           id="invSelCount">0</span>)</button>
     </div>
   </div>
@@ -1193,6 +1193,7 @@
   }
 
   function invSave() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var payload = invBuildPayload();
     if (!payload) return;
     showLoader();
@@ -1280,6 +1281,7 @@
     invLoadList();
   }
   function invShowForm(id) {
+    if (!id && !APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     document.getElementById('invListView').style.display = 'none';
     document.getElementById('invFormView').style.display = '';
     invInit();
@@ -1352,7 +1354,7 @@
         + '<td><div style="display:flex;gap:5px">'
         + '<button class="il-ab il-open" onclick="invShowForm(\'' + paramId + '\')"><i class="fas fa-pen"></i> Open</button>'
         + '<button class="il-ab il-print" onclick="invPrintSaved(\'' + paramId + '\')"><i class="fas fa-print"></i> Print</button>'
-        + '<button class="il-ab il-del" onclick="invDeleteFromList(\'' + paramId + '\')"><i class="fas fa-trash"></i></button>'
+        + '<button class="il-ab il-del edit-only" onclick="invDeleteFromList(\'' + paramId + '\')"><i class="fas fa-trash"></i></button>'
         + '</div></td></tr>';
     }
     tb.innerHTML = rows;
@@ -1393,10 +1395,11 @@
     var sel = document.querySelectorAll('.inv-chk:checked').length;
     var row = document.getElementById('invDelRow');
     var sc = document.getElementById('invSelCount');
-    if (row) row.style.display = sel > 0 ? 'flex' : 'none';
+    if (row) row.style.display = (APP.editMode && sel > 0) ? 'flex' : 'none';
     if (sc) sc.textContent = sel;
   }
   function invDeleteSelected() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var ids = [];
     document.querySelectorAll('.inv-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No entries selected', 'warning'); return; }
@@ -1485,6 +1488,7 @@
 
   /* DELETE FROM LIST */
   function invDeleteFromList(id) {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     confirmDialog(
       'Delete estimate <strong>' + _htmlEsc(id) + '</strong>?<br><small style="color:#6b7280">This will reverse the party outstanding balance.</small>',
       function () {

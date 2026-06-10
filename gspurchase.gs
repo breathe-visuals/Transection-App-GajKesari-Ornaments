@@ -124,6 +124,7 @@ function purAddPurchase(d) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
 
     return { success: true, message: 'New Purchase Added' };
   } catch (e) {
@@ -188,6 +189,7 @@ function purUpdatePurchase(d) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
 
     return { success: true, message: 'Purchase Updated' };
   } catch (e) {
@@ -215,6 +217,7 @@ function purDeletePurchase(purchaseId) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
 
     return { success: true, message: 'Purchase Deleted' };
   } catch (e) {
@@ -245,6 +248,7 @@ function purBulkDelete(ids) {
       StockSvc.recalcSaleProfits();
       _invalidateDashCache_();
       _invalidateSearchCache_();
+      _invalidateRefCache_();
       return { success: true, message: deleted + ' purchase(s) deleted.' };
     }
 
@@ -271,6 +275,7 @@ function purBulkDelete(ids) {
     StockSvc.recalcSaleProfits();
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: toDelete.length + ' purchase(s) deleted.' };
   } catch (e) {
     return DB.safeError(e, 'purBulkDelete');

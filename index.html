@@ -419,6 +419,9 @@
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-receipt"
             style="color:#d97706;margin-right:5px"></i>Total Receipts (₹)</span><span class="dash-stat-val"
           id="dashPayR">-</span></div>
+      <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-money-bill-transfer"
+            style="color:#be123c;margin-right:5px"></i>Total Payments (â‚¹)</span><span class="dash-stat-val"
+          id="dashPaymentR">-</span></div>
       <div class="dash-stat-row"><span class="dash-stat-lbl"><i class="fas fa-cubes"
             style="color:#7c3aed;margin-right:5px"></i>Stock Balance (g)</span><span class="dash-stat-val"
           id="dashStock">-</span></div>
@@ -498,12 +501,13 @@
           document.getElementById('dashParties').textContent = r.parties;
           document.getElementById('dashPurCount').textContent = r.purchases;
           document.getElementById('dashSaleCount').textContent = r.sales;
-          document.getElementById('dashPayCount').textContent = r.payments;
+          document.getElementById('dashPayCount').textContent = r.receipts;
           document.getElementById('dashPurR').textContent = dashFmt(r.purRupees);
           document.getElementById('dashPurG').textContent = dashFmtG(r.purGrams);
           document.getElementById('dashSaleR').textContent = dashFmt(r.saleRupees);
           document.getElementById('dashSaleG').textContent = dashFmtG(r.saleGrams);
-          document.getElementById('dashPayR').textContent = dashFmt(r.rcptRupees || r.payRupees || 0);
+          document.getElementById('dashPayR').textContent = dashFmt(r.rcptRupees);
+          document.getElementById('dashPaymentR').textContent = dashFmt(r.payRupees);
           document.getElementById('dashStock').textContent = dashFmtG(r.stockGrams);
           document.getElementById('dashAvgRate').textContent = dashFmt(r.avgPurRate);
           document.getElementById('dashProfit').textContent = dashFmt(r.profitRupees);

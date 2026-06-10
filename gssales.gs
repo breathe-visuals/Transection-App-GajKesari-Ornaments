@@ -132,6 +132,7 @@ function saleAddSale(d) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'New Sale Added' };
   } catch (e) {
     return DB.safeError(e, 'saleAddSale');
@@ -191,6 +192,7 @@ function saleUpdateSale(d) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'Sale Updated' };
   } catch (e) {
     return DB.safeError(e, 'saleUpdateSale');
@@ -215,6 +217,7 @@ function saleDeleteSale(saleId) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'Sale Deleted' };
   } catch (e) {
     Logger.log('saleDeleteSale: ' + e.message);
@@ -244,6 +247,7 @@ function saleBulkDelete(ids) {
       var deleted = DB.bulkDeleteAndRewrite('Sales', SALE_COL_COUNT, ids);
       _invalidateDashCache_();
       _invalidateSearchCache_();
+      _invalidateRefCache_();
       return { success: true, message: deleted + ' sale(s) deleted.' };
     }
 
@@ -268,6 +272,7 @@ function saleBulkDelete(ids) {
     OutSvc.updateDeltas(smallDeltas);
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: toDelete.length + ' sale(s) deleted.' };
   } catch (e) {
     return DB.safeError(e, 'saleBulkDelete');

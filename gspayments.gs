@@ -122,6 +122,7 @@ function rcptAddReceipt(d) {
     if (partyId) OutSvc.updateDelta(partyId, -rupeesRcvd, -gramsRcvd);
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'New Receipt Added' };
   } catch (e) {
     return DB.safeError(e, 'rcptAddReceipt');
@@ -199,6 +200,7 @@ function rcptUpdateReceipt(d) {
 
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'Receipt Updated' };
   } catch (e) {
     return DB.safeError(e, 'rcptUpdateReceipt');
@@ -238,6 +240,7 @@ function rcptDeleteReceipt(receiptId) {
     if (partyId) OutSvc.updateDelta(partyId, +oldRupees, +oldGrams);
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'Entry Deleted' };
   } catch (e) {
     Logger.log('rcptDeleteReceipt: ' + e.message);
@@ -269,6 +272,7 @@ function rcptBulkDelete(ids) {
       var deleted = DB.bulkDeleteAndRewrite('Receipts', RCPT_COL_COUNT, ids);
       _invalidateDashCache_();
       _invalidateSearchCache_();
+      _invalidateRefCache_();
       return { success: true, message: deleted + ' entry(ies) deleted.' };
     }
 
@@ -290,6 +294,7 @@ function rcptBulkDelete(ids) {
     OutSvc.updateDeltas(smallDeltas);
     _invalidateDashCache_();
     _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: toDelete.length + ' entry(ies) deleted.' };
   } catch (e) {
     return DB.safeError(e, 'rcptBulkDelete');
@@ -379,6 +384,10 @@ function rcptAdjustOutstanding(d) {
     DB.setDateFormat('Receipts', newRow, 2);
 
     OutSvc.setAbsolute(party.partyId, newR, newG);
+
+    _invalidateDashCache_();
+    _invalidateSearchCache_();
+    _invalidateRefCache_();
 
     return { success: true, message: 'Outstanding for ' + d.partyName + ' adjusted successfully.' };
   } catch (e) {

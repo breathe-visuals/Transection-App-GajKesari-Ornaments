@@ -3,18 +3,18 @@
 // Thin wrapper: validates → calls DB/OutSvc/CalcSvc → returns.
 // ============================================================
 
-var INV_MASTER_SHEET   = 'InvoiceMaster';
-var INV_ITEMS_SHEET    = 'InvoiceItems';
-var INV_MASTER_COLS    = 13;
-var INV_ITEMS_COLS     = 11;
+var INV_MASTER_SHEET = 'InvoiceMaster';
+var INV_ITEMS_SHEET = 'InvoiceItems';
+var INV_MASTER_COLS = 13;
+var INV_ITEMS_COLS = 11;
 var INV_MASTER_HEADERS = [
-  'Invoice ID','Date','Party ID','Party Name','Address',
-  'Subtotal','GST Enabled','GST %','GST Amount','Grand Total',
-  'Total Qty','Total Weight','Note'
+  'Invoice ID', 'Date', 'Party ID', 'Party Name', 'Address',
+  'Subtotal', 'GST Enabled', 'GST %', 'GST Amount', 'Grand Total',
+  'Total Qty', 'Total Weight', 'Note'
 ];
-var INV_ITEMS_HEADERS  = [
-  'Invoice ID','Item Name','Qty','Weight','Rate','Labour',
-  'Metal Amount','Labour Amount','Item Total','Barcode','Purity'
+var INV_ITEMS_HEADERS = [
+  'Invoice ID', 'Item Name', 'Qty', 'Weight', 'Rate', 'Labour',
+  'Metal Amount', 'Labour Amount', 'Item Total', 'Barcode', 'Purity'
 ];
 
 // ── Public: Check ID ──────────────────────────────────────────
@@ -54,10 +54,10 @@ function invGetAllInvoices() {
 function invGetPage(params) {
   try {
     DB.ensureSheet(INV_MASTER_SHEET, INV_MASTER_HEADERS);
-    var p        = params || {};
+    var p = params || {};
     var pageSize = parseInt(p.pageSize, 10) || getPageSize_();
-    var page     = Math.max(1, parseInt(p.page, 10) || 1);
-    var q        = String(p.searchQ || '').trim().toLowerCase().substring(0, 100);
+    var page = Math.max(1, parseInt(p.page, 10) || 1);
+    var q = String(p.searchQ || '').trim().toLowerCase().substring(0, 100);
 
     if (!q) {
       var pg = DB.readPage(INV_MASTER_SHEET, INV_MASTER_COLS, (page - 1) * pageSize, pageSize);
@@ -199,9 +199,9 @@ function invSaveInvoice(data) {
   try {
     if (!data || !data.master) return { success: false, message: 'No invoice data provided.' };
     var m = data.master;
-    if (!m.invoiceId)  return { success: false, message: 'Estimate ID is required.' };
-    if (!m.date)       return { success: false, message: 'Estimate date is required.' };
-    if (!m.partyName)  return { success: false, message: 'Customer name is required.' };
+    if (!m.invoiceId) return { success: false, message: 'Estimate ID is required.' };
+    if (!m.date) return { success: false, message: 'Estimate date is required.' };
+    if (!m.partyName) return { success: false, message: 'Customer name is required.' };
     if (!data.items || !data.items.length)
       return { success: false, message: 'Add at least one invoice item.' };
 
@@ -212,7 +212,7 @@ function invSaveInvoice(data) {
     var totalQty = 0, totalWt = 0;
     for (var j = 0; j < data.items.length; j++) {
       totalQty += DB.num(data.items[j].qty);
-      totalWt  += DB.num(data.items[j].weight);
+      totalWt += DB.num(data.items[j].weight);
     }
     totalWt = CalcSvc.round3(totalWt);
 
@@ -250,7 +250,7 @@ function invUpdateInvoice(data) {
     var totalQty = 0, totalWt = 0;
     for (var j = 0; j < data.items.length; j++) {
       totalQty += DB.num(data.items[j].qty);
-      totalWt  += DB.num(data.items[j].weight);
+      totalWt += DB.num(data.items[j].weight);
     }
     totalWt = CalcSvc.round3(totalWt);
 
@@ -316,33 +316,33 @@ function invGetPartiesForDropdown() {
 
 // Concurrency guard: estimate writes mutate master/items and party outstanding.
 var invSaveInvoice_raw = invSaveInvoice;
-invSaveInvoice = function() {
+invSaveInvoice = function () {
   var args = arguments;
-  return DB.withWriteLock('invSaveInvoice', function() {
+  return DB.withWriteLock('invSaveInvoice', function () {
     return invSaveInvoice_raw.apply(null, args);
   });
 };
 
 var invUpdateInvoice_raw = invUpdateInvoice;
-invUpdateInvoice = function() {
+invUpdateInvoice = function () {
   var args = arguments;
-  return DB.withWriteLock('invUpdateInvoice', function() {
+  return DB.withWriteLock('invUpdateInvoice', function () {
     return invUpdateInvoice_raw.apply(null, args);
   });
 };
 
 var invDeleteInvoice_raw = invDeleteInvoice;
-invDeleteInvoice = function() {
+invDeleteInvoice = function () {
   var args = arguments;
-  return DB.withWriteLock('invDeleteInvoice', function() {
+  return DB.withWriteLock('invDeleteInvoice', function () {
     return invDeleteInvoice_raw.apply(null, args);
   });
 };
 
 var invBulkDelete_raw = invBulkDelete;
-invBulkDelete = function() {
+invBulkDelete = function () {
   var args = arguments;
-  return DB.withWriteLock('invBulkDelete', function() {
+  return DB.withWriteLock('invBulkDelete', function () {
     return invBulkDelete_raw.apply(null, args);
   });
 };

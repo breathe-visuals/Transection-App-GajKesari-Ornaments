@@ -561,6 +561,12 @@ DB.truncate = function (v, maxLen) {
 };
 
 DB.getPartiesForDropdown = function (includeOutstanding) {
+  var cacheKey = includeOutstanding ? 'parties_dropdown_outstanding_v1' : 'parties_dropdown_basic_v1';
+  try {
+    var cached = CacheService.getScriptCache().get(cacheKey);
+    if (cached) return JSON.parse(cached);
+  } catch (e) { }
+
   var rows = DB.readAll('Parties', includeOutstanding ? 11 : 4);
   var result = [];
   for (var i = 0; i < rows.length; i++) {
@@ -577,6 +583,7 @@ DB.getPartiesForDropdown = function (includeOutstanding) {
     }
     result.push(item);
   }
+  try { CacheService.getScriptCache().put(cacheKey, JSON.stringify(result), 300); } catch (e2) { }
   return result;
 };
 
@@ -610,7 +617,18 @@ function safeReturn_(obj) { return DB.safeReturn(obj); }
 
 /** Invalidate the dashboard summary cache. */
 function _invalidateDashCache_() {
-  try { CacheService.getScriptCache().remove('dash_summary_v1'); } catch (e) { }
+  try { CacheService.getScriptCache().removeAll(['dash_summary_v1', 'dash_summary_v2']); } catch (e) { }
+}
+
+/** Invalidate reference data caches used by dropdowns/forms. */
+function _invalidateRefCache_() {
+  try {
+    CacheService.getScriptCache().removeAll([
+      'gajkesari_config',
+      'parties_dropdown_basic_v1',
+      'parties_dropdown_outstanding_v1'
+    ]);
+  } catch (e) { }
 }
 
 /** Invalidate the global search index cache. */

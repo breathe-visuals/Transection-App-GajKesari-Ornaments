@@ -92,6 +92,9 @@ function partAddParty(d) {
       d.outstandingGrams  !== '' && d.outstandingGrams  != null ? Number(d.outstandingGrams)  : 0,
       note
     ]);
+    _invalidateDashCache_();
+    _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'New Party Added' };
   } catch (e) {
     return DB.safeError(e, 'partAddParty');
@@ -136,6 +139,9 @@ function partUpdateParty(d) {
       currentOutG,
       note
     ]);
+    _invalidateDashCache_();
+    _invalidateSearchCache_();
+    _invalidateRefCache_();
     return { success: true, message: 'Party Details Updated' };
   } catch (e) {
     return DB.safeError(e, 'partUpdateParty');
@@ -155,6 +161,9 @@ function partDeleteParty(partyId) {
         return { success: false, message: 'Party has outstanding balance (₹' + outR + ', ' + outG + 'g). Clear balance before deleting.' };
       }
       DB.deleteRow('Parties', i + 2);
+      _invalidateDashCache_();
+      _invalidateSearchCache_();
+      _invalidateRefCache_();
       return { success: true, message: 'Party deleted successfully.' };
     }
     return { success: false, message: 'Party not found.' };
@@ -185,6 +194,9 @@ function partBulkDelete(ids) {
       }
     }
     DB.deleteRowsDesc('Parties', toDelete);
+    _invalidateDashCache_();
+    _invalidateSearchCache_();
+    _invalidateRefCache_();
     var msg = toDelete.length + ' party(ies) deleted.';
     if (skipped.length) msg += ' Skipped (outstanding balance): ' + skipped.join(', ');
     return { success: true, message: msg };

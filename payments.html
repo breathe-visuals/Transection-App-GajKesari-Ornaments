@@ -553,10 +553,11 @@
     var sel = document.querySelectorAll('.rcpt-chk:checked').length;
     var row = document.getElementById('rcptDelRow');
     var sc = document.getElementById('rcptSelCount');
-    if (row) row.style.display = sel > 0 ? 'flex' : 'none';
+    if (row) row.style.display = (APP.editMode && sel > 0) ? 'flex' : 'none';
     if (sc) sc.textContent = sel;
   }
   function rcptDeleteSelected() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var ids = [];
     document.querySelectorAll('.rcpt-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No entries selected', 'warning'); return; }
@@ -571,9 +572,21 @@
 
   /* empty”€empty”€ Print empty”€empty”€ */
   function rcptPrint() {
-    if (!rcptAll || !rcptAll.length) { showToast('No data to print', 'warning'); return; }
+    var total = Math.max(parseInt(rcptTotal || 0, 10), (rcptAll || []).length);
+    if (!total) { showToast('No data to print', 'warning'); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        var rows = (r && r.success) ? (r.data || []) : (rcptAll || []);
+        rcptPrintRows(rows);
+      })
+      .withFailureHandler(function () { rcptPrintRows(rcptAll || []); })
+      .rcptGetPage({ page: 1, pageSize: Math.max(total, rcptPer || 25), searchCol: rcptSearchCol, searchQ: rcptSearchQ });
+  }
+
+  function rcptPrintRows(printRows) {
+    if (!printRows || !printRows.length) { showToast('No data to print', 'warning'); return; }
     var totalAmt = 0, totalG = 0;
-    var rows = rcptAll.map(function (d, i) {
+    var rows = printRows.map(function (d, i) {
       totalAmt += parseFloat(d.rupeesReceived) || 0;
       totalG += parseFloat(d.gramsReceived) || 0;
       var typeLabel = d.entryType === 'Receipt' ? '<span class="gk-badge badge-rcpt">Receipt</span>'
@@ -589,15 +602,16 @@
         + '<td class="num">' + (parseFloat(d.gramsReceived) || 0).toFixed(3) + ' g</td>'
         + '<td>' + _htmlEsc(d.note || '') + '</td></tr>';
     }).join('');
-    var foot = '<tr><td colspan="6"><strong>Totals (' + rcptAll.length + ' records)</strong></td>'
+    var foot = '<tr><td colspan="6"><strong>Totals (' + printRows.length + ' records)</strong></td>'
       + '<td class="num"><strong>&#8377; ' + totalAmt.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td>'
       + '<td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td>'
       + '<td></td></tr>';
-    var meta = (rcptSearchQ ? 'Filter: \u201c' + _htmlEsc(rcptSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + rcptPage;
+    var meta = (rcptSearchQ ? 'Filter: \u201c' + _htmlEsc(rcptSearchQ) + '\u201d' : 'All records') + '  \u00b7  ' + printRows.length + ' records';
     var tbl = '<table><thead><tr><th>#</th><th>ID</th><th>Type</th><th>Date</th><th>Party</th><th>Area</th>'
       + '<th class="num">Amount \u20b9</th><th class="num">Amount g</th><th>Note</th></tr></thead>'
       + '<tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
     mobileSafePrint(_gkPrintWrap('Receipts & Payments Register', meta, tbl), 'Receipts & Payments \u2014 GajKesari Ornaments');
+  
   }
 
   rcptLoad();

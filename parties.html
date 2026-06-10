@@ -393,8 +393,20 @@
 
   /* empty”€empty”€ Print empty”€empty”€ */
   function partPrint() {
-    if (!partAllData || !partAllData.length) { showToast('No data to print', 'warning'); return; }
-    var rows = partAllData.map(function (d, i) {
+    var total = Math.max(parseInt(partTotal || 0, 10), (partAllData || []).length);
+    if (!total) { showToast('No data to print', 'warning'); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        var rows = (r && r.success) ? (r.data || []) : (partAllData || []);
+        partPrintRows(rows);
+      })
+      .withFailureHandler(function () { partPrintRows(partAllData || []); })
+      .partGetPage({ page: 1, pageSize: Math.max(total, partPerPage || 25), searchCol: partSearchCol, searchQ: partSearchQ });
+  }
+
+  function partPrintRows(printRows) {
+    if (!printRows || !printRows.length) { showToast('No data to print', 'warning'); return; }
+    var rows = printRows.map(function (d, i) {
       var typeClass = d.partyType === 'Supplier' ? 'badge-buy' : d.partyType === 'Customer' ? 'badge-sell' : 'badge-adj';
       return '<tr><td>' + (i + 1) + '</td>'
         + '<td><code>' + _htmlEsc(d.partyId) + '</code></td>'
@@ -407,11 +419,12 @@
         + '<td class="num">' + (parseFloat(d.outstandingGrams) || 0).toFixed(3) + ' g</td>'
         + '</tr>';
     }).join('');
-    var meta = (partSearchQ ? 'Filter: \u201c' + _htmlEsc(partSearchQ) + '\u201d' : 'All parties') + '  \u00b7  ' + partAllData.length + ' records';
+    var meta = (partSearchQ ? 'Filter: \u201c' + _htmlEsc(partSearchQ) + '\u201d' : 'All parties') + '  \u00b7  ' + printRows.length + ' records';
     var tbl = '<table><thead><tr><th>#</th><th>Party ID</th><th>Party Name</th><th>Type</th><th>Area</th>'
       + '<th>Owner</th><th>Mobile</th><th class="num">Outstanding \u20b9</th><th class="num">Outstanding g</th></tr></thead>'
       + '<tbody>' + rows + '</tbody></table>';
     mobileSafePrint(_gkPrintWrap('Party Directory', meta, tbl), 'Party Directory \u2014 GajKesari Ornaments');
+  
   }
 
   partLoad();
@@ -424,10 +437,11 @@
     var sel = document.querySelectorAll('.part-chk:checked').length;
     var row = document.getElementById('partDelRow');
     var sc = document.getElementById('partSelCount');
-    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (row) row.style.display = (APP.editMode && sel > 0) ? 'block' : 'none';
     if (sc) sc.textContent = sel;
   }
   function partDeleteSelected() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var ids = [];
     document.querySelectorAll('.part-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No parties selected', 'warning'); return; }

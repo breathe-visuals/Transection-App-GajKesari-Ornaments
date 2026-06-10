@@ -507,6 +507,15 @@
       banner.classList.remove('show');
     }
     try { syncFabEditMode(isOn); } catch (e) { }
+    if (!isOn) {
+      ['partDelRow', 'purDelRow', 'saleDelRow', 'rcptDelRow', 'invDelRow'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      document.querySelectorAll('tbody input[type="checkbox"], thead input[type="checkbox"]').forEach(function (el) {
+        el.checked = false;
+      });
+    }
   }
   function handleEditModeToggle() {
     if (APP.editMode) {

@@ -359,10 +359,11 @@
     var sel = document.querySelectorAll('.pur-chk:checked').length;
     var row = document.getElementById('purDelRow');
     var sc = document.getElementById('purSelCount');
-    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (row) row.style.display = (APP.editMode && sel > 0) ? 'block' : 'none';
     if (sc) sc.textContent = sel;
   }
   function purDeleteSelected() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var ids = [];
     document.querySelectorAll('.pur-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No purchases selected', 'warning'); return; }
@@ -380,9 +381,21 @@
 
   /* empty”€empty”€ Print empty”€empty”€ */
   function purPrint() {
-    if (!purAll || !purAll.length) { showToast('No data to print', 'warning'); return; }
+    var total = Math.max(parseInt(purTotal || 0, 10), (purAll || []).length);
+    if (!total) { showToast('No data to print', 'warning'); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        var rows = (r && r.success) ? (r.data || []) : (purAll || []);
+        purPrintRows(rows);
+      })
+      .withFailureHandler(function () { purPrintRows(purAll || []); })
+      .purGetPage({ page: 1, pageSize: Math.max(total, purPer || 25), searchCol: purSearchCol, searchQ: purSearchQ });
+  }
+
+  function purPrintRows(printRows) {
+    if (!printRows || !printRows.length) { showToast('No data to print', 'warning'); return; }
     var totalG = 0, totalR = 0;
-    var rows = purAll.map(function (d, i) {
+    var rows = printRows.map(function (d, i) {
       totalG += parseFloat(d.grams) || 0;
       totalR += parseFloat(d.rupees) || 0;
       return '<tr><td>' + (i + 1) + '</td>'
@@ -395,15 +408,16 @@
         + '<td class="num">' + _htmlEsc(d.rate10g) + '</td>'
         + '<td>' + _htmlEsc(d.note || '') + '</td></tr>';
     }).join('');
-    var foot = '<tr><td colspan="5"><strong>Totals (' + purAll.length + ' records)</strong></td>'
+    var foot = '<tr><td colspan="5"><strong>Totals (' + printRows.length + ' records)</strong></td>'
       + '<td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td>'
       + '<td class="num"><strong>&#8377; ' + totalR.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td>'
       + '<td colspan="2"></td></tr>';
-    var meta = (purSearchQ ? 'Filter: \u201c' + _htmlEsc(purSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + purPage;
+    var meta = (purSearchQ ? 'Filter: \u201c' + _htmlEsc(purSearchQ) + '\u201d' : 'All records') + '  \u00b7  ' + printRows.length + ' records';
     var tbl = '<table><thead><tr><th>#</th><th>Purchase ID</th><th>Date</th><th>Party Name</th><th>Area</th>'
       + '<th class="num">Grams</th><th class="num">Rupees</th><th class="num">Rate/10g</th><th>Note</th></tr></thead>'
       + '<tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
     mobileSafePrint(_gkPrintWrap('Purchase Register', meta, tbl), 'Purchase Register \u2014 GajKesari Ornaments');
+  
   }
 
   purLoad();

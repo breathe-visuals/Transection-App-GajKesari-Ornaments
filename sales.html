@@ -285,10 +285,11 @@
     var sel = document.querySelectorAll('.sale-chk:checked').length;
     var row = document.getElementById('saleDelRow');
     var sc = document.getElementById('saleSelCount');
-    if (row) row.style.display = sel > 0 ? 'block' : 'none';
+    if (row) row.style.display = (APP.editMode && sel > 0) ? 'block' : 'none';
     if (sc) sc.textContent = sel;
   }
   function saleDeleteSelected() {
+    if (!APP.editMode) { showToast('Enable Edit Mode first', 'warning'); return; }
     var ids = []; document.querySelectorAll('.sale-chk:checked').forEach(function (c) { ids.push(c.value); });
     if (!ids.length) { showToast('No sales selected', 'warning'); return; }
     confirmDialog('Delete <strong>' + ids.length + '</strong> selected sale(s)? Outstanding balances will be reversed.', function () {
@@ -300,20 +301,33 @@
 
   /* empty”€empty”€ Print empty”€empty”€ */
   function salePrint() {
-    if (!salePageData || !salePageData.length) { showToast('No data to print', 'warning'); return; }
+    var total = Math.max(parseInt(saleTotalRecords || 0, 10), (salePageData || []).length);
+    if (!total) { showToast('No data to print', 'warning'); return; }
+    API.run
+      .withSuccessHandler(function (r) {
+        var rows = (r && r.success) ? (r.data || []) : (salePageData || []);
+        salePrintRows(rows);
+      })
+      .withFailureHandler(function () { salePrintRows(salePageData || []); })
+      .saleGetPage({ page: 1, pageSize: Math.max(total, salePageSize || 25), searchCol: saleSearchCol, searchQ: saleSearchQ });
+  }
+
+  function salePrintRows(printRows) {
+    if (!printRows || !printRows.length) { showToast('No data to print', 'warning'); return; }
     var totalG = 0, totalR = 0, totalPL = 0;
-    var rows = salePageData.map(function (d, i) {
+    var rows = printRows.map(function (d, i) {
       totalG += parseFloat(d.grams) || 0; totalR += parseFloat(d.rupees) || 0; totalPL += parseFloat(d.profitRupees) || 0;
-      var sn = (salePage - 1) * salePageSize + i + 1;
+      var sn = i + 1;
       var plColor = (parseFloat(d.profitRupees) || 0) >= 0 ? 'color:var(--success)' : 'color:var(--danger)';
       return '<tr><td>' + sn + '</td><td><code>' + _htmlEsc(d.saleId) + '</code></td><td>' + _htmlEsc(d.date) + '</td><td>' + _htmlEsc(d.partyName) + '</td><td>' + _htmlEsc(d.area) + '</td>'
         + '<td class="num">' + (parseFloat(d.grams) || 0).toFixed(3) + ' g</td><td class="num">&#8377; ' + (parseFloat(d.rupees) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>'
         + '<td class="num">' + _htmlEsc(d.saleRate10g) + '</td><td class="num" style="' + plColor + '">&#8377; ' + (parseFloat(d.profitRupees) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td><td>' + _htmlEsc(d.note || '') + '</td></tr>';
     }).join('');
-    var foot = '<tr><td colspan="5"><strong>Totals (' + salePageData.length + ' records)</strong></td><td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td><td class="num"><strong>&#8377; ' + totalR.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td><td></td><td class="num"><strong>&#8377; ' + totalPL.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td><td></td></tr>';
-    var meta = (saleSearchQ ? 'Filter: \u201c' + _htmlEsc(saleSearchQ) + '\u201d' : 'All records') + '  \u00b7  Page ' + salePage;
+    var foot = '<tr><td colspan="5"><strong>Totals (' + printRows.length + ' records)</strong></td><td class="num"><strong>' + totalG.toFixed(3) + ' g</strong></td><td class="num"><strong>&#8377; ' + totalR.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td><td></td><td class="num"><strong>&#8377; ' + totalPL.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td><td></td></tr>';
+    var meta = (saleSearchQ ? 'Filter: \u201c' + _htmlEsc(saleSearchQ) + '\u201d' : 'All records') + '  \u00b7  ' + printRows.length + ' records';
     var tbl = '<table><thead><tr><th>#</th><th>Sale ID</th><th>Date</th><th>Party</th><th>Area</th><th class="num">Grams</th><th class="num">Rupees</th><th class="num">Rate/10g</th><th class="num">Profit \u20b9</th><th>Note</th></tr></thead><tbody>' + rows + '</tbody><tfoot>' + foot + '</tfoot></table>';
     mobileSafePrint(_gkPrintWrap('Sales Register', meta, tbl), 'Sales Register \u2014 GajKesari Ornaments');
+  
   }
 
   saleLoad();
