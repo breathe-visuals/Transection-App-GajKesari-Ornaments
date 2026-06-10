@@ -534,6 +534,16 @@
           document.getElementById('dashOutCustG').textContent = dashFmtG(custG);
           document.getElementById('dashOutCustRCard').className = 'dash-out-card ' + (custR >= 0 ? 'dash-out-pos' : 'dash-out-neg');
           document.getElementById('dashOutCustGCard').className = 'dash-out-card ' + (custG >= 0 ? 'dash-out-pos' : 'dash-out-neg');
+          // Pre-load party list in background so first form click is instant
+          if (!dashParties._loaded && typeof API !== 'undefined') {
+            API.run
+              .withSuccessHandler(function (pr) {
+                if (pr && pr.success) dashParties = pr.data || [];
+                dashParties._loaded = true;
+              })
+              .withFailureHandler(function () { /* silent fail — will retry on first click */ })
+              .purGetPartiesForDropdown();
+          }
         })
         .withFailureHandler(function (e) {
           console.error('dashLoad: Failure handler triggered', e);
@@ -627,7 +637,9 @@
         '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="dqPurIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (will NOT be added to Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSavePurchase()"><i class="fas fa-save"></i> Save</button>');
-      document.getElementById('dqDate').value = dqToday(); dqPurGenId(); return;
+      var dEl = document.getElementById('dqDate');
+      dEl.value = dqToday(); dEl.blur();
+      dqPurGenId(); return;
     }
 
     /* empty”€empty”€ SALE empty”€empty”€ */
@@ -645,7 +657,9 @@
         '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="dqSaleIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (will NOT be added to Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSaveSale()"><i class="fas fa-save"></i> Save</button>');
-      document.getElementById('dqSDate').value = dqToday(); dqSaleGenId();
+      var sdEl = document.getElementById('dqSDate');
+      sdEl.value = dqToday(); sdEl.blur();
+      dqSaleGenId();
       API.run.withSuccessHandler(function (r) { if (r && r.success) { document.getElementById('dqSAvg').value = r.avgRate || 0; dqCalcSaleRate(); } }).saleGetCalcData();
       return;
     }
@@ -666,7 +680,8 @@
         fg('Note', fld('dqPyNote', 'text', 'Optional note')),
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="dashSavePayment()"><i class="fas fa-save"></i> Save</button>');
-      document.getElementById('dqPyDate').value = dqToday();
+      var pyEl = document.getElementById('dqPyDate');
+      pyEl.value = dqToday(); pyEl.blur();
       dqPayGenId();
       window._dqEntryType = 'Receipt';
       return;
