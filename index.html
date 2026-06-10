@@ -371,6 +371,13 @@
       <div class="dash-sk" style="height:24px;width:40px"></div>
     </div>
   </div>
+  <div class="dash-card">
+    <div class="dash-card-icon dash-ic-org"><i class="fas fa-money-bill-transfer"></i></div>
+    <div class="dash-card-label">Payments</div>
+    <div class="dash-card-val" id="dashPaymentCount">
+      <div class="dash-sk" style="height:24px;width:40px"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Outstanding Cards -->
@@ -502,6 +509,7 @@
           document.getElementById('dashPurCount').textContent = r.purchases;
           document.getElementById('dashSaleCount').textContent = r.sales;
           document.getElementById('dashPayCount').textContent = r.receipts;
+          document.getElementById('dashPaymentCount').textContent = r.payments;
           document.getElementById('dashPurR').textContent = dashFmt(r.purRupees);
           document.getElementById('dashPurG').textContent = dashFmtG(r.purGrams);
           document.getElementById('dashSaleR').textContent = dashFmt(r.saleRupees);
