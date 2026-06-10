@@ -79,13 +79,13 @@
           <th>Party Name</th>
           <th>Party Type</th>
           <th>Area</th>
+          <th>Outstanding ₹</th>
+          <th>Outstanding (g)</th>
           <th>Owner Name</th>
           <th>Mobile</th>
           <th>L-999</th>
           <th>L-925</th>
           <th>L-Other</th>
-          <th>Outstanding ₹</th>
-          <th>Outstanding (g)</th>
           <th>Note</th>
           <th>Actions</th>
         </tr>
@@ -158,13 +158,13 @@
         + '<td class="pt-c-partyName">' + _htmlEsc(d.partyName) + '</td>'
         + '<td class="pt-c-partyType"><span class="app-badge ' + badge + '">' + _htmlEsc(d.partyType) + '</span></td>'
         + '<td class="pt-c-area">' + _htmlEsc(d.area) + '</td>'
+        + '<td class="pt-c-outstandingRupees" style="font-weight:600;color:' + (Number(d.outstandingRupees || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmt(d.outstandingRupees) + '</td>'
+        + '<td class="pt-c-outstandingGrams" style="font-weight:600;color:' + (Number(d.outstandingGrams || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmtG(d.outstandingGrams) + '</td>'
         + '<td class="pt-c-ownerName">' + _htmlEsc(d.ownerName) + '</td>'
         + '<td class="pt-c-mobileNumber">' + _htmlEsc(d.mobileNumber) + '</td>'
         + '<td class="pt-c-labour999">' + partNum(d.labour999) + '</td>'
         + '<td class="pt-c-labour925">' + partNum(d.labour925) + '</td>'
         + '<td class="pt-c-labourOther">' + partNum(d.labourOther) + '</td>'
-        + '<td class="pt-c-outstandingRupees" style="font-weight:600;color:' + (Number(d.outstandingRupees || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmt(d.outstandingRupees) + '</td>'
-        + '<td class="pt-c-outstandingGrams" style="font-weight:600;color:' + (Number(d.outstandingGrams || 0) > 0 ? 'var(--danger)' : 'var(--success)') + '">' + partFmtG(d.outstandingGrams) + '</td>'
         + '<td class="pt-c-note">' + _htmlEsc(d.note) + '</td>'
         + '<td style="min-width:160px">'
         + '<div id="pt-view-' + d.partyId + '" style="display:flex;gap:5px">'
@@ -224,13 +224,13 @@
       + '<div class="app-fg"><label class="app-label">Party Name *</label><input class="app-field" id="pfName" type="text" placeholder="Enter party name"/></div>'
       + '<div class="app-fg"><label class="app-label">Party Type *</label><select class="app-field" id="pfType"><option value="">Select...</option><option>Supplier</option><option>Customer</option><option>Both</option></select></div>'
       + '<div class="app-fg"><label class="app-label">Area</label><input class="app-field" id="pfArea" type="text" placeholder="Area"/></div>'
+      + '<div class="app-fg"><label class="app-label">Outstanding ₹ <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalR" type="number" placeholder="0" title="Set initial outstanding. After this, it updates automatically via Sales and Payments."/></div>'
+      + '<div class="app-fg"><label class="app-label">Outstanding (g) <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalG" type="number" placeholder="0" title="Set initial outstanding grams."/></div>'
       + '<div class="app-fg"><label class="app-label">Owner Name</label><input class="app-field" id="pfOwner" type="text" placeholder="Owner name"/></div>'
       + '<div class="app-fg"><label class="app-label">Mobile Number</label><input class="app-field" id="pfMobile" type="text" placeholder="Mobile"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour 999</label><input class="app-field" id="pfL999" type="number" placeholder="0"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour 925</label><input class="app-field" id="pfL925" type="number" placeholder="0"/></div>'
       + '<div class="app-fg"><label class="app-label">Labour Other</label><input class="app-field" id="pfLOth" type="number" placeholder="0"/></div>'
-      + '<div class="app-fg"><label class="app-label">Outstanding ₹ <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalR" type="number" placeholder="0" title="Set initial outstanding. After this, it updates automatically via Sales and Payments."/></div>'
-      + '<div class="app-fg"><label class="app-label">Outstanding (g) <small style="color:#9ca3af;font-weight:400">(auto)</small></label><input class="app-field" id="pfBalG" type="number" placeholder="0" title="Set initial outstanding grams."/></div>'
       + '<div class="app-fg full"><label class="app-label">Note</label><input class="app-field" id="pfNote" type="text" placeholder="Note"/></div>'
       + '</div>';
     var foot = '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>'
@@ -413,15 +413,15 @@
         + '<td><strong>' + _htmlEsc(d.partyName) + '</strong></td>'
         + '<td><span class="gk-badge ' + typeClass + '">' + _htmlEsc(d.partyType) + '</span></td>'
         + '<td>' + _htmlEsc(d.area) + '</td>'
-        + '<td>' + _htmlEsc(d.ownerName) + '</td>'
-        + '<td>' + _htmlEsc(d.mobileNumber) + '</td>'
         + '<td class="num">' + (parseFloat(d.outstandingRupees) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>'
         + '<td class="num">' + (parseFloat(d.outstandingGrams) || 0).toFixed(3) + ' g</td>'
+        + '<td>' + _htmlEsc(d.ownerName) + '</td>'
+        + '<td>' + _htmlEsc(d.mobileNumber) + '</td>'
         + '</tr>';
     }).join('');
     var meta = (partSearchQ ? 'Filter: \u201c' + _htmlEsc(partSearchQ) + '\u201d' : 'All parties') + '  \u00b7  ' + printRows.length + ' records';
     var tbl = '<table><thead><tr><th>#</th><th>Party ID</th><th>Party Name</th><th>Type</th><th>Area</th>'
-      + '<th>Owner</th><th>Mobile</th><th class="num">Outstanding \u20b9</th><th class="num">Outstanding g</th></tr></thead>'
+      + '<th class="num">Outstanding \u20b9</th><th class="num">Outstanding g</th><th>Owner</th><th>Mobile</th></tr></thead>'
       + '<tbody>' + rows + '</tbody></table>';
     mobileSafePrint(_gkPrintWrap('Party Directory', meta, tbl), 'Party Directory \u2014 GajKesari Ornaments');
   
