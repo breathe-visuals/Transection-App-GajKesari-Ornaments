@@ -13,6 +13,9 @@ var DASH_CACHE_SHEET = 'DashboardCache';
 var DASH_CACHE_RANGE_NAME = 'RANGEDASHBOARD';
 var DASH_RUPEE = '\u20b9';
 var DASH_CACHE_HEADERS = ['Key', 'Value ' + DASH_RUPEE, 'Value g', 'Value %', 'Value Digit'];
+// Bump this string whenever DashboardCache formulas change (col refs, new rows, etc.)
+// dashReadCacheMap_ checks this and auto-rewrites the sheet exactly once.
+var DASH_FORMULA_VERSION = 'v6_parties_EF_guard';
 var DASH_CACHE_KEYS = [
   'Total Parties',
   'Total Purchase',
@@ -43,6 +46,7 @@ function dashFormula_(valueRupees, valueGrams, valuePct, valueDigit) {
 }
 
 function dashEnsureCacheSheet_() {
+  if (typeof partEnsureLayout_ === 'function') partEnsureLayout_();
   DB.ensureSheet('Parties', typeof PART_HEADERS !== 'undefined' ? PART_HEADERS : null);
   DB.ensureSheet('Purchase', typeof PUR_HEADERS !== 'undefined' ? PUR_HEADERS : null);
   DB.ensureSheet('Sales', typeof SALE_HEADERS !== 'undefined' ? SALE_HEADERS : null);
@@ -74,10 +78,10 @@ function dashEnsureCacheSheet_() {
       0,
       '=IFERROR(ROWS(FILTER(Receipts!A2:A,' + receiptRows + ',' + paymentType + ')),0)'
     )),
-    ['Supplier Outstanding ' + DASH_RUPEE].concat(dashFormula_('=IFERROR(SUM(FILTER(Parties!J2:J,LEN(Parties!A2:A),' + supplierType + ')),0)', 0, 0, 0)),
-    ['Supplier Outstanding g'].concat(dashFormula_(0, '=IFERROR(SUM(FILTER(Parties!K2:K,LEN(Parties!A2:A),' + supplierType + ')),0)', 0, 0)),
-    ['Customer Outstanding ' + DASH_RUPEE].concat(dashFormula_('=IFERROR(SUM(FILTER(Parties!J2:J,LEN(Parties!A2:A),' + customerType + ')),0)', 0, 0, 0)),
-    ['Customer Outstanding g'].concat(dashFormula_(0, '=IFERROR(SUM(FILTER(Parties!K2:K,LEN(Parties!A2:A),' + customerType + ')),0)', 0, 0)),
+    ['Supplier Outstanding ' + DASH_RUPEE].concat(dashFormula_('=IFERROR(SUM(FILTER(Parties!E2:E,LEN(Parties!A2:A),' + supplierType + ')),0)', 0, 0, 0)),
+    ['Supplier Outstanding g'].concat(dashFormula_(0, '=IFERROR(SUM(FILTER(Parties!F2:F,LEN(Parties!A2:A),' + supplierType + ')),0)', 0, 0)),
+    ['Customer Outstanding ' + DASH_RUPEE].concat(dashFormula_('=IFERROR(SUM(FILTER(Parties!E2:E,LEN(Parties!A2:A),' + customerType + ')),0)', 0, 0, 0)),
+    ['Customer Outstanding g'].concat(dashFormula_(0, '=IFERROR(SUM(FILTER(Parties!F2:F,LEN(Parties!A2:A),' + customerType + ')),0)', 0, 0)),
     ['Total Purchase (' + DASH_RUPEE + ')'].concat(dashFormula_('=IFERROR(SUM(Purchase!G2:G),0)', 0, 0, 0)),
     ['Total Purchase (g)'].concat(dashFormula_(0, '=IFERROR(SUM(Purchase!F2:F),0)', 0, 0)),
     ['Total Sales (' + DASH_RUPEE + ')'].concat(dashFormula_('=IFERROR(SUM(Sales!G2:G),0)', 0, 0, 0)),
@@ -108,12 +112,29 @@ function dashEnsureCacheSheet_() {
 }
 
 function dashReadCacheMap_() {
+  if (typeof partEnsureLayout_ === 'function') partEnsureLayout_();
+  // Read DashboardCache sheet directly — NO rewrite, NO flush.
+  // The sheet already has Google Sheets formulas that update automatically.
+  // EXCEPTION: if DASH_FORMULA_VERSION doesn't match stored version, rewrite formulas once.
   var ss = DB.ss();
-  dashEnsureCacheSheet_();
-  var range = ss.getRangeByName(DASH_CACHE_RANGE_NAME);
-  if (!range) range = ss.getSheetByName(DASH_CACHE_SHEET).getRange(1, 1, DASH_CACHE_KEYS.length + 1, DASH_CACHE_HEADERS.length);
-  var values = range.getValues();
-  var rows = values.slice(1);
+  var sh = ss.getSheetByName(DASH_CACHE_SHEET);
+
+  var needsRefresh = false;
+  try {
+    var storedVer = PropertiesService.getScriptProperties().getProperty('DASH_FORMULA_VERSION');
+    if (storedVer !== DASH_FORMULA_VERSION) needsRefresh = true;
+  } catch (pe) { needsRefresh = !sh; }
+
+  if (!sh || needsRefresh) {
+    dashEnsureCacheSheet_();
+    sh = ss.getSheetByName(DASH_CACHE_SHEET);
+    try { PropertiesService.getScriptProperties().setProperty('DASH_FORMULA_VERSION', DASH_FORMULA_VERSION); } catch (pe2) {}
+  }
+
+  var lastRow = sh.getLastRow();
+  if (lastRow < 2) return {};
+  var values = sh.getRange(1, 1, lastRow, DASH_CACHE_HEADERS.length).getValues();
+  var rows = values.slice(1); // skip header row
   var map = {};
   for (var i = 0; i < rows.length; i++) {
     var key = dashKey_(rows[i][0]);
@@ -135,41 +156,42 @@ function dashCacheVal_(map, key, col) {
 
 function dashGetSummary() {
   try {
-    var CACHE_KEY = 'dash_summary_v2';
+    var CACHE_KEY = 'dash_summary_v4';
     var cache = CacheService.getScriptCache();
     try {
       var cached = cache.get(CACHE_KEY);
       if (cached) return JSON.parse(cached);
-    } catch (ce) {}
+    } catch (ce) { }
 
+    // Simply read current values from DashboardCache — no recalculation needed
     var m = dashReadCacheMap_();
-    var result = DB.safeReturn({
+    var result = {
       success: true,
-      parties: dashCacheVal_(m, 'Total Parties', 'digit'),
-      purchases: dashCacheVal_(m, 'Total Purchase', 'digit'),
-      sales: dashCacheVal_(m, 'Total Sales', 'digit'),
-      receipts: dashCacheVal_(m, 'Total Receipts', 'digit'),
-      payments: dashCacheVal_(m, 'Total Payments', 'digit'),
-      purGrams: CalcSvc.round3(dashCacheVal_(m, 'Total Purchase (g)', 'grams')),
-      purRupees: CalcSvc.round2(dashCacheVal_(m, 'Total Purchase (' + DASH_RUPEE + ')', 'rupees')),
-      saleGrams: CalcSvc.round3(dashCacheVal_(m, 'Total Sales (g)', 'grams')),
-      saleRupees: CalcSvc.round2(dashCacheVal_(m, 'Total Sales (' + DASH_RUPEE + ')', 'rupees')),
-      rcptRupees: CalcSvc.round2(dashCacheVal_(m, 'Total Receipts (' + DASH_RUPEE + ')', 'rupees')),
-      rcptGrams: CalcSvc.round3(dashCacheVal_(m, 'Total Receipts', 'grams')),
-      payRupees: CalcSvc.round2(dashCacheVal_(m, 'Total Payments', 'rupees')),
-      payGrams: CalcSvc.round3(dashCacheVal_(m, 'Total Payments', 'grams')),
-      stockGrams: CalcSvc.round3(dashCacheVal_(m, 'Stock Balance (g)', 'grams')),
-      avgPurRate: CalcSvc.round2(dashCacheVal_(m, 'Avg Purchase Rate/10g', 'rupees')),
-      profitRupees: CalcSvc.round2(dashCacheVal_(m, 'Total Profit (' + DASH_RUPEE + ')', 'rupees')),
-      profitPct: CalcSvc.round2(dashCacheVal_(m, 'Profit %', 'pct')),
-      outSupRupees: CalcSvc.round2(dashCacheVal_(m, 'Supplier Outstanding ' + DASH_RUPEE, 'rupees')),
-      outSupGrams: CalcSvc.round3(dashCacheVal_(m, 'Supplier Outstanding g', 'grams')),
-      outCustRupees: CalcSvc.round2(dashCacheVal_(m, 'Customer Outstanding ' + DASH_RUPEE, 'rupees')),
-      outCustGrams: CalcSvc.round3(dashCacheVal_(m, 'Customer Outstanding g', 'grams')),
+      parties: Number(dashCacheVal_(m, 'Total Parties', 'digit')) || 0,
+      purchases: Number(dashCacheVal_(m, 'Total Purchase', 'digit')) || 0,
+      sales: Number(dashCacheVal_(m, 'Total Sales', 'digit')) || 0,
+      receipts: Number(dashCacheVal_(m, 'Total Receipts', 'digit')) || 0,
+      payments: Number(dashCacheVal_(m, 'Total Payments', 'digit')) || 0,
+      purGrams: Number(dashCacheVal_(m, 'Total Purchase (g)', 'grams')) || 0,
+      purRupees: Number(dashCacheVal_(m, 'Total Purchase (' + DASH_RUPEE + ')', 'rupees')) || 0,
+      saleGrams: Number(dashCacheVal_(m, 'Total Sales (g)', 'grams')) || 0,
+      saleRupees: Number(dashCacheVal_(m, 'Total Sales (' + DASH_RUPEE + ')', 'rupees')) || 0,
+      rcptRupees: Number(dashCacheVal_(m, 'Total Receipts (' + DASH_RUPEE + ')', 'rupees')) || 0,
+      rcptGrams: Number(dashCacheVal_(m, 'Total Receipts', 'grams')) || 0,
+      payRupees: Number(dashCacheVal_(m, 'Total Payments', 'rupees')) || 0,
+      payGrams: Number(dashCacheVal_(m, 'Total Payments', 'grams')) || 0,
+      stockGrams: Number(dashCacheVal_(m, 'Stock Balance (g)', 'grams')) || 0,
+      avgPurRate: Number(dashCacheVal_(m, 'Avg Purchase Rate/10g', 'rupees')) || 0,
+      profitRupees: Number(dashCacheVal_(m, 'Total Profit (' + DASH_RUPEE + ')', 'rupees')) || 0,
+      profitPct: Number(dashCacheVal_(m, 'Profit %', 'pct')) || 0,
+      outSupRupees: Number(dashCacheVal_(m, 'Supplier Outstanding ' + DASH_RUPEE, 'rupees')) || 0,
+      outSupGrams: Number(dashCacheVal_(m, 'Supplier Outstanding g', 'grams')) || 0,
+      outCustRupees: Number(dashCacheVal_(m, 'Customer Outstanding ' + DASH_RUPEE, 'rupees')) || 0,
+      outCustGrams: Number(dashCacheVal_(m, 'Customer Outstanding g', 'grams')) || 0,
       rangeName: DASH_CACHE_RANGE_NAME
-    });
+    };
 
-    try { cache.put(CACHE_KEY, JSON.stringify(result), 120); } catch (ce2) {}
+    try { cache.put(CACHE_KEY, JSON.stringify(result), 120); } catch (ce2) { }
     return result;
   } catch (e) {
     Logger.log('dashGetSummary: ' + e.message);
@@ -183,10 +205,10 @@ function repGetReportData(filters) {
   try {
     filters = filters || {};
     var dateFrom = filters.dateFrom ? new Date(filters.dateFrom) : null;
-    var dateTo   = filters.dateTo   ? new Date(filters.dateTo + 'T23:59:59') : null;
-    var party    = (filters.party   || '').trim().toLowerCase();
-    var area     = (filters.area    || '').trim().toLowerCase();
-    var module   = filters.module   || 'all';
+    var dateTo = filters.dateTo ? new Date(filters.dateTo + 'T23:59:59') : null;
+    var party = (filters.party || '').trim().toLowerCase();
+    var area = (filters.area || '').trim().toLowerCase();
+    var module = filters.module || 'all';
 
     function inRange(val) {
       if (!val) return true;
@@ -194,18 +216,18 @@ function repGetReportData(filters) {
         var d = new Date(val);
         if (isNaN(d.getTime())) return true;
         if (dateFrom && d < dateFrom) return false;
-        if (dateTo   && d > dateTo)   return false;
+        if (dateTo && d > dateTo) return false;
         return true;
-      } catch(e) { return true; }
+      } catch (e) { return true; }
     }
     function matchParty(name) { return !party || String(name || '').toLowerCase().includes(party); }
-    function matchArea(a)     { return !area  || String(a || '').toLowerCase().includes(area); }
+    function matchArea(a) { return !area || String(a || '').toLowerCase().includes(area); }
 
     var result = { success: true, purchase: [], sales: [], payments: [], summary: {} };
 
     if (module === 'all' || module === 'purchase') {
       var purRows = DB.readAll('Purchase', 11);
-      purRows.forEach(function(r) {
+      purRows.forEach(function (r) {
         if (!inRange(r[1]) || !matchParty(r[3]) || !matchArea(r[4])) return;
         result.purchase.push({
           purchaseId: r[0], date: DB.dateRaw(r[1]), partyId: r[2], partyName: r[3], area: r[4],
@@ -216,7 +238,7 @@ function repGetReportData(filters) {
 
     if (module === 'all' || module === 'sales') {
       var saleRows = DB.readAll('Sales', 13);
-      saleRows.forEach(function(r) {
+      saleRows.forEach(function (r) {
         if (!inRange(r[1]) || !matchParty(r[3]) || !matchArea(r[4])) return;
         result.sales.push({
           saleId: r[0], date: DB.dateRaw(r[1]), partyId: r[2], partyName: r[3], area: r[4],
@@ -228,8 +250,8 @@ function repGetReportData(filters) {
 
     if (module === 'all' || module === 'payments') {
       var rcptRows = [];
-      try { rcptRows = DB.readAll('Receipts', 11); } catch(e) {}
-      rcptRows.forEach(function(r) {
+      try { rcptRows = DB.readAll('Receipts', 11); } catch (e) { }
+      rcptRows.forEach(function (r) {
         if (!inRange(r[1]) || !matchParty(r[3]) || !matchArea(r[4])) return;
         result.payments.push({
           paymentId: r[0], date: DB.dateRaw(r[1]), partyId: r[2], partyName: r[3], area: r[4],
@@ -241,9 +263,9 @@ function repGetReportData(filters) {
 
     // Aggregate summary from filtered results
     var purG = 0, purR = 0, salG = 0, salR = 0, prof = 0, payR = 0, payG = 0;
-    result.purchase.forEach(function(r) { purG += DB.num(r.grams); purR += DB.num(r.rupees); });
-    result.sales.forEach(function(r)    { salG += DB.num(r.grams); salR += DB.num(r.rupees); prof += DB.num(r.profitR); });
-    result.payments.forEach(function(r) { payR += DB.num(r.rupeesRP); payG += DB.num(r.gramsRP); });
+    result.purchase.forEach(function (r) { purG += DB.num(r.grams); purR += DB.num(r.rupees); });
+    result.sales.forEach(function (r) { salG += DB.num(r.grams); salR += DB.num(r.rupees); prof += DB.num(r.profitR); });
+    result.payments.forEach(function (r) { payR += DB.num(r.rupeesRP); payG += DB.num(r.gramsRP); });
 
     var outByType = OutSvc.getByType();
     result.summary = {

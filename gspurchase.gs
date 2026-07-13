@@ -72,7 +72,7 @@ function purCheckIdExists(purchaseId) {
 function purGetPartiesForDropdown() {
   try {
     var parties = DB.getPartiesForDropdown(false);
-    var filtered = parties.filter(function (p) { return p.partyType !== 'Customer'; });
+    var filtered = parties.filter(function (p) { return p.partyType === 'Supplier' || p.partyType === 'Both'; });
     return { success: true, data: filtered };
   } catch (e) { return { success: false, message: e.message }; }
 }

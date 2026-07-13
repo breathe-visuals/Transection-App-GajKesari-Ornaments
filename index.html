@@ -469,7 +469,7 @@
 
 <script>
   /* empty”€empty”€ Shared helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
-  var dashData = null, dashParties = [];
+  var dashData = null, dashParties = [], dqPurCombo = null, dqSaleCombo = null, dqPayCombo = null;
   var dqFS = 'margin-top:4px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);width:100%;font-family:var(--font-main);font-size:13px;outline:none;box-sizing:border-box';
   var dqLB = 'display:block;font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px';
   function dqToday() { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
@@ -542,7 +542,7 @@
                 dashParties._loaded = true;
               })
               .withFailureHandler(function () { /* silent fail — will retry on first click */ })
-              .purGetPartiesForDropdown();
+              .rcptGetPartiesForDropdown();
           }
         })
         .withFailureHandler(function (e) {
@@ -565,7 +565,7 @@
     API.run
       .withSuccessHandler(function (r) { if (r && r.success) dashParties = r.data || []; cb && cb(); })
       .withFailureHandler(function () { cb && cb(); })
-      .repGetPartyList();
+      .rcptGetPartiesForDropdown();
   }
 
   /* empty”€empty”€ Quick Action dispatcher - opens modal forms in dashboard empty”€empty”€ */
@@ -581,17 +581,13 @@
           _dqOpen(type);
         })
         .withFailureHandler(function () { _dqOpen(type); })
-        .purGetPartiesForDropdown();
+        .rcptGetPartiesForDropdown();
     } else {
       _dqOpen(type);
     }
   }
 
   function _dqOpen(type) {
-    var opts = dashParties.map(function (p) {
-      var n = String(p.partyName || ''), id = p.partyId || '', ar = p.area || '';
-      return '<option value="' + n + '" data-id="' + id + '" data-area="' + ar + '">' + n + '</option>';
-    }).join('');
     var fs = dqFS;
     function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp || 'text') + '" placeholder="' + (ph || '') + '" style="' + fs + '" ' + (ex || '') + '/>'; }
     function sel(id, cont, ch) { return '<select id="' + id + '" style="' + fs + '" ' + (ch ? 'onchange="' + ch + '"' : '') + '>' + cont + '</select>'; }
@@ -599,6 +595,7 @@
     function row2(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' + a + b + '</div>'; }
     function idr(inp, btn) { return '<div style="display:flex;gap:8px;align-items:center">' + inp + btn + '</div>'; }
     function roFld(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph || '') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
+    function comboWrap(id) { return '<div id="' + id + '"></div>'; }
 
     /* empty”€empty”€ PARTY empty”€empty”€ */
     if (type === 'party') {
@@ -625,10 +622,9 @@
 
     /* empty”€empty”€ PURCHASE empty”€empty”€ */
     if (type === 'purchase') {
-      var pOpts = '<option value="">Select Party...</option>' + opts;
       dqOpenWide('Add New Purchase',
         fg('Purchase ID', idr(roFld('dqPurId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPurGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqDate', 'date')), fg('Party Name *', sel('dqPurPN', pOpts, 'dqPurFetchParty()'))) +
+        row2(fg('Date *', fld('dqDate', 'date')), fg('Party Name *', comboWrap('dqPurPNWrap'))) +
         row2(fg('Party ID', roFld('dqPurPID')), fg('Area', roFld('dqPurArea'))) +
         row2(fg('Grams *', '<input id="dqG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcPurRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="dqR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcPurRate()" style="' + fs + '">')) +
@@ -639,15 +635,25 @@
         '<button class="btn btn-primary" onclick="dashSavePurchase()"><i class="fas fa-save"></i> Save</button>');
       var dEl = document.getElementById('dqDate');
       dEl.value = dqToday(); dEl.blur();
+      dqPurCombo = makePartyCombo({
+        wrap: document.getElementById('dqPurPNWrap'),
+        inputId: 'dqPurPN',
+        parties: dashParties,
+        placeholder: 'Type to search supplier...',
+        filter: function (p) { return p.partyType === 'Supplier' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('dqPurPID').value = p ? p.partyId : '';
+          document.getElementById('dqPurArea').value = p ? p.area : '';
+        }
+      });
       dqPurGenId(); return;
     }
 
     /* empty”€empty”€ SALE empty”€empty”€ */
     if (type === 'sale') {
-      var sOpts = '<option value="">Select Party...</option>' + opts;
       dqOpenWide('Add New Sale',
         fg('Sale ID', idr(roFld('dqSaleId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqSaleGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqSDate', 'date')), fg('Party Name *', sel('dqSPN', sOpts, 'dqSaleFetchParty()'))) +
+        row2(fg('Date *', fld('dqSDate', 'date')), fg('Party Name *', comboWrap('dqSPNWrap'))) +
         row2(fg('Party ID', roFld('dqSPID')), fg('Area', roFld('dqSArea'))) +
         row2(fg('Grams *', '<input id="dqSG" type="number" step="0.001" placeholder="0.000" oninput="dqCalcSaleRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="dqSR" type="number" step="0.01" placeholder="0.00" oninput="dqCalcSaleRate()" style="' + fs + '">')) +
@@ -659,6 +665,17 @@
         '<button class="btn btn-primary" onclick="dashSaveSale()"><i class="fas fa-save"></i> Save</button>');
       var sdEl = document.getElementById('dqSDate');
       sdEl.value = dqToday(); sdEl.blur();
+      dqSaleCombo = makePartyCombo({
+        wrap: document.getElementById('dqSPNWrap'),
+        inputId: 'dqSPN',
+        parties: dashParties,
+        placeholder: 'Type to search customer...',
+        filter: function (p) { return p.partyType === 'Customer' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('dqSPID').value = p ? p.partyId : '';
+          document.getElementById('dqSArea').value = p ? p.area : '';
+        }
+      });
       dqSaleGenId();
       API.run.withSuccessHandler(function (r) { if (r && r.success) { document.getElementById('dqSAvg').value = r.avgRate || 0; dqCalcSaleRate(); } }).saleGetCalcData();
       return;
@@ -666,7 +683,6 @@
 
     /* empty”€empty”€ RECEIPT / PAYMENT empty”€empty”€ */
     if (type === 'payment') {
-      var rOpts = '<option value="">Select Party...</option>' + opts;
       var typeBtns = '<div style="display:flex;gap:8px;margin-bottom:4px">'
         + '<button type="button" id="dqTypeRcpt" onclick="dqSetType(\'Receipt\')" style="flex:1;padding:10px;border:2px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i class="fas fa-arrow-down"></i> Receipt (from Customer)</button>'
         + '<button type="button" id="dqTypePay" onclick="dqSetType(\'Payment\')" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer"><i class="fas fa-arrow-up"></i> Payment (to Supplier)</button>'
@@ -674,7 +690,7 @@
       dqOpenWide('New Receipt / Payment',
         fg('Type', typeBtns) +
         fg('Receipt ID', idr(roFld('dqPayId', 'Click Generate'), '<button class="btn btn-secondary btn-sm" onclick="dqPayGenId()"><i class="fas fa-rotate-right"></i> Generate</button>')) +
-        row2(fg('Date *', fld('dqPyDate', 'date')), fg('Party Name *', sel('dqPyPN', rOpts, 'dqPayFetchParty()'))) +
+        row2(fg('Date *', fld('dqPyDate', 'date')), fg('Party Name *', comboWrap('dqPyPNWrap'))) +
         row2(fg('Party ID', roFld('dqPyPID')), fg('Area', roFld('dqPyArea'))) +
         row2(fg('Rupees ₹', fld('dqPyR', 'number', '0.00')), fg('Grams (g)', fld('dqPyG', 'number', '0.000'))) +
         fg('Note', fld('dqPyNote', 'text', 'Optional note')),
@@ -682,8 +698,19 @@
         '<button class="btn btn-primary" onclick="dashSavePayment()"><i class="fas fa-save"></i> Save</button>');
       var pyEl = document.getElementById('dqPyDate');
       pyEl.value = dqToday(); pyEl.blur();
-      dqPayGenId();
+      dqPayCombo = makePartyCombo({
+        wrap: document.getElementById('dqPyPNWrap'),
+        inputId: 'dqPyPN',
+        parties: dashParties,
+        placeholder: 'Type to search customer...',
+        filter: function (p) { return p.partyType === 'Customer' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('dqPyPID').value = p ? p.partyId : '';
+          document.getElementById('dqPyArea').value = p ? p.area : '';
+        }
+      });
       window._dqEntryType = 'Receipt';
+      dqPayGenId();
       return;
     }
   }
@@ -698,6 +725,17 @@
     var inactiveStyle = 'flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer';
     rBtn.style.cssText = (type === 'Receipt' ? activeStyle : inactiveStyle);
     pBtn.style.cssText = (type === 'Payment' ? activeStyle : inactiveStyle);
+    if (dqPayCombo) {
+      dqPayCombo.clearValue();
+      dqPayCombo.setFilter(function (p) {
+        return type === 'Receipt'
+          ? (p.partyType === 'Customer' || p.partyType === 'Both')
+          : (p.partyType === 'Supplier' || p.partyType === 'Both');
+      });
+      var inp = document.getElementById('dqPyPN');
+      if (inp) inp.placeholder = type === 'Receipt' ? 'Type to search customer...' : 'Type to search supplier...';
+    }
+    dqPayGenId();
   }
 
   /* empty”€empty”€ Party auto-fill helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
@@ -728,7 +766,7 @@
     document.getElementById('dqSaleId').value = 'S' + Math.floor(10000 + Math.random() * 90000);
   }
   function dqPayGenId() {
-    document.getElementById('dqPayId').value = 'RC' + Math.floor(10000 + Math.random() * 90000);
+    document.getElementById('dqPayId').value = ((window._dqEntryType || 'Receipt') === 'Payment' ? 'PY' : 'RC') + Math.floor(10000 + Math.random() * 90000);
   }
 
   /* empty”€empty”€ Live calculation helpers empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€empty”€ */
@@ -785,12 +823,13 @@
   function dashSavePurchase() {
     var id = (document.getElementById('dqPurId').value || '').trim();
     var dt = document.getElementById('dqDate').value;
-    var pn = document.getElementById('dqPurPN').value;
+    var pn = dqPurCombo ? dqPurCombo.getValue() : '';
     var g = document.getElementById('dqG').value;
     var r = document.getElementById('dqR').value;
     if (!id) { showToast('Generate a Purchase ID first', 'warning'); return; }
     if (!dt) { showToast('Date is required', 'warning'); return; }
     if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!dqPurCombo || !dqPurCombo.getSelected()) { showToast('Please select a supplier from the list', 'warning'); return; }
     if (!g || parseFloat(g) <= 0) { showToast('Grams must be > 0', 'warning'); return; }
     if (!r || parseFloat(r) <= 0) { showToast('Rupees must be > 0', 'warning'); return; }
     var payload = {
@@ -813,12 +852,13 @@
   function dashSaveSale() {
     var id = (document.getElementById('dqSaleId').value || '').trim();
     var dt = document.getElementById('dqSDate').value;
-    var pn = document.getElementById('dqSPN').value;
+    var pn = dqSaleCombo ? dqSaleCombo.getValue() : '';
     var g = document.getElementById('dqSG').value;
     var r = document.getElementById('dqSR').value;
     if (!id) { showToast('Generate a Sale ID first', 'warning'); return; }
     if (!dt) { showToast('Date is required', 'warning'); return; }
     if (!pn) { showToast('Party Name is required', 'warning'); return; }
+    if (!dqSaleCombo || !dqSaleCombo.getSelected()) { showToast('Please select a customer from the list', 'warning'); return; }
     if (!g || parseFloat(g) <= 0) { showToast('Grams must be > 0', 'warning'); return; }
     if (!r || parseFloat(r) <= 0) { showToast('Rupees must be > 0', 'warning'); return; }
     var payload = {
@@ -841,13 +881,14 @@
   function dashSavePayment() {
     var id = (document.getElementById('dqPayId').value || '').trim();
     var dt = document.getElementById('dqPyDate').value;
-    var pn = document.getElementById('dqPyPN').value;
+    var pn = dqPayCombo ? dqPayCombo.getValue() : '';
     var rr = parseFloat(document.getElementById('dqPyR').value) || 0;
     var gr = parseFloat(document.getElementById('dqPyG').value) || 0;
     var entryType = window._dqEntryType || 'Receipt';
     if (!id) { showToast('Generate a Receipt ID first', 'warning'); return; }
     if (!dt) { showToast('Date is required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!dqPayCombo || !dqPayCombo.getSelected()) { showToast('Please select a party from the list', 'warning'); return; }
     if (!rr && !gr) { showToast('Enter Rupees or Grams received', 'warning'); return; }
     var payload = {
       receiptId: id,

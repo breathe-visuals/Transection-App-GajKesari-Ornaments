@@ -149,6 +149,7 @@
   }
   var _fabParties = [];
   var _fabPartiesLoaded = false;
+  var _fabPurCombo = null, _fabSaleCombo = null, _fabPayCombo = null;
   function _fabLoadPartiesThen(type) {
     if (_fabPartiesLoaded) { _fabOpenModal(type); return; }
     API.run
@@ -158,13 +159,9 @@
         _fabOpenModal(type);
       })
       .withFailureHandler(function () { _fabOpenModal(type); })
-      .purGetPartiesForDropdown();
+      .rcptGetPartiesForDropdown();
   }
   function _fabOpenModal(type) {
-    var partyOpts = _fabParties.map(function (p) {
-      var n = String(p.partyName || ''), id = p.partyId || '', ar = p.area || '';
-      return '<option value="' + n + '" data-id="' + id + '" data-area="' + ar + '">' + n + '</option>';
-    }).join('');
     var fs = 'margin-top:4px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;width:100%;font-family:Poppins,sans-serif;font-size:16px;outline:none;box-sizing:border-box';
     var lb = 'display:block;font-size:11.5px;font-weight:600;color:#374151;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px';
     function fld(id, tp, ph, ex) { return '<input id="' + id + '" type="' + (tp || 'text') + '" placeholder="' + (ph || '') + '" style="' + fs + '" ' + (ex || '') + '/>'; }
@@ -174,6 +171,7 @@
     function idr(inp, btn) { return '<div style="display:flex;gap:8px;align-items:center">' + inp + btn + '</div>'; }
     function ro(id, ph) { return '<input id="' + id + '" type="text" readonly placeholder="' + (ph || '') + '" style="' + fs + ';background:#f9fafb;color:#6b7280"/>'; }
     function genBtn(fn) { return '<button class="btn btn-secondary btn-sm" onclick="' + fn + '"><i class="fas fa-rotate-right"></i> Gen</button>'; }
+    function comboWrap(id) { return '<div id="' + id + '"></div>'; }
     function today() { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
     if (type === 'party') {
       var ptOpts = '<option value="">Select...</option><option>Supplier</option><option>Customer</option><option>Both</option>';
@@ -197,10 +195,9 @@
       _fabPartGenId(); return;
     }
     if (type === 'purchase') {
-      var pOpts = '<option value="">Select Party...</option>' + partyOpts;
       openModal('Add New Purchase',
         fg('Purchase ID', idr(ro('_fabPurId', 'Click Gen'), genBtn('_fabPurGenId()'))) +
-        row2(fg('Date *', fld('_fabDate', 'date')), fg('Party *', sel('_fabPurPN', pOpts, '_fabPurFetch()'))) +
+        row2(fg('Date *', fld('_fabDate', 'date')), fg('Party *', comboWrap('_fabPurPNWrap'))) +
         row2(fg('Party ID', ro('_fabPurPID')), fg('Area', ro('_fabPurArea'))) +
         row2(fg('Grams *', '<input id="_fabG" type="number" step="0.001" placeholder="0.000" oninput="_fabCalcPurRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="_fabR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcPurRate()" style="' + fs + '">')) +
@@ -209,13 +206,24 @@
         '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="_fabPurIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (skip Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="_fabSavePurchase()"><i class="fas fa-save"></i> Save</button>');
-      document.getElementById('_fabDate').value = today(); _fabPurGenId(); return;
+      document.getElementById('_fabDate').value = today();
+      _fabPurCombo = makePartyCombo({
+        wrap: document.getElementById('_fabPurPNWrap'),
+        inputId: '_fabPurPN',
+        parties: _fabParties,
+        placeholder: 'Type to search supplier...',
+        filter: function (p) { return p.partyType === 'Supplier' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('_fabPurPID').value = p ? p.partyId : '';
+          document.getElementById('_fabPurArea').value = p ? p.area : '';
+        }
+      });
+      _fabPurGenId(); return;
     }
     if (type === 'sale') {
-      var sOpts = '<option value="">Select Party...</option>' + partyOpts;
       openModal('Add New Sale',
         fg('Sale ID', idr(ro('_fabSaleId', 'Click Gen'), genBtn('_fabSaleGenId()'))) +
-        row2(fg('Date *', fld('_fabSDate', 'date')), fg('Party *', sel('_fabSPN', sOpts, '_fabSaleFetch()'))) +
+        row2(fg('Date *', fld('_fabSDate', 'date')), fg('Party *', comboWrap('_fabSPNWrap'))) +
         row2(fg('Party ID', ro('_fabSPID')), fg('Area', ro('_fabSArea'))) +
         row2(fg('Grams *', '<input id="_fabSG" type="number" step="0.001" placeholder="0.000" oninput="_fabCalcSaleRate()" style="' + fs + '">'),
           fg('Rupees *', '<input id="_fabSR" type="number" step="0.01" placeholder="0.00" oninput="_fabCalcSaleRate()" style="' + fs + '">')) +
@@ -225,12 +233,23 @@
         '<div style="margin-top:4px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:#166534"><input type="checkbox" id="_fabSaleIsPaid" style="width:16px;height:16px;cursor:pointer;accent-color:#16a34a"> <span><i class="fas fa-check-circle" style="margin-right:4px"></i>Mark as Paid (skip Outstanding)</span></label></div>',
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="_fabSaveSale()"><i class="fas fa-save"></i> Save</button>');
-      document.getElementById('_fabSDate').value = today(); _fabSaleGenId();
+      document.getElementById('_fabSDate').value = today();
+      _fabSaleCombo = makePartyCombo({
+        wrap: document.getElementById('_fabSPNWrap'),
+        inputId: '_fabSPN',
+        parties: _fabParties,
+        placeholder: 'Type to search customer...',
+        filter: function (p) { return p.partyType === 'Customer' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('_fabSPID').value = p ? p.partyId : '';
+          document.getElementById('_fabSArea').value = p ? p.area : '';
+        }
+      });
+      _fabSaleGenId();
       API.run.withSuccessHandler(function (r) { if (r && r.success) { document.getElementById('_fabSAvg').value = r.avgRate || 0; _fabCalcSaleRate(); } }).saleGetCalcData();
       return;
     }
     if (type === 'payment') {
-      var rOpts = '<option value="">Select Party...</option>' + partyOpts;
       var tBtns = '<div style="display:flex;gap:8px;margin-bottom:4px">'
         + '<button type="button" id="_fabTypeRcpt" onclick="_fabSetType(\'Receipt\')" style="flex:1;padding:10px;border:2px solid #0d9488;border-radius:8px;background:#0d9488;color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i class="fas fa-arrow-down"></i> Receipt</button>'
         + '<button type="button" id="_fabTypePay" onclick="_fabSetType(\'Payment\')" style="flex:1;padding:10px;border:2px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:500;cursor:pointer"><i class="fas fa-arrow-up"></i> Payment</button>'
@@ -238,15 +257,26 @@
       openModal('New Receipt / Payment',
         fg('Type', tBtns) +
         fg('ID', idr(ro('_fabPayId', 'Click Gen'), genBtn('_fabPayGenId()'))) +
-        row2(fg('Date *', fld('_fabPyDate', 'date')), fg('Party *', sel('_fabPyPN', rOpts, '_fabPayFetch()'))) +
+        row2(fg('Date *', fld('_fabPyDate', 'date')), fg('Party *', comboWrap('_fabPyPNWrap'))) +
         row2(fg('Party ID', ro('_fabPyPID')), fg('Area', ro('_fabPyArea'))) +
         row2(fg('Rupees ?', fld('_fabPyR', 'number', '0.00')), fg('Grams (g)', fld('_fabPyG', 'number', '0.000'))) +
         fg('Note', fld('_fabPyNote', 'text', 'Optional')),
         '<button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-xmark"></i> Close</button>' +
         '<button class="btn btn-primary" onclick="_fabSavePayment()"><i class="fas fa-save"></i> Save</button>');
       document.getElementById('_fabPyDate').value = today();
-      _fabPayGenId();
       window._fabEntryType = 'Receipt';
+      _fabPayCombo = makePartyCombo({
+        wrap: document.getElementById('_fabPyPNWrap'),
+        inputId: '_fabPyPN',
+        parties: _fabParties,
+        placeholder: 'Type to search customer...',
+        filter: function (p) { return p.partyType === 'Customer' || p.partyType === 'Both'; },
+        onSelect: function (p) {
+          document.getElementById('_fabPyPID').value = p ? p.partyId : '';
+          document.getElementById('_fabPyArea').value = p ? p.area : '';
+        }
+      });
+      _fabPayGenId();
       return;
     }
   }
@@ -254,7 +284,7 @@
   function _fabPartGenId() { var el = document.getElementById('_fabPartId'); if (el) el.value = _fabGenId('P'); }
   function _fabPurGenId() { var el = document.getElementById('_fabPurId'); if (el) el.value = _fabGenId('P'); }
   function _fabSaleGenId() { var el = document.getElementById('_fabSaleId'); if (el) el.value = _fabGenId('S'); }
-  function _fabPayGenId() { var el = document.getElementById('_fabPayId'); if (el) el.value = _fabGenId('R'); }
+  function _fabPayGenId() { var el = document.getElementById('_fabPayId'); if (el) el.value = _fabGenId((window._fabEntryType || 'Receipt') === 'Payment' ? 'PY' : 'RC'); }
   function _fabPurFetch() { var s = document.getElementById('_fabPurPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabPurPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabPurArea').value = o.getAttribute('data-area') || ''; }
   function _fabSaleFetch() { var s = document.getElementById('_fabSPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabSPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabSArea').value = o.getAttribute('data-area') || ''; }
   function _fabPayFetch() { var s = document.getElementById('_fabPyPN'), o = s && s.options[s.selectedIndex]; if (!o) return; document.getElementById('_fabPyPID').value = o.getAttribute('data-id') || ''; document.getElementById('_fabPyArea').value = o.getAttribute('data-area') || ''; }
@@ -278,6 +308,17 @@
     var r = document.getElementById('_fabTypeRcpt'), p = document.getElementById('_fabTypePay');
     if (r) r.style.cssText = (type === 'Receipt' ? aS : iS);
     if (p) p.style.cssText = (type === 'Payment' ? aS : iS);
+    if (_fabPayCombo) {
+      _fabPayCombo.clearValue();
+      _fabPayCombo.setFilter(function (party) {
+        return type === 'Receipt'
+          ? (party.partyType === 'Customer' || party.partyType === 'Both')
+          : (party.partyType === 'Supplier' || party.partyType === 'Both');
+      });
+      var inp = document.getElementById('_fabPyPN');
+      if (inp) inp.placeholder = type === 'Receipt' ? 'Type to search customer...' : 'Type to search supplier...';
+    }
+    _fabPayGenId();
   }
   function _fabSaveParty() {
     var id = (document.getElementById('_fabPartId').value || '').trim();
@@ -293,12 +334,13 @@
   function _fabSavePurchase() {
     var id = (document.getElementById('_fabPurId').value || '').trim();
     var dt = document.getElementById('_fabDate').value;
-    var pn = document.getElementById('_fabPurPN').value;
+    var pn = _fabPurCombo ? _fabPurCombo.getValue() : '';
     var g = parseFloat(document.getElementById('_fabG').value) || 0;
     var r = parseFloat(document.getElementById('_fabR').value) || 0;
     if (!id) { showToast('Generate an ID first', 'warning'); return; }
     if (!dt) { showToast('Date required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!_fabPurCombo || !_fabPurCombo.getSelected()) { showToast('Please select a supplier from the list', 'warning'); return; }
     if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
     var payload = { purchaseId: id, date: dt, partyId: document.getElementById('_fabPurPID').value, partyName: pn, area: document.getElementById('_fabPurArea').value, grams: g, rupees: r, note: (document.getElementById('_fabNote').value || '').trim(), isPaid: document.getElementById('_fabPurIsPaid') ? document.getElementById('_fabPurIsPaid').checked : false };
     closeModal(); showLoader();
@@ -307,12 +349,13 @@
   function _fabSaveSale() {
     var id = (document.getElementById('_fabSaleId').value || '').trim();
     var dt = document.getElementById('_fabSDate').value;
-    var pn = document.getElementById('_fabSPN').value;
+    var pn = _fabSaleCombo ? _fabSaleCombo.getValue() : '';
     var g = parseFloat(document.getElementById('_fabSG').value) || 0;
     var r = parseFloat(document.getElementById('_fabSR').value) || 0;
     if (!id) { showToast('Generate an ID first', 'warning'); return; }
     if (!dt) { showToast('Date required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!_fabSaleCombo || !_fabSaleCombo.getSelected()) { showToast('Please select a customer from the list', 'warning'); return; }
     if (!g && !r) { showToast('Enter Grams or Rupees', 'warning'); return; }
     var payload = { saleId: id, date: dt, partyId: document.getElementById('_fabSPID').value, partyName: pn, area: document.getElementById('_fabSArea').value, grams: g, rupees: r, note: (document.getElementById('_fabSNote').value || '').trim(), isPaid: document.getElementById('_fabSaleIsPaid') ? document.getElementById('_fabSaleIsPaid').checked : false };
     closeModal(); showLoader();
@@ -321,13 +364,14 @@
   function _fabSavePayment() {
     var id = (document.getElementById('_fabPayId').value || '').trim();
     var dt = document.getElementById('_fabPyDate').value;
-    var pn = document.getElementById('_fabPyPN').value;
+    var pn = _fabPayCombo ? _fabPayCombo.getValue() : '';
     var rr = parseFloat(document.getElementById('_fabPyR').value) || 0;
     var gr = parseFloat(document.getElementById('_fabPyG').value) || 0;
     var et = window._fabEntryType || 'Receipt';
     if (!id) { showToast('Generate an ID first', 'warning'); return; }
     if (!dt) { showToast('Date required', 'warning'); return; }
     if (!pn) { showToast('Select a Party', 'warning'); return; }
+    if (!_fabPayCombo || !_fabPayCombo.getSelected()) { showToast('Please select a party from the list', 'warning'); return; }
     if (!rr && !gr) { showToast('Enter Rupees or Grams', 'warning'); return; }
     var payload = { receiptId: id, date: dt, partyId: document.getElementById('_fabPyPID').value, partyName: pn, area: document.getElementById('_fabPyArea').value, rupeesReceived: rr, gramsReceived: gr, entryType: et, note: (document.getElementById('_fabPyNote').value || '').trim() };
     closeModal(); showLoader();

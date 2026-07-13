@@ -74,7 +74,7 @@ function saleCheckIdExists(saleId) {
 function saleGetPartiesForDropdown() {
   try {
     var parties = DB.getPartiesForDropdown(false);
-    var filtered = parties.filter(function(p) { return p.partyType !== 'Supplier'; });
+    var filtered = parties.filter(function(p) { return p.partyType === 'Customer' || p.partyType === 'Both'; });
     return { success: true, data: filtered };
   } catch (e) { return { success: false, message: e.message }; }
 }

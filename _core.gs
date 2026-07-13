@@ -1,9 +1,9 @@
 ﻿// ============================================================
-// _config.gs — Configuration, Auth & App Metadata
+// _config.gs â€” Configuration, Auth & App Metadata
 // Extracted from gstemplate.gs for clean separation.
 // ============================================================
 
-// ── Spreadsheet Helpers ──────────────────────────────────────
+// â”€â”€ Spreadsheet Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getSpreadsheet() {
   return SpreadsheetApp.getActiveSpreadsheet();
@@ -16,7 +16,7 @@ function getSheet(name) {
   return sh;
 }
 
-// ── Config Reader ─────────────────────────────────────────────
+// â”€â”€ Config Reader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Reads all key-value pairs from the Config sheet.
  * Expected layout: Column A = Key, Column B = Value (starting row 2).
@@ -67,7 +67,7 @@ function getConfig() {
   }
 }
 
-// ── Edit Mode ─────────────────────────────────────────────────
+// â”€â”€ Edit Mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getEditMode() {
   var cfg = getConfig();
@@ -98,7 +98,7 @@ function toggleEditMode() {
   }
 }
 
-// ── Drive URL Converter ───────────────────────────────────────
+// â”€â”€ Drive URL Converter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Converts a Google Drive share URL to a direct embeddable image URL.
  * Input:  https://drive.google.com/file/d/FILE_ID/view
@@ -112,7 +112,7 @@ function convertDriveUrl_(url) {
   return url_s;
 }
 
-// ── App Meta ──────────────────────────────────────────────────
+// â”€â”€ App Meta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getAppMeta() {
   try {
@@ -144,9 +144,9 @@ function getAppMeta() {
   }
 }
 
-// ── Admin Password Verification ───────────────────────────────
+// â”€â”€ Admin Password Verification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// ── Admin Password Verification ──────────────────────────────────
+// â”€â”€ Admin Password Verification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Verify the admin password.
@@ -177,7 +177,7 @@ function verifyAdminPassword(inputPassword) {
       return { success: false, message: 'Admin password not set in Config sheet.' };
     }
 
-    // Direct comparison — password is stored as plaintext in Config sheet
+    // Direct comparison â€” password is stored as plaintext in Config sheet
     var match = (input === stored);
     return { success: true, match: match };
   } catch (err) {
@@ -198,7 +198,7 @@ function hashPassword_(pw) {
   return bytes.map(function (b) { return ('0' + (b & 0xff).toString(16)).slice(-2); }).join('');
 }
 
-// ── Page Size Helper ──────────────────────────────────────────
+// â”€â”€ Page Size Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getPageSize_() {
   try {
@@ -208,14 +208,14 @@ function getPageSize_() {
   } catch (e) { return 25; }
 }
 // ============================================================
-// _data.gs — Data Access Layer (DAL)
+// _data.gs â€” Data Access Layer (DAL)
 // ALL Google Sheets reads/writes go through this file.
 // Zero business logic. Shared utilities for every module.
 // ============================================================
 
 var DB = {};
 
-// ── Spreadsheet access (cached within a single execution) ────
+// â”€â”€ Spreadsheet access (cached within a single execution) â”€â”€â”€â”€
 
 DB._ss = null;
 
@@ -234,7 +234,7 @@ DB.sheet = function (name) {
 };
 
 /**
- * Get a sheet by name — auto-create with headers if missing.
+ * Get a sheet by name â€” auto-create with headers if missing.
  * Also ensures column count and header row.
  */
 DB.ensureSheet = function (name, headers) {
@@ -256,18 +256,18 @@ DB.ensureSheet = function (name, headers) {
   return sh;
 };
 
-// ── Internal ──────────────────────────────────────────────────
+// â”€â”€ Internal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 DB.ensureCols_ = function (sh, colCount) {
   var maxCols = sh.getMaxColumns();
   if (maxCols < colCount) sh.insertColumnsAfter(maxCols, colCount - maxCols);
 };
 
-// ── Read operations ──────────────────────────────────────────
+// â”€â”€ Read operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Read all data rows (excludes header row 1).
- * Returns raw 2D array — caller decides how to filter.
+ * Returns raw 2D array â€” caller decides how to filter.
  */
 DB.readAll = function (name, colCount) {
   var sh = DB.sheet(name);
@@ -329,7 +329,7 @@ DB.findRowById = function (name, id) {
   return found ? found.getRow() : -1;
 };
 
-// ── Write operations ─────────────────────────────────────────
+// â”€â”€ Write operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Append a single row. Returns the 1-indexed row number of the new row.
@@ -369,9 +369,9 @@ DB.deleteRowsDesc = function (name, rowNums) {
 
 /**
  * PERF (B6): Bulk delete via read-filter-compact-rewrite.
- * Ideal for deleting 10+ rows — reduces N deleteRow() calls to 3 API calls:
+ * Ideal for deleting 10+ rows â€” reduces N deleteRow() calls to 3 API calls:
  *   1. getValues (read all)  2. clearContent (wipe data rows)  3. setValues (rewrite kept rows)
- * Does NOT reverse outstanding — caller must handle that before calling this.
+ * Does NOT reverse outstanding â€” caller must handle that before calling this.
  * @param {string}   name       - Sheet name
  * @param {number}   colCount   - Number of columns to read/write
  * @param {string[]} idsToDelete - Array of IDs (column A) to remove
@@ -399,7 +399,7 @@ DB.bulkDeleteAndRewrite = function (name, colCount, idsToDelete) {
 
 /**
  * Write values to specific cells. values2d is a 2D array.
- * Example: DB.setCells('Parties', 5, 10, [[100, 50]]) → writes 100 to J5, 50 to K5
+ * Example: DB.setCells('Parties', 5, 10, [[100, 50]]) â†’ writes 100 to J5, 50 to K5
  */
 DB.setCells = function (name, row, col, values2d) {
   DB.sheet(name).getRange(row, col, values2d.length, values2d[0].length).setValues(values2d);
@@ -442,9 +442,9 @@ DB.locked = function (context, fn) {
   };
 };
 
-// ── Formatting utilities ─────────────────────────────────────
+// â”€â”€ Formatting utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/** Format date → dd/MM/yyyy display string. Uses script timezone (L3 fix). */
+/** Format date â†’ dd/MM/yyyy display string. Uses script timezone (L3 fix). */
 DB.formatDate = function (val) {
   if (!val || val === '') return '';
   try {
@@ -454,7 +454,7 @@ DB.formatDate = function (val) {
   } catch (e) { return String(val); }
 };
 
-/** Format date → YYYY-MM-DD raw string using script timezone (H2+L3 fix). */
+/** Format date â†’ YYYY-MM-DD raw string using script timezone (H2+L3 fix). */
 DB.dateRaw = function (val) {
   if (!val || val === '') return '';
   try {
@@ -491,9 +491,9 @@ DB.isValidDate = function (dateStr) {
   return DB.parseDate(dateStr) !== '';
 };
 
-// ── Number utilities ─────────────────────────────────────────
+// â”€â”€ Number utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/** Safe number parse — NaN/undefined/Infinity → 0. */
+/** Safe number parse â€” NaN/undefined/Infinity â†’ 0. */
 DB.num = function (v) {
   var n = parseFloat(v);
   return (isNaN(n) || !isFinite(n)) ? 0 : n;
@@ -511,7 +511,188 @@ DB.nonNegNum = function (v) {
   return (!isNaN(n) && isFinite(n) && n >= 0) ? n : null;
 };
 
-// ── Serialization ────────────────────────────────────────────
+
+/**
+ * Append a single row. Returns the 1-indexed row number of the new row.
+ */
+DB.appendRow = function (name, colCount, values) {
+  var sh = DB.sheet(name);
+  DB.ensureCols_(sh, colCount);
+  var nextRow = sh.getLastRow() + 1;
+  sh.getRange(nextRow, 1, 1, colCount).setValues([values]);
+  return nextRow;
+};
+
+/**
+ * Overwrite a single row at the given 1-indexed row number.
+ */
+DB.updateRow = function (name, rowNum, colCount, values) {
+  var sh = DB.sheet(name);
+  DB.ensureCols_(sh, colCount);
+  sh.getRange(rowNum, 1, 1, colCount).setValues([values]);
+};
+
+/**
+ * Delete a single row by 1-indexed row number.
+ */
+DB.deleteRow = function (name, rowNum) {
+  DB.sheet(name).deleteRow(rowNum);
+};
+
+/**
+ * Delete multiple rows. Sorts descending automatically so indices stay valid.
+ */
+DB.deleteRowsDesc = function (name, rowNums) {
+  var sh = DB.sheet(name);
+  rowNums.sort(function (a, b) { return b - a; });
+  for (var i = 0; i < rowNums.length; i++) sh.deleteRow(rowNums[i]);
+};
+
+/**
+ * PERF (B6): Bulk delete via read-filter-compact-rewrite.
+ * Ideal for deleting 10+ rows â€” reduces N deleteRow() calls to 3 API calls:
+ *   1. getValues (read all)  2. clearContent (wipe data rows)  3. setValues (rewrite kept rows)
+ * Does NOT reverse outstanding â€” caller must handle that before calling this.
+ * @param {string}   name       - Sheet name
+ * @param {number}   colCount   - Number of columns to read/write
+ * @param {string[]} idsToDelete - Array of IDs (column A) to remove
+ * @returns {number} Number of rows actually deleted
+ */
+DB.bulkDeleteAndRewrite = function (name, colCount, idsToDelete) {
+  var idSet = {};
+  for (var i = 0; i < idsToDelete.length; i++) idSet[String(idsToDelete[i]).trim()] = true;
+  var sh = DB.sheet(name);
+  DB.ensureCols_(sh, colCount);
+  var lastRow = sh.getLastRow();
+  if (lastRow < 2) return 0;
+  var all = sh.getRange(2, 1, lastRow - 1, colCount).getValues();
+  var kept = [];
+  for (var j = 0; j < all.length; j++) {
+    if (!idSet[String(all[j][0]).trim()]) kept.push(all[j]);
+  }
+  var deleted = all.length - kept.length;
+  // Clear existing data rows
+  sh.getRange(2, 1, lastRow - 1, colCount).clearContent();
+  // Rewrite kept rows in one call
+  if (kept.length > 0) sh.getRange(2, 1, kept.length, colCount).setValues(kept);
+  return deleted;
+};
+
+/**
+ * Write values to specific cells. values2d is a 2D array.
+ * Example: DB.setCells('Parties', 5, 10, [[100, 50]]) â†’ writes 100 to J5, 50 to K5
+ */
+DB.setCells = function (name, row, col, values2d) {
+  DB.sheet(name).getRange(row, col, values2d.length, values2d[0].length).setValues(values2d);
+};
+
+/**
+ * Set a cell's number format to dd/mm/yyyy (used after writing a Date value).
+ */
+DB.setDateFormat = function (name, row, col) {
+  DB.sheet(name).getRange(row, col).setNumberFormat('dd/mm/yyyy');
+};
+
+/**
+ * Run a multi-step mutation under a document lock.
+ * Prevents concurrent users from creating duplicate IDs or drifting balances.
+ */
+DB.withWriteLock = function (context, fn) {
+  var lock = LockService.getDocumentLock() || LockService.getScriptLock();
+  try {
+    if (!lock) {
+      return { success: false, message: 'Unable to acquire write lock. Please try again.' };
+    }
+    if (!lock.tryLock(30000)) {
+      return { success: false, message: 'System is busy. Please try again in a few seconds.' };
+    }
+    return fn();
+  } catch (e) {
+    return DB.safeError(e, context || 'DB.withWriteLock');
+  } finally {
+    try { lock.releaseLock(); } catch (releaseErr) { }
+  }
+};
+
+DB.locked = function (context, fn) {
+  return function () {
+    var args = arguments;
+    return DB.withWriteLock(context, function () {
+      return fn.apply(null, args);
+    });
+  };
+};
+
+// â”€â”€ Formatting utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+/** Format date â†’ dd/MM/yyyy display string. Uses script timezone (L3 fix). */
+DB.formatDate = function (val) {
+  if (!val || val === '') return '';
+  try {
+    var d = (val instanceof Date) ? val : new Date(val);
+    if (isNaN(d.getTime())) return String(val);
+    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+  } catch (e) { return String(val); }
+};
+
+/** Format date â†’ YYYY-MM-DD raw string using script timezone (H2+L3 fix). */
+DB.dateRaw = function (val) {
+  if (!val || val === '') return '';
+  try {
+    var d = (val instanceof Date) ? val : new Date(val);
+    if (isNaN(d.getTime())) return '';
+    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  } catch (e) { return ''; }
+};
+
+/** Format date for search results (e.g., "30 May 2026"). */
+DB.formatDateDisplay = function (val) {
+  if (!val) return '';
+  try {
+    var d = (val instanceof Date) ? val : new Date(val);
+    if (isNaN(d.getTime())) return String(val);
+    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'dd MMM yyyy');
+  } catch (e) { return String(val); }
+};
+
+/**
+ * Parse a YYYY-MM-DD string as local date, avoiding UTC midnight offset (H2 fix).
+ * Returns a Date object or '' if invalid.
+ */
+DB.parseDate = function (dateStr) {
+  if (!dateStr) return '';
+  var m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return isNaN(d.getTime()) ? '' : d;
+};
+
+/** Returns true if dateStr is a valid YYYY-MM-DD date (M4 fix). */
+DB.isValidDate = function (dateStr) {
+  return DB.parseDate(dateStr) !== '';
+};
+
+// â”€â”€ Number utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+/** Safe number parse â€” NaN/undefined/Infinity â†’ 0. */
+DB.num = function (v) {
+  var n = parseFloat(v);
+  return (isNaN(n) || !isFinite(n)) ? 0 : n;
+};
+
+/** Returns parsed value if > 0, else null (M4 fix). */
+DB.positiveNum = function (v) {
+  var n = parseFloat(v);
+  return (!isNaN(n) && isFinite(n) && n > 0) ? n : null;
+};
+
+/** Returns parsed value if >= 0, else null. */
+DB.nonNegNum = function (v) {
+  var n = parseFloat(v);
+  return (!isNaN(n) && isFinite(n) && n >= 0) ? n : null;
+};
+
+// â”€â”€ Serialization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Recursively sanitize an object for google.script.run transport.
@@ -539,7 +720,7 @@ DB.safeReturn = function (obj) {
   return obj;
 };
 
-// ── Text sanitization ────────────────────────────────────────
+// â”€â”€ Text sanitization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Sanitize a text value for sheet storage (C3 fix):
@@ -567,7 +748,8 @@ DB.getPartiesForDropdown = function (includeOutstanding) {
     if (cached) return JSON.parse(cached);
   } catch (e) { }
 
-  var rows = DB.readAll('Parties', includeOutstanding ? 11 : 4);
+  if (typeof partEnsureLayout_ === 'function') partEnsureLayout_();
+  var rows = DB.readAll('Parties', includeOutstanding ? 6 : 4);
   var result = [];
   for (var i = 0; i < rows.length; i++) {
     if (!String(rows[i][0]).trim()) continue;
@@ -578,8 +760,8 @@ DB.getPartiesForDropdown = function (includeOutstanding) {
       area: rows[i][3]
     };
     if (includeOutstanding) {
-      item.outstandingRupees = rows[i][9] || 0;
-      item.outstandingGrams = rows[i][10] || 0;
+      item.outstandingRupees = rows[i][4] || 0;
+      item.outstandingGrams = rows[i][5] || 0;
     }
     result.push(item);
   }
@@ -611,13 +793,14 @@ DB.safeError = function (e, context) {
 
 function safeReturn_(obj) { return DB.safeReturn(obj); }
 
-// ── Global cache-invalidation helpers ────────────────────────
+
+// â”€â”€ Global cache-invalidation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Called by every mutation controller (Add/Update/Delete) to keep
 // CacheService entries in sync after writes.
 
 /** Invalidate the dashboard summary cache. */
 function _invalidateDashCache_() {
-  try { CacheService.getScriptCache().removeAll(['dash_summary_v1', 'dash_summary_v2']); } catch (e) { }
+  try { CacheService.getScriptCache().removeAll(['dash_summary_v1', 'dash_summary_v2', 'dash_summary_v3', 'dash_summary_v4']); } catch (e) { }
 }
 
 /** Invalidate reference data caches used by dropdowns/forms. */
@@ -630,331 +813,6 @@ function _invalidateRefCache_() {
     ]);
   } catch (e) { }
 }
-
-/** Invalidate the global search index cache. */
-function _invalidateSearchCache_() {
-  try {
-    var keys = ['gs_search_index_v1', 'gs_search_index_v1_meta'];
-    for (var i = 0; i < 20; i++) keys.push('gs_search_index_v1_part_' + i);
-    CacheService.getScriptCache().removeAll(keys);
-  } catch (e) { }
-}
-// ============================================================
-// _svcCalc.gs — Calculation Service
-// Pure business math: rates, profits, rounding.
-// No sheet access — works only on values passed in.
-// ============================================================
-
-var CalcSvc = {};
-
-/** Round to 2 decimal places (for ₹). */
-CalcSvc.round2 = function (v) { return Math.round(v * 100) / 100; };
-
-/** Round to 3 decimal places (for grams). */
-CalcSvc.round3 = function (v) { return Math.round(v * 1000) / 1000; };
-
-/**
- * Calculate rate per 10 grams.
- * Works for both individual purchase rows AND weighted averages.
- */
-CalcSvc.purchaseRate = function (grams, rupees) {
-  return grams > 0 ? CalcSvc.round2((rupees / grams) * 10) : 0;
-};
-
-/**
- * Calculate sale profit breakdown.
- * @param {number} grams   - Grams sold
- * @param {number} rupees  - Sale amount in ₹
- * @param {number} avgRate - Average purchase rate per 10g at time of sale
- * @returns {{ saleRate10g, costRupees, profitRup, profitPct }}
- */
-CalcSvc.saleProfit = function (grams, rupees, avgRate) {
-  var saleRate10g = grams > 0 ? CalcSvc.round2((rupees / grams) * 10) : 0;
-  var costRupees = CalcSvc.round2((avgRate / 10) * grams);
-  var profitRup = CalcSvc.round2(rupees - costRupees);
-  var profitPct = costRupees > 0 ? CalcSvc.round2((profitRup / costRupees) * 100) : 0;
-  return {
-    saleRate10g: saleRate10g,
-    costRupees: costRupees,
-    profitRup: profitRup,
-    profitPct: profitPct
-  };
-};
-// ============================================================
-// _svcOutstanding.gs — Outstanding Balance Service
-// Owns all party-balance mutations: delta updates, absolute sets, reads.
-// Uses: DB (data layer), CalcSvc (rounding)
-// ============================================================
-
-var OutSvc = {};
-
-// ── Audit Log ────────────────────────────────────────────────
-
-var AUDIT_SHEET = 'AuditLog';
-var AUDIT_COLS = 7;
-var AUDIT_HEADERS = ['Timestamp', 'Party ID', 'Action', 'Delta ₹', 'Delta g', 'New ₹', 'New g'];
-
-/**
- * Append a row to the AuditLog sheet.
- * Silent — never throws. If the sheet doesn't exist, creates it.
- */
-OutSvc.audit_ = function (partyId, action, deltaR, deltaG, newR, newG) {
-  try {
-    DB.ensureSheet(AUDIT_SHEET, AUDIT_HEADERS);
-    var ts = new Date();
-    DB.appendRow(AUDIT_SHEET, AUDIT_COLS, [
-      ts, partyId, action,
-      CalcSvc.round2(deltaR), CalcSvc.round3(deltaG),
-      CalcSvc.round2(newR), CalcSvc.round3(newG)
-    ]);
-    DB.setDateFormat(AUDIT_SHEET, DB.lastRow(AUDIT_SHEET), 1);
-  } catch (e) {
-    Logger.log('OutSvc.audit_ error (non-fatal): ' + e.message);
-  }
-};
-
-// ── Core Mutations ───────────────────────────────────────────
-
-/**
- * Add/subtract from a party's outstanding balance.
- * @param {string} partyId      - Party ID (column A in Parties sheet)
- * @param {number} deltaRupees  - Amount to add (positive) or subtract (negative)
- * @param {number} deltaGrams   - Grams to add (positive) or subtract (negative)
- */
-OutSvc.updateDelta = function (partyId, deltaRupees, deltaGrams) {
-  try {
-    if (!partyId) { Logger.log('OutSvc.updateDelta: empty partyId, skipping.'); return; }
-    var rows = DB.readAll('Parties', 12);
-    for (var i = 0; i < rows.length; i++) {
-      if (String(rows[i][0]).trim() !== String(partyId).trim()) continue;
-      var newR = CalcSvc.round2(DB.num(rows[i][9]) + DB.num(deltaRupees));
-      var newG = CalcSvc.round3(DB.num(rows[i][10]) + DB.num(deltaGrams));
-      DB.setCells('Parties', i + 2, 10, [[newR, newG]]);
-      OutSvc.audit_(partyId, 'DELTA', deltaRupees, deltaGrams, newR, newG);
-      return;
-    }
-    Logger.log('OutSvc.updateDelta: partyId not found: ' + partyId);
-  } catch (e) {
-    Logger.log('OutSvc.updateDelta: ' + e.message);
-  }
-};
-
-OutSvc.updateDeltas = function (deltas) {
-  try {
-    if (!deltas || !deltas.length) return;
-    var merged = {};
-    for (var d = 0; d < deltas.length; d++) {
-      var pid = String(deltas[d].partyId || '').trim();
-      if (!pid) continue;
-      if (!merged[pid]) merged[pid] = { rupees: 0, grams: 0 };
-      merged[pid].rupees += DB.num(deltas[d].rupees);
-      merged[pid].grams += DB.num(deltas[d].grams);
-    }
-    var rows = DB.readAll('Parties', 12);
-    for (var i = 0; i < rows.length; i++) {
-      var partyId = String(rows[i][0] || '').trim();
-      var delta = merged[partyId];
-      if (!delta) continue;
-      var newR = CalcSvc.round2(DB.num(rows[i][9]) + delta.rupees);
-      var newG = CalcSvc.round3(DB.num(rows[i][10]) + delta.grams);
-      DB.setCells('Parties', i + 2, 10, [[newR, newG]]);
-      OutSvc.audit_(partyId, 'DELTA_BATCH', delta.rupees, delta.grams, newR, newG);
-    }
-  } catch (e) {
-    Logger.log('OutSvc.updateDeltas: ' + e.message);
-  }
-};
-
-/**
- * Directly set a party's outstanding to specific values (for adjustments).
- * @param {string} partyId
- * @param {number} newR - New outstanding ₹
- * @param {number} newG - New outstanding grams
- * @returns {boolean} true if party found and updated
- */
-OutSvc.setAbsolute = function (partyId, newR, newG) {
-  if (!partyId) return false;
-  var rows = DB.readAll('Parties', 12);
-  for (var i = 0; i < rows.length; i++) {
-    if (String(rows[i][0]).trim() !== String(partyId).trim()) continue;
-    var oldR = DB.num(rows[i][9]);
-    var oldG = DB.num(rows[i][10]);
-    DB.setCells('Parties', i + 2, 10, [[newR, newG]]);
-    OutSvc.audit_(partyId, 'SET_ABSOLUTE', newR - oldR, newG - oldG, newR, newG);
-    return true;
-  }
-  Logger.log('OutSvc.setAbsolute: partyId not found: ' + partyId);
-  return false;
-};
-
-// ── Read Operations ──────────────────────────────────────────
-
-/**
- * Read current outstanding balance for a specific party.
- * @returns {{ rupees: number, grams: number }}
- */
-OutSvc.getForParty = function (partyId) {
-  if (!partyId) return { rupees: 0, grams: 0 };
-  var rows = DB.readAll('Parties', 11);
-  for (var i = 0; i < rows.length; i++) {
-    if (String(rows[i][0]).trim() !== String(partyId).trim()) continue;
-    return { rupees: DB.num(rows[i][9]), grams: DB.num(rows[i][10]) };
-  }
-  return { rupees: 0, grams: 0 };
-};
-
-/**
- * Resolve a party by NAME (not ID).
- * Used by outstanding adjustment feature where frontend sends partyName.
- * @returns {{ rowIdx, partyId, area, rupees, grams } | null}
- */
-OutSvc.resolveByName = function (name) {
-  if (!name) return null;
-  var rows = DB.readAll('Parties', 11);
-  var lowerName = String(name).trim().toLowerCase();
-  for (var i = 0; i < rows.length; i++) {
-    if (String(rows[i][1]).trim().toLowerCase() !== lowerName) continue;
-    return {
-      rowIdx: i + 2,
-      partyId: String(rows[i][0] || ''),
-      area: String(rows[i][3] || ''),
-      rupees: DB.num(rows[i][9]),
-      grams: DB.num(rows[i][10])
-    };
-  }
-  return null;
-};
-
-/**
- * Aggregate outstanding by party type (Supplier / Customer / Both).
- * @returns {{ supRupees, supGrams, custRupees, custGrams }}
- */
-OutSvc.getByType = function () {
-  var rows = DB.readAll('Parties', 11);
-  var r = { supRupees: 0, supGrams: 0, custRupees: 0, custGrams: 0 };
-  for (var i = 0; i < rows.length; i++) {
-    var t = String(rows[i][2] || '').trim();
-    var oR = DB.num(rows[i][9]);
-    var oG = DB.num(rows[i][10]);
-    if (t === 'Supplier') { r.supRupees += oR; r.supGrams += oG; }
-    else if (t === 'Customer') { r.custRupees += oR; r.custGrams += oG; }
-    else if (t === 'Both') { r.supRupees += oR; r.supGrams += oG; r.custRupees += oR; r.custGrams += oG; }
-  }
-  r.supRupees = CalcSvc.round2(r.supRupees);
-  r.supGrams = CalcSvc.round3(r.supGrams);
-  r.custRupees = CalcSvc.round2(r.custRupees);
-  r.custGrams = CalcSvc.round3(r.custGrams);
-  return r;
-};
-
-// ── Reconciliation ───────────────────────────────────────────
-
-/**
- * Recompute outstanding for ALL parties from raw transactions.
- * Scans Sales + Receipts, computes expected outstanding, compares with stored.
- *
- * @param {boolean} [autoFix=false] - If true, auto-correct drifted values.
- * @returns {{ parties: number, drifted: [], fixed: number }}
- *
- * Each drifted entry: { partyId, partyName, storedR, storedG, expectedR, expectedG, diffR, diffG }
- */
-OutSvc.reconcile = function (autoFix) {
-  try {
-    // 1. Build expected outstanding per partyId from transactions
-    var expected = {};  // partyId → { rupees, grams }
-
-    // Purchases: unpaid purchase entries add to supplier outstanding.
-    try {
-      var purRows = DB.readAll('Purchase', 12);
-      for (var u = 0; u < purRows.length; u++) {
-        var uParty = String(purRows[u][2] || '').trim();
-        var uPaid = purRows[u][11] === 'YES';
-        if (!uParty || uPaid) continue;
-        if (!expected[uParty]) expected[uParty] = { rupees: 0, grams: 0 };
-        expected[uParty].rupees += DB.num(purRows[u][6]);
-        expected[uParty].grams += DB.num(purRows[u][5]);
-      }
-    } catch (e) { }
-
-    // Sales: unpaid sale entries add to customer outstanding.
-    try {
-      var saleRows = DB.readAll('Sales', 14);
-      for (var s = 0; s < saleRows.length; s++) {
-        var sParty = String(saleRows[s][2] || '').trim();
-        var sPaid = saleRows[s][13] === 'YES';
-        if (!sParty || sPaid) continue;
-        if (!expected[sParty]) expected[sParty] = { rupees: 0, grams: 0 };
-        expected[sParty].rupees += DB.num(saleRows[s][6]);
-        expected[sParty].grams += DB.num(saleRows[s][5]);
-      }
-    } catch (e) { }
-
-    // Receipts/payments/adjustments subtract from outstanding.
-    try {
-      var rcptRows = DB.readAll('Receipts', 7);
-      for (var r = 0; r < rcptRows.length; r++) {
-        var rParty = String(rcptRows[r][2] || '').trim();
-        if (!rParty) continue;
-        if (!expected[rParty]) expected[rParty] = { rupees: 0, grams: 0 };
-        expected[rParty].rupees -= DB.num(rcptRows[r][5]);
-        expected[rParty].grams -= DB.num(rcptRows[r][6]);
-      }
-    } catch (e) { }
-
-    // 2. Compare with stored values in Parties sheet
-    var partRows = DB.readAll('Parties', 12);
-    var drifted = [];
-    var fixed = 0;
-
-    for (var p = 0; p < partRows.length; p++) {
-      var pid = String(partRows[p][0] || '').trim();
-      if (!pid) continue;
-
-      var storedR = CalcSvc.round2(DB.num(partRows[p][9]));
-      var storedG = CalcSvc.round3(DB.num(partRows[p][10]));
-      var exp = expected[pid] || { rupees: 0, grams: 0 };
-      var expectedR = CalcSvc.round2(exp.rupees);
-      var expectedG = CalcSvc.round3(exp.grams);
-
-      var diffR = CalcSvc.round2(storedR - expectedR);
-      var diffG = CalcSvc.round3(storedG - expectedG);
-
-      if (diffR !== 0 || diffG !== 0) {
-        drifted.push({
-          partyId: pid,
-          partyName: String(partRows[p][1] || ''),
-          storedR: storedR,
-          storedG: storedG,
-          expectedR: expectedR,
-          expectedG: expectedG,
-          diffR: diffR,
-          diffG: diffG
-        });
-
-        if (autoFix) {
-          DB.setCells('Parties', p + 2, 10, [[expectedR, expectedG]]);
-          OutSvc.audit_(pid, 'RECONCILE_FIX', expectedR - storedR, expectedG - storedG, expectedR, expectedG);
-          fixed++;
-        }
-      }
-    }
-
-    Logger.log('OutSvc.reconcile: parties=' + partRows.length + ', drifted=' + drifted.length + ', fixed=' + fixed);
-    return { success: true, parties: partRows.length, drifted: drifted, fixed: fixed };
-  } catch (e) {
-    Logger.log('OutSvc.reconcile error: ' + e.message);
-    return { success: false, message: e.message, drifted: [], fixed: 0 };
-  }
-};
-
-// ── Global backward-compat alias ──────────────────────────────
-// partUpdateOutstanding_ was previously in gsparties.gs
-function partUpdateOutstanding_(partyId, deltaR, deltaG) {
-  return OutSvc.updateDelta(partyId, deltaR, deltaG);
-}
-
-// ── Global convenience functions (Run from Apps Script editor) ──
-
 /**
  * Run from Apps Script editor: checks outstanding drift without fixing.
  * View results in Execution Log.
@@ -966,7 +824,7 @@ function runReconcileCheck() {
   Logger.log('Drifted: ' + result.drifted.length);
   for (var i = 0; i < result.drifted.length; i++) {
     var d = result.drifted[i];
-    Logger.log('  ' + d.partyName + ' (' + d.partyId + '): stored ₹' + d.storedR + '/' + d.storedG + 'g → expected ₹' + d.expectedR + '/' + d.expectedG + 'g (diff ₹' + d.diffR + '/' + d.diffG + 'g)');
+    Logger.log('  ' + d.partyName + ' (' + d.partyId + '): stored â‚¹' + d.storedR + '/' + d.storedG + 'g â†’ expected â‚¹' + d.expectedR + '/' + d.expectedG + 'g (diff â‚¹' + d.diffR + '/' + d.diffG + 'g)');
   }
   return result;
 }
@@ -993,7 +851,7 @@ function runRecalcProfits() {
 }
 
 // ============================================================
-// _svcStock.gs — Stock & Rate Service
+// _svcStock.gs â€” Stock & Rate Service
 // Owns all purchased-vs-sold balance and avg rate calculations.
 // Uses: DB (data layer), CalcSvc (rounding/rates)
 // ============================================================
@@ -1027,7 +885,7 @@ StockSvc.getSoldTotal = function () {
 };
 
 /**
- * Current stock balance = total purchased − total sold.
+ * Current stock balance = total purchased âˆ’ total sold.
  */
 StockSvc.getBalance = function () {
   return CalcSvc.round3(StockSvc.getPurchaseTotal() - StockSvc.getSoldTotal());
@@ -1117,7 +975,7 @@ StockSvc.getCalcDataForSaleForm = function () {
   return { avgRate: avgRate, stockBalance: CalcSvc.round3(purStock - sold) };
 };
 
-// ── Stock Guard ──────────────────────────────────────────────
+// â”€â”€ Stock Guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Validate that enough stock is available for a sale.
@@ -1143,7 +1001,7 @@ StockSvc.guardStock = function (gramsNeeded, excludeSaleId) {
   return { ok: true, available: available, message: '' };
 };
 
-// ── Profit Recalculation ─────────────────────────────────────
+// â”€â”€ Profit Recalculation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Public entry point. Reads Purchase sheet once, then delegates.
@@ -1205,7 +1063,7 @@ StockSvc.recalcSaleProfitsWithData_ = function (purRows) {
     var allPurG = 0;
     for (var p = 0; p < purchases.length; p++) allPurG += purchases[p].grams;
 
-    // Step 3: Compute changes — collect pending writes instead of writing immediately
+    // Step 3: Compute changes â€” collect pending writes instead of writing immediately
     // pendingWrites: { rowNum (1-indexed sheet row), values: [5 cells] }
     var pendingWrites = [];
 
@@ -1238,7 +1096,7 @@ StockSvc.recalcSaleProfitsWithData_ = function (purRows) {
       runningSoldG += saleG;
       var newStockBal = CalcSvc.round3(allPurG - runningSoldG);
 
-      // Compare with stored values — only write if changed
+      // Compare with stored values â€” only write if changed
       var oldAvgRate = CalcSvc.round2(DB.num(saleRows[j][8]));
       var oldProfitR = CalcSvc.round2(DB.num(saleRows[j][9]));
       var oldProfitP = CalcSvc.round2(DB.num(saleRows[j][10]));
@@ -1255,7 +1113,7 @@ StockSvc.recalcSaleProfitsWithData_ = function (purRows) {
       }
     }
 
-    // Step 4: Batch write — group contiguous rows to minimise API calls
+    // Step 4: Batch write â€” group contiguous rows to minimise API calls
     if (pendingWrites.length > 0) {
       var sh = DB.sheet('Sales');
       // Sort by row number so we can detect contiguous runs
@@ -1271,7 +1129,7 @@ StockSvc.recalcSaleProfitsWithData_ = function (purRows) {
           block.push(pendingWrites[j2].values);
           j2++;
         }
-        // Single setValues call for the whole contiguous block (cols H–L = 8 to 12)
+        // Single setValues call for the whole contiguous block (cols Hâ€“L = 8 to 12)
         sh.getRange(startRow, 8, block.length, 5).setValues(block);
         i = j2;
       }
